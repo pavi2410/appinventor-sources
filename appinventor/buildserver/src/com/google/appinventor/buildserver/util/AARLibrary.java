@@ -123,7 +123,7 @@ public class AARLibrary {
   public AARLibrary(final File aar) {
     aarPath = aar;
     String temp = aar.getAbsolutePath();
-    name = temp.substring(temp.lastIndexOf('/'), temp.length()-4);
+    name = temp.substring(temp.lastIndexOf(File.separatorChar), temp.length()-4);
   }
 
   public File getFile() {
