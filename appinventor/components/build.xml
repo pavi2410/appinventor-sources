@@ -124,6 +124,7 @@
 
     <ai.javac5 destdir="${AndroidRuntime-class.dir}">
       <include name="**/*.java" /> <!-- include all java files -->
+	  <include name="**/*.kt" /> <!-- include all kotlin files -->
       <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
       <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
       <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
@@ -257,6 +258,7 @@
              srcdir="${src.dir}"
              includeantruntime="false">
         <include name="**/*.java" /> <!-- include all java files -->
+		<include name="**/*.kt" /> <!-- include all kotlin files -->
         <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
         <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
         <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->

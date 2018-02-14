@@ -13,7 +13,8 @@
 
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
-<project name="CommonDefinitions">
+<project name="CommonDefinitions"
+         xmlns:if="ant:if">
   <!-- Always build with debug set... (jis) -->
   <property name="debug" value="true"/>
   <description>
@@ -82,6 +83,15 @@
       <pathelement location="${appinventor.dir}/lib/ant-contrib/ant-contrib-1.0b3.jar"/>
     </classpath>
   </taskdef>
+  
+  <!-- =====================================================================
+       Kotlin support
+	   ===================================================================== -->
+  <property environment="env"/>
+  <property name="kotlin.lib" location="${env.KOTLIN_HOME}/lib" />
+  
+  <typedef resource="org/jetbrains/kotlin/ant/antlib.xml"
+           classpath="${kotlin.lib}/kotlin-ant.jar"/>
 
   <!-- =====================================================================
        Define task ai.javac as the default compilation task for AI.  It sets
@@ -124,6 +134,7 @@
              debug="@{debug}"
              debuglevel="@{debuglevel}">
         <implicit-elements/>
+		<withKotlin if:set="${env.KOTLIN_HOME}"/>
       </javac>
     </sequential>
   </macrodef>
