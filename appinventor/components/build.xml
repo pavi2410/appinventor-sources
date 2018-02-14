@@ -298,6 +298,7 @@
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
+		<withKotlin/>
       </javac>
     </sequential>
   </macrodef>

@@ -13,8 +13,7 @@
 
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
-<project name="CommonDefinitions"
-         xmlns:if="ant:if">
+<project name="CommonDefinitions">
   <!-- Always build with debug set... (jis) -->
   <property name="debug" value="true"/>
   <description>
@@ -134,7 +133,7 @@
              debug="@{debug}"
              debuglevel="@{debuglevel}">
         <implicit-elements/>
-		<withKotlin if:set="${env.KOTLIN_HOME}"/>
+		<withKotlin/>
       </javac>
     </sequential>
   </macrodef>
