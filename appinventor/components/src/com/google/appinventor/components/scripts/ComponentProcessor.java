@@ -911,12 +911,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String permission : usesPermissions.permissionNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
+      for (String permission: usesPermissions.value()) {
+        updateWithNonEmptyValue(componentInfo.permissions, permission);
+      }
     }
 
     // Gather library names.
     UsesLibraries usesLibraries = element.getAnnotation(UsesLibraries.class);
     if (usesLibraries != null) {
       for (String library : usesLibraries.libraries().split(",")) {
+        updateWithNonEmptyValue(componentInfo.libraries, library);
+      }
+      for (String library: usesLibraries.value()) {
         updateWithNonEmptyValue(componentInfo.libraries, library);
       }
     }
@@ -938,6 +944,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String file : usesAssets.fileNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.assets, file);
       }
+      for (String file : usesAssets.value()) {
+        updateWithNonEmptyValue(componentInfo.assets, file);
+      }
     }
 
     // Gather the required activities and build their element strings.
@@ -945,6 +954,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesActivities != null) {
       try {
         for (ActivityElement ae : usesActivities.activities()) {
+          updateWithNonEmptyValue(componentInfo.activities, activityElementToString(ae));
+        }
+        for (ActivityElement ae : usesActivities.value()) {
           updateWithNonEmptyValue(componentInfo.activities, activityElementToString(ae));
         }
       } catch (IllegalAccessException e) {
@@ -963,6 +975,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesBroadcastReceivers != null) {
       try {
         for (ReceiverElement re : usesBroadcastReceivers.receivers()) {
+          updateWithNonEmptyValue(componentInfo.broadcastReceivers, receiverElementToString(re));
+        }
+        for (ReceiverElement re : usesBroadcastReceivers.value()) {
           updateWithNonEmptyValue(componentInfo.broadcastReceivers, receiverElementToString(re));
         }
       } catch (IllegalAccessException e) {

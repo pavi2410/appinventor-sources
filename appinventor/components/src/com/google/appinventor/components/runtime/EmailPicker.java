@@ -43,7 +43,7 @@ import android.widget.AutoCompleteTextView;
     "complete.",
     category = ComponentCategory.SOCIAL)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
+@UsesPermissions({"android.permission.READ_CONTACTS"})
 public class EmailPicker extends TextBoxBase {
 
   private final EmailAddressAdapter addressAdapter;

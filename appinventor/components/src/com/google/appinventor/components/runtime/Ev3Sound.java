@@ -43,9 +43,9 @@ import java.util.List;
                    nonVisible = true,
                    iconName = "images/legoMindstormsEv3.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-                                   "android.permission.WRITE_EXTERNAL_STORAGE," +
-                                   "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.INTERNET",
+                  "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "android.permission.READ_EXTERNAL_STORAGE"})
 public class Ev3Sound extends LegoMindstormsEv3Base {
   /**
    * Creates a new Ev3Sound component.

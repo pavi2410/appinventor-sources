@@ -39,7 +39,7 @@ import java.io.IOException;
  *
  */
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 public abstract class ButtonBase extends AndroidViewComponent
     implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
 

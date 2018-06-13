@@ -81,9 +81,8 @@ import java.util.List;
     nonVisible = true,
     iconName = "images/gameClient.png")
 @SimpleObject
-@UsesPermissions(
-    permissionNames = "android.permission.INTERNET, " +
-                "com.google.android.googleapps.permission.GOOGLE_AUTH")
+@UsesPermissions({"android.permission.INTERNET",
+                  "com.google.android.googleapps.permission.GOOGLE_AUTH"})
 public class GameClient extends AndroidNonvisibleComponent
     implements Component, OnResumeListener, OnStopListener {
 

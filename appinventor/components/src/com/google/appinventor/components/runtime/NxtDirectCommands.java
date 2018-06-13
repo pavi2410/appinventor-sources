@@ -39,9 +39,9 @@ import java.util.List;
     nonVisible = true,
     iconName = "images/legoMindstormsNxt.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.WRITE_EXTERNAL_STORAGE," +
-  "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.INTERNET",
+                 "android.permission.WRITE_EXTERNAL_STORAGE",
+                 "android.permission.READ_EXTERNAL_STORAGE"})
 public class NxtDirectCommands extends LegoMindstormsNxtBase {
 
   /**

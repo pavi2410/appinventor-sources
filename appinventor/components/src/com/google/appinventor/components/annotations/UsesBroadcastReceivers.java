@@ -30,4 +30,6 @@ public @interface UsesBroadcastReceivers {
    * @return  the array containing the relevant receivers
    */
   ReceiverElement[] receivers();
+
+  ReceiverElement[] value();
 }

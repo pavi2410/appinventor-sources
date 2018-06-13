@@ -98,7 +98,7 @@ import java.io.IOException;
         + "but the URL must point to the video file itself, not to a program that plays the video.",
     category = ComponentCategory.MEDIA)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 public final class VideoPlayer extends AndroidViewComponent implements
     OnDestroyListener, Deleteable, OnCompletionListener, OnErrorListener,
     OnPreparedListener {

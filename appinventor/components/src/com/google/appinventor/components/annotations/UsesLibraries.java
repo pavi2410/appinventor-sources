@@ -27,4 +27,6 @@ public @interface UsesLibraries {
    * @see android.Manifest.permission
    */
   String libraries() default "";
+  
+  String[] value() default {};
 }

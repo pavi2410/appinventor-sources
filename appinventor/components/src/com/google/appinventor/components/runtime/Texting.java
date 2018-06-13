@@ -115,21 +115,22 @@ import android.widget.Toast;
   iconName = "images/texting.png")
 
 @SimpleObject
-@UsesPermissions(permissionNames =
-  "android.permission.RECEIVE_SMS, android.permission.SEND_SMS, " +
-  "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
-  "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
-  "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
-  "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
-@UsesLibraries(libraries =
-  "google-api-client-beta.jar," +
-  "google-api-client-android2-beta.jar," +
-  "google-http-client-beta.jar," +
-  "google-http-client-android2-beta.jar," +
-  "google-http-client-android3-beta.jar," +
-  "google-oauth-client-beta.jar," +
-  "guava-14.0.1.jar")
-@UsesBroadcastReceivers(receivers = {
+@UsesPermissions({"android.permission.RECEIVE_SMS",
+                  "android.permission.SEND_SMS",
+                  "com.google.android.apps.googlevoice.permission.RECEIVE_SMS",
+                  "com.google.android.apps.googlevoice.permission.SEND_SMS",
+                  "android.permission.ACCOUNT_MANAGER",
+                  "android.permission.MANAGE_ACCOUNTS",
+                  "android.permission.GET_ACCOUNTS",
+                  "android.permission.USE_CREDENTIALS"})
+@UsesLibraries({"google-api-client-beta.jar",
+                "google-api-client-android2-beta.jar",
+                "google-http-client-beta.jar",
+                "google-http-client-android2-beta.jar",
+                "google-http-client-android3-beta.jar",
+                "google-oauth-client-beta.jar",
+                "guava-14.0.1.jar"})
+@UsesBroadcastReceivers({
     @ReceiverElement(name = "com.google.appinventor.components.runtime.util.SmsBroadcastReceiver",
                      intentFilters = {
                          @IntentFilterElement(actionElements = {

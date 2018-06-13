@@ -52,7 +52,8 @@ import java.io.StringWriter;
     nonVisible = true,
     iconName = "images/file.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.WRITE_EXTERNAL_STORAGE",
+                  "android.permission.READ_EXTERNAL_STORAGE"})
 public class File extends AndroidNonvisibleComponent implements Component {
   public static final String NO_ASSETS = "No_Assets";
   private final Activity activity;

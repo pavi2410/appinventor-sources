@@ -40,8 +40,8 @@ import android.util.Log;
         "can be used to provide an info window, custom fill and stroke colors, and custom " +
         "images to convey information to the user.</p>")
 @SimpleObject
-@UsesAssets(fileNames = "marker.svg")
-@UsesLibraries(libraries = "osmdroid.aar, androidsvg.jar")
+@UsesAssets({"marker.svg"})
+@UsesLibraries({"osmdroid.aar", "androidsvg.jar"})
 public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   private static final String TAG = Marker.class.getSimpleName();
 

@@ -57,7 +57,8 @@ import java.util.Map;
     nonVisible = true,
     iconName = "images/soundEffect.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET")
+@UsesPermissions({"android.permission.VIBRATE",
+                  "android.permission.INTERNET"})
 public class Sound extends AndroidNonvisibleComponent
     implements Component, OnResumeListener, OnStopListener, OnDestroyListener, Deleteable {
 

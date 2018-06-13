@@ -38,9 +38,8 @@ import java.util.concurrent.atomic.AtomicReference;
     nonVisible = true,
     iconName = "images/bluetooth.png")
 @SimpleObject
-@UsesPermissions(permissionNames =
-                 "android.permission.BLUETOOTH, " +
-                 "android.permission.BLUETOOTH_ADMIN")
+@UsesPermissions({"android.permission.BLUETOOTH",
+                  "android.permission.BLUETOOTH_ADMIN"})
 public final class BluetoothServer extends BluetoothConnectionBase {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 

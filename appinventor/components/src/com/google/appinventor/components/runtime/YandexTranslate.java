@@ -43,7 +43,7 @@ import java.net.URLEncoder;
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/yandex.png")
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 @SimpleObject
 public final class YandexTranslate extends AndroidNonvisibleComponent {
 

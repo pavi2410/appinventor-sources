@@ -54,7 +54,9 @@ import android.telephony.TelephonyManager;
     nonVisible = true,
     iconName = "images/phoneCall.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.CALL_PHONE, android.permission.READ_PHONE_STATE, android.permission.PROCESS_OUTGOING_CALLS")
+@UsesPermissions({"android.permission.CALL_PHONE",
+                  "android.permission.READ_PHONE_STATE",
+                  "android.permission.PROCESS_OUTGOING_CALLS"})
 public class PhoneCall extends AndroidNonvisibleComponent implements Component, OnDestroyListener {
 
   private String phoneNumber;

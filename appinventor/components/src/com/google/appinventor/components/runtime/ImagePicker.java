@@ -48,7 +48,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
           "will delete previous images, in order from oldest to newest.",
     category = ComponentCategory.MEDIA)
 
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.WRITE_EXTERNAL_STORAGE"})
 @SimpleObject
 public class ImagePicker extends Picker implements ActivityResultListener {
 

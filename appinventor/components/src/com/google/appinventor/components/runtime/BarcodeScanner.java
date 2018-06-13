@@ -39,7 +39,7 @@ import android.content.ComponentName;
     nonVisible = true,
     iconName = "images/barcodeScanner.png")
 @SimpleObject
-@UsesActivities(activities = {
+@UsesActivities({
     @ActivityElement(name = "com.google.zxing.client.android.AppInvCaptureActivity",
                      screenOrientation = "landscape",
                      stateNotNeeded = "true",
@@ -47,8 +47,8 @@ import android.content.ComponentName;
                      theme = "@android:style/Theme.NoTitleBar.Fullscreen",
                      windowSoftInputMode = "stateAlwaysHidden")
 })
-@UsesPermissions(permissionNames = "android.permission.CAMERA")
-@UsesLibraries(libraries = "Barcode.jar,core.jar")
+@UsesPermissions({"android.permission.CAMERA"})
+@UsesLibraries({"Barcode.jar", "core.jar"})
 public class BarcodeScanner extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 

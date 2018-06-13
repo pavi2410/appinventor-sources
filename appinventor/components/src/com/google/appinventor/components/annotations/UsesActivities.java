@@ -30,4 +30,6 @@ public @interface UsesActivities {
    * @return  the array containing the relevant activities
    */
   ActivityElement[] activities();
+
+  ActivityElement[] value();
 }

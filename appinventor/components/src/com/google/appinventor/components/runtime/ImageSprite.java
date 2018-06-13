@@ -49,7 +49,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
     "can be changed at any time under program control.</p> ",
     category = ComponentCategory.ANIMATION)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 public class ImageSprite extends Sprite {
   private final Form form;
   private BitmapDrawable drawable;

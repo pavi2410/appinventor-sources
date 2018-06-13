@@ -40,7 +40,8 @@ import java.util.Date;
   nonVisible = true,
   iconName = "images/camcorder.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.WRITE_EXTERNAL_STORAGE",
+                  "android.permission.READ_EXTERNAL_STORAGE"})
 public class Camcorder extends AndroidNonvisibleComponent
   implements ActivityResultListener, Component {
 

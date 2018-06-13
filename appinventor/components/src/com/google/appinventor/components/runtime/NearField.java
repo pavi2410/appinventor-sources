@@ -40,7 +40,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     iconName = "images/nearfield.png")
 
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.NFC")
+@UsesPermissions({"android.permission.NFC"})
 public class NearField extends AndroidNonvisibleComponent
 implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListener, Deleteable {
   private static final String TAG = "nearfield";

@@ -125,24 +125,22 @@ import java.util.ArrayList;
     nonVisible = true,
     iconName = "images/fusiontables.png")
 @SimpleObject
-@UsesPermissions(permissionNames =
-    "android.permission.INTERNET," +
-    "android.permission.ACCOUNT_MANAGER," +
-    "android.permission.MANAGE_ACCOUNTS," +
-    "android.permission.GET_ACCOUNTS," +
-    "android.permission.USE_CREDENTIALS," +
-    "android.permission.WRITE_EXTERNAL_STORAGE," +
-    "android.permission.READ_EXTERNAL_STORAGE")
-@UsesLibraries(libraries =
-    "fusiontables.jar," +
-    "google-api-client-beta.jar," +
-    "google-api-client-android2-beta.jar," +
-    "google-http-client-beta.jar," +
-    "google-http-client-android2-beta.jar," +
-    "google-http-client-android3-beta.jar," +
-    "google-oauth-client-beta.jar," +
-    "guava-14.0.1.jar," +
-    "gson-2.1.jar")
+@UsesPermissions({"android.permission.INTERNET",
+                  "android.permission.ACCOUNT_MANAGER",
+                  "android.permission.MANAGE_ACCOUNTS",
+                  "android.permission.GET_ACCOUNTS",
+                  "android.permission.USE_CREDENTIALS",
+                  "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "android.permission.READ_EXTERNAL_STORAGE"})
+@UsesLibraries({"fusiontables.jar",
+                "google-api-client-beta.jar",
+                "google-api-client-android2-beta.jar",
+                "google-http-client-beta.jar",
+                "google-http-client-android2-beta.jar",
+                "google-http-client-android3-beta.jar",
+                "google-oauth-client-beta.jar",
+                "guava-14.0.1.jar",
+                "gson-2.1.jar"})
 
 public class FusiontablesControl extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "FUSION";

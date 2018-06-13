@@ -92,8 +92,8 @@ import java.util.Set;
     "and circles.</p>",
     category = ComponentCategory.ANIMATION)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-                 "android.permission.WRITE_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.INTERNET",
+                  "android.permission.WRITE_EXTERNAL_STORAGE"})
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {
   private static final String LOG_TAG = "Canvas";
 

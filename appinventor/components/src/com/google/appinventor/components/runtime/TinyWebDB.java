@@ -66,7 +66,7 @@ import org.json.JSONException;
     nonVisible = true,
     iconName = "images/tinyWebDB.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
 
   private static final String LOG_TAG = "TinyWebDB";

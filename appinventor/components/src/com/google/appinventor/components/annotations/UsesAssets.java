@@ -23,4 +23,6 @@ public @interface UsesAssets {
    * The filenames of the required assets separated by commas.
    */
   String fileNames() default "";
+  
+  String[] value() default {};
 }

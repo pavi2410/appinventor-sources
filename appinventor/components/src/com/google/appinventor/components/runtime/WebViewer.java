@@ -67,7 +67,7 @@ import android.webkit.WebViewClient;
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 public final class WebViewer extends AndroidViewComponent {
 
   private final WebView webview;

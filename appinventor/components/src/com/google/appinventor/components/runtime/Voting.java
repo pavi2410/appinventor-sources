@@ -77,7 +77,7 @@ import java.util.List;
     nonVisible = true,
     iconName = "images/voting.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 
 public class Voting extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "Voting";

@@ -73,12 +73,18 @@ import java.util.List;
     "different location, for example to add Markers off-screen, then the &quot;Reset Map to " +
     "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>")
 @SimpleObject
-@UsesAssets(fileNames = "location.png")
-@UsesPermissions(permissionNames = "android.permission.INTERNET, " + "android.permission.ACCESS_FINE_LOCATION, "
-  + "android.permission.ACCESS_COARSE_LOCATION, " + "android.permission.ACCESS_WIFI_STATE, "
-  + "android.permission.ACCESS_NETWORK_STATE, " + "android.permission.WRITE_EXTERNAL_STORAGE, "
-  + "android.permission.READ_EXTERNAL_STORAGE")
-@UsesLibraries(libraries = "osmdroid.aar, osmdroid.jar, androidsvg.jar, jts.jar")
+@UsesAssets({"location.png"})
+@UsesPermissions({"android.permission.INTERNET",
+                  "android.permission.ACCESS_FINE_LOCATION",
+                  "android.permission.ACCESS_COARSE_LOCATION",
+                  "android.permission.ACCESS_WIFI_STATE",
+                  "android.permission.ACCESS_NETWORK_STATE",
+                  "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "android.permission.READ_EXTERNAL_STORAGE"})
+@UsesLibraries({"osmdroid.aar",
+                "osmdroid.jar",
+                "androidsvg.jar",
+                "jts.jar"})
 public class Map extends MapFeatureContainerBase implements MapEventListener {
   private static final String TAG = Map.class.getSimpleName();
 

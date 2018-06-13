@@ -43,7 +43,7 @@ import android.view.WindowManager;
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
     "whether it can be clicked on (<code>Enabled</code>).</p>")
 @SimpleObject
-@UsesActivities(activities = {
+@UsesActivities({
     @ActivityElement(name = "com.google.appinventor.components.runtime.ListPickerActivity",
                      configChanges = "orientation|keyboardHidden",
                      screenOrientation = "behind")

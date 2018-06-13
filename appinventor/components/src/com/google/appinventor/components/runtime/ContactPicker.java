@@ -59,7 +59,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     "numbers, and the list of email addresses will contain only one email.",
     category = ComponentCategory.SOCIAL)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
+@UsesPermissions({"android.permission.READ_CONTACTS"})
 public class ContactPicker extends Picker implements ActivityResultListener {
 
   private static String[] CONTACT_PROJECTION;

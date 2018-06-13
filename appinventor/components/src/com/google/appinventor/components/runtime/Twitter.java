@@ -80,9 +80,9 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
     + " specific to your app from http://twitter.com/oauth_clients/new",
     category = ComponentCategory.SOCIAL, nonVisible = true, iconName = "images/twitter.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
-@UsesLibraries(libraries = "twitter4j.jar," + "twitter4jmedia.jar")
-@UsesActivities(activities = {
+@UsesPermissions({"android.permission.INTERNET"})
+@UsesLibraries({"twitter4j.jar", "twitter4jmedia.jar"})
+@UsesActivities({
     @ActivityElement(name = "com.google.appinventor.components.runtime.WebViewActivity",
                      configChanges = "orientation|keyboardHidden",
                      screenOrientation = "behind",

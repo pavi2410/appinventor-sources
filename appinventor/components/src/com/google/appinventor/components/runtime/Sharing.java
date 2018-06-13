@@ -43,7 +43,7 @@ import java.io.File;
     category = ComponentCategory.SOCIAL,
     nonVisible = true, iconName = "images/sharing.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({"android.permission.READ_EXTERNAL_STORAGE"})
 public class Sharing extends AndroidNonvisibleComponent {
 
   public Sharing(ComponentContainer container) {

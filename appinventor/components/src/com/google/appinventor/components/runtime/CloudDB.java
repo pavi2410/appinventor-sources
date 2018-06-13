@@ -102,10 +102,10 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
     category = ComponentCategory.EXPERIMENTAL,
     nonVisible = true,
     iconName = "images/cloudDB.png")
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.ACCESS_NETWORK_STATE")
+@UsesPermissions({"android.permission.INTERNET",
+                  "android.permission.ACCESS_NETWORK_STATE"})
 
-@UsesLibraries(libraries = "jedis.jar")
+@UsesLibraries({"jedis.jar"})
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
   OnClearListener, OnDestroyListener {
   private static final boolean DEBUG = false;

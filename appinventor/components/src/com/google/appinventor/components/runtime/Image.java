@@ -41,7 +41,7 @@ import java.io.IOException;
     "and other aspects of the Image's appearance, can be specified in the " +
     "Designer or in the Blocks Editor.")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions({"android.permission.INTERNET"})
 public final class Image extends AndroidViewComponent {
 
   private final ImageView view;

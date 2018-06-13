@@ -94,9 +94,10 @@ import org.json.JSONException;
     androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
-@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar")
-@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
-    "android.permission.ACCESS_NETWORK_STATE")
+@UsesLibraries({"appcompat-v7.aar", "support-v4.aar"})
+@UsesPermissions({"android.permission.INTERNET",
+                  "android.permission.ACCESS_WIFI_STATE",
+                  "android.permission.ACCESS_NETWORK_STATE"})
 public class Form extends AppInventorCompatActivity
   implements Component, ComponentContainer, HandlesEventDispatching,
   OnGlobalLayoutListener {

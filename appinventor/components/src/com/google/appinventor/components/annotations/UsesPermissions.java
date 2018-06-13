@@ -27,4 +27,6 @@ public @interface UsesPermissions {
    * @see android.Manifest.permission
    */
   String permissionNames() default "";
+  
+  String[] value() default {};
 }
