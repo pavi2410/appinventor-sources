@@ -23,10 +23,16 @@ public @interface UsesPermissions {
   /**
    * The names of the permissions separated by commas.
    *
+   * @deprecated use {@link #value()} instead
+   * 
    * @return  the permission name
    * @see android.Manifest.permission
    */
+  @Deprecated
   String permissionNames() default "";
   
+  /**
+   * An array of the names of permissions
+   */
   String[] value() default {};
 }

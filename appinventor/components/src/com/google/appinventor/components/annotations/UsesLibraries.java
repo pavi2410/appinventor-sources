@@ -23,10 +23,16 @@ public @interface UsesLibraries {
   /**
    * The names of the libraries separated by commas.
    *
+   * @deprecated use {@link #value()} instead
+   * 
    * @return  the library name
    * @see android.Manifest.permission
    */
+  @Deprecated
   String libraries() default "";
   
+  /**
+   * An array of the names of the libraries
+   */
   String[] value() default {};
 }

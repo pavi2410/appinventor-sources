@@ -26,10 +26,16 @@ public @interface UsesBroadcastReceivers {
   /**
    * An array containing each {@link ReceiverElement}
    * that is required by the component.
+   * 
+   * @deprecated use {@link #value()} instead
    *
    * @return  the array containing the relevant receivers
    */
-  ReceiverElement[] receivers();
+  @Deprecated
+  ReceiverElement[] receivers() default {};
 
-  ReceiverElement[] value();
+  /**
+   * An array of {@link ReceiverElement}
+   */
+  ReceiverElement[] value() default {};
 }

@@ -26,10 +26,16 @@ public @interface UsesActivities {
   /**
    * An array containing each {@link ActivityElement}
    * that is required by the component.
+   * 
+   * @deprecated use {@link #value()} instead
    *
    * @return  the array containing the relevant activities
    */
-  ActivityElement[] activities();
+  @Deprecated
+  ActivityElement[] activities() default {};
 
-  ActivityElement[] value();
+  /**
+   * An array of {@link ActivityElement}
+   */
+  ActivityElement[] value() default {};
 }

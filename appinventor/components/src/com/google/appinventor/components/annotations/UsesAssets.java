@@ -21,8 +21,14 @@ import java.lang.annotation.Target;
 public @interface UsesAssets {
   /**
    * The filenames of the required assets separated by commas.
+   * 
+   * @deprecated use {@link #value()} instead
    */
+  @Deprecated
   String fileNames() default "";
   
+  /**
+   * An array of the names of assets
+   */
   String[] value() default {};
 }
