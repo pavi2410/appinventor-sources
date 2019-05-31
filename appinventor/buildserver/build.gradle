@@ -1,0 +1,166 @@
+plugins {
+    id 'application'
+}
+
+/* Source Structure
+├───build
+│   ├───classes
+│   │   └───BuildServer
+│   │       ├───com
+│   │       │   └───google
+│   │       │       └───appinventor
+│   │       │           └───buildserver
+│   │       │               └───util
+│   │       ├───files
+│   │       └───tools
+│   └───run
+│       └───lib
+├───lib
+├───reports
+│   ├───html
+│   └───raw
+├───src
+│   └───com
+│       └───google
+│           └───appinventor
+│               └───buildserver
+│                   ├───resources
+│                   └───util
+└───tests
+    └───com
+        └───google
+            └───appinventor
+                └───buildserver
+*/
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']  
+        }
+        resources {
+            srcDirs = ['src']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['tests']
+        }
+    }
+}
+
+application {
+    mainClassName = 'com.google.appinventor.buildserver.Main'
+}
+
+dependencies {
+    implementation fileTree(dir: 'lib', include: '*.jar')
+}
+
+task makeKeystore {
+    def userHome = System.getProperty('user.home')
+    def keystoreFile = file("$userHome/.appinventor/debug.keystore")
+    onlyIf {
+        keystoreFile.exists()
+    }
+    doLast {
+        keystoreFile.mkdirs()
+        ant.genkey(
+            alias: 'androidkey',
+            dname: 'CN=Android Debug, O=Android, C=US',
+            storepass: 'android',
+            keystore: keystoreFile,
+            keyalg: 'rsa',
+            validity: '10000')
+    }
+}
+
+task PlayApp(type: JavaExec) {
+    // dependsOn BuildServer
+    classpath = sourceSets.main.runtimeClasspath
+    
+    main = 'com.google.appinventor.buildserver.Main'
+
+    // arguments to pass to the application
+    args '--childProcessRamMb', '1024',
+        '--inputZipFile', '$buildDir/aiplayapp.zip',
+        '--userName', 'App Inventor',
+        '--isForCompanion',
+        '--outputDir', publicBuildDir,
+        '--dexCacheDir','$publicBuildDir/dexCache'
+    
+    systemProperties 'file.encoding': 'UTF-8'
+}
+
+task PlayAppExtras(type: JavaExec) {
+    // dependsOn BuildServer
+    classpath = sourceSets.main.runtimeClasspath
+    
+    main = 'com.google.appinventor.buildserver.Main'
+
+    // arguments to pass to the application
+    args '--childProcessRamMb', '1024',
+        '--inputZipFile', '$buildDir/aiplayapp.zip',
+        '--userName', 'App Inventor',
+        '--isForCompanion',
+        '--includeDangerousPermissions',
+        '--extensions', 'edu.mit.appinventor.companionextras.CompanionExtras',
+        '--outputDir', publicBuildDir,
+        '--outputFileName', 'MITAI2Companion-full.apk',
+        '--dexCacheDir', '$publicBuildDir/dexCache'
+    
+    systemProperties 'file.encoding': 'UTF-8'
+}
+
+task Emulator(type: JavaExec) {
+    // dependsOn BuildServer
+    classpath = sourceSets.main.runtimeClasspath
+    
+    main = 'com.google.appinventor.buildserver.Main'
+
+    // arguments to pass to the application
+    args '--childProcessRamMb', '1024',
+        '--inputZipFile', '$buildDir/aiplayapp.zip',
+        '--userName', 'App Inventor',
+        '--isForCompanion',
+        '--isForEmulator',
+        '--includeDangerousPermissions',
+        '--outputDir', publicBuildDir,
+        '--outputFileName', 'Emulator.apk',
+        '--dexCacheDir', '$publicBuildDir/dexCache'
+    
+    systemProperties 'file.encoding': 'UTF-8'
+}
+
+task installPlay(type: Exec) {
+    commandLine 'adb', 'install', '-r', '$publicBuildDir/MIT AI2 Companion.apk'
+}
+
+task RunLocalBuildServer(type: JavaExec) {
+    // dependsOn BuildServer
+    classpath = sourceSets.main.runtimeClasspath
+    
+    main = 'com.google.appinventor.buildserver.BuildServer'
+
+    // arguments to pass to the application
+    args '--dexCacheDir', '$publicBuildDir/dexCache',
+        '--shutdownToken', 'token'
+    
+    systemProperties 'file.encoding': 'UTF-8'
+}
+
+task RunMain(type: JavaExec) {
+    // dependsOn BuildServer
+    classpath = sourceSets.main.runtimeClasspath
+    
+    main = 'com.google.appinventor.buildserver.Main'
+
+    // arguments to pass to the application
+    args '--inputZipFile', '$buildDir/aiplayapp.zip',
+        '--userName', 'App Inventor',
+        '--outputDir', publicBuildDir,
+        '--dexCacheDir', '$publicBuildDir/dexCache'
+    
+    systemProperties 'file.encoding': 'UTF-8'
+}
+

@@ -1,5 +1,3 @@
-task hello {
-    doLast {
-        print("hello")
-    }
+subprojects {
+    ext.publicBuildDir = "${rootProject.buildDir}/${name}"
 }
