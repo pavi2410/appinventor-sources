@@ -1,3 +1,0 @@
-subprojects {
-    ext.publicBuildDir = "${rootProject.buildDir}/${name}"
-}

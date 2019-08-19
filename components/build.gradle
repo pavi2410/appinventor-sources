@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compileOnly project(':components-annotations')
+    annotationProcessor project(':components-compiler')
+    testImplementation 'junit:junit:4.12'
+}

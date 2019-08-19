@@ -1,0 +1,1 @@
+include ':appengine', ':buildserver', ':common', ':components', ':components-annotations', ':components-compiler'
