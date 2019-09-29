@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  *
  * @author trevorbadams@gmail.com (Trevor Adams)
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface UsesNativeLibraries {
 

@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * with this annotation. All other methods will be ignored.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
 public @interface SimpleFunction {
   /**

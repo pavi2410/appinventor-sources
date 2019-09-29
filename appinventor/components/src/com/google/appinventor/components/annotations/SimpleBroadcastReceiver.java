@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * <i>android:enabled</i> will default to true because the same attribute in the <i>application</i> tag is not specified.
  * If any other attributes are ever needed for the receiver, the annotation can be extended.
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 @Deprecated
 public @interface SimpleBroadcastReceiver {

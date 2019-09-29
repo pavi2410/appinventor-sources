@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  *
  * @author ralph.morelli@trincoll.edu
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface UsesLibraries {
 

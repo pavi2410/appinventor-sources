@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation to mark components for use in the Designer and Blocks Editor.
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface DesignerComponent {
   /**

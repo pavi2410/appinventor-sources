@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  *
  * @author markf@google.com (Mark Friedman)
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
 public @interface SimplePropertyCopier {
 }

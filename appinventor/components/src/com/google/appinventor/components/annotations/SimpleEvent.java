@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * Annotation to mark Simple event definitions.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
 public @interface SimpleEvent {
   /**

@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  * annotation.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
 public @interface DesignerProperty {
   /**
