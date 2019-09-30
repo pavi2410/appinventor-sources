@@ -98,7 +98,7 @@ abstract class MockHVLayoutBase extends MockLayout {
   private void ensureDividerInited() {
     if (dividerElement == null) {
       dividerElement = DOM.createDiv();
-      DOM.setStyleAttribute(dividerElement, "backgroundColor", DIVIDER_COLOR);
+      dividerElement.getStyle().setProperty("backgroundColor", DIVIDER_COLOR);
       setDividerVisible(false);
       DOM.appendChild(container.getRootPanel().getElement(), dividerElement);
     }
@@ -125,15 +125,15 @@ abstract class MockHVLayoutBase extends MockLayout {
   }
 
   private void setDividerVisible(boolean visible) {
-    DOM.setStyleAttribute(dividerElement, "visibility", visible ? "visible" : "hidden");
+    dividerElement.getStyle().setProperty("visibility", visible ? "visible" : "hidden");
   }
 
   private void setDividerBoundsAndShow(int x, int y, int width, int height) {
-    DOM.setStyleAttribute(dividerElement, "position", "absolute");
-    DOM.setStyleAttribute(dividerElement, "left", x + "px");
-    DOM.setStyleAttribute(dividerElement, "top", y + "px");
-    DOM.setStyleAttribute(dividerElement, "width", width + "px");
-    DOM.setStyleAttribute(dividerElement, "height", height + "px");
+    dividerElement.getStyle().setProperty("position", "absolute");
+    dividerElement.getStyle().setProperty("left", x + "px");
+    dividerElement.getStyle().setProperty("top", y + "px");
+    dividerElement.getStyle().setProperty("width", width + "px");
+    dividerElement.getStyle().setProperty("height", height + "px");
     setDividerVisible(true);
   }
 

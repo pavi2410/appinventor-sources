@@ -143,20 +143,20 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
 
     // Create the outer shell
     setElement(DOM.createDiv());
-    DOM.setStyleAttribute(getElement(), "position", "relative");
+    getElement().getStyle().setProperty("position", "relative");
     setStyleName("gwt-ProgressBar-shell");
 
     // Create the bar element
     barElement = DOM.createDiv();
     DOM.appendChild(getElement(), barElement);
-    DOM.setStyleAttribute(barElement, "height", "100%");
+    barElement.getStyle().setProperty("height", "100%");
     setBarStyleName("gwt-ProgressBar-bar");
 
     // Create the text element
     textElement = DOM.createDiv();
     DOM.appendChild(getElement(), textElement);
-    DOM.setStyleAttribute(textElement, "position", "absolute");
-    DOM.setStyleAttribute(textElement, "top", "0px");
+    textElement.getStyle().setProperty("position", "absolute");
+    textElement.getStyle().setProperty("top", "0px");
 
     //Set the current progress
     setProgress(curProgress);
@@ -237,7 +237,7 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
     if (textVisible) {
       int textWidth = DOM.getElementPropertyInt(textElement, "offsetWidth");
       int left = (width / 2) - (textWidth / 2);
-      DOM.setStyleAttribute(textElement, "left", left + "px");
+      textElement.getStyle().setProperty("left", left + "px");
     }
   }
 
@@ -290,7 +290,7 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
 
     // Calculate percent complete
     int percent = (int) (100 * getPercent());
-    DOM.setStyleAttribute(barElement, "width", percent + "%");
+    barElement.getStyle().setProperty("width", percent + "%");
     DOM.setElementProperty(textElement, "innerHTML", generateText(curProgress));
     updateTextStyle(percent);
 
@@ -330,10 +330,10 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
   public void setTextVisible(boolean textVisible) {
     this.textVisible = textVisible;
     if (this.textVisible) {
-      DOM.setStyleAttribute(textElement, "display", "");
+      textElement.getStyle().setProperty("display", "");
       redraw();
     } else {
-      DOM.setStyleAttribute(textElement, "display", "none");
+      textElement.getStyle().setProperty("display", "none");
     }
   }
 
@@ -378,7 +378,7 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
   @Override
   protected void onLoad() {
     // Reset the position attribute of the parent element
-    DOM.setStyleAttribute(getElement(), "position", "relative");
+    getElement().getStyle().setProperty("position", "relative");
     ResizableWidgetCollection.get().add(this);
     redraw();
   }

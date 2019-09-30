@@ -138,8 +138,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
   private void setTrackColorActiveProperty(String text) {
     trackColorActive = MockComponentsUtil.getColor(text).toString();
     if (checked) {
-      DOM.setStyleAttribute(toggleWidget.getWidget(1).getElement().getFirstChildElement(), "fill",
-              trackColorActive);
+      toggleWidget.getWidget(1).getElement().getFirstChildElement().getStyle().setProperty("fill", trackColorActive);
     }
   }
 
@@ -151,8 +150,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
   private void setTrackColorInactiveProperty(String text) {
     trackColorInactive = MockComponentsUtil.getColor(text).toString();
     if (!checked) {
-      DOM.setStyleAttribute(toggleWidget.getWidget(1).getElement().getFirstChildElement(), "fill",
-              trackColorInactive);
+      toggleWidget.getWidget(1).getElement().getFirstChildElement().getStyle().setProperty("fill", trackColorInactive);
     }
   }
 

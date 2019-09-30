@@ -34,9 +34,9 @@ public final class MockComponentsUtil {
    */
   static void setWidgetBackgroundColor(Widget widget, String color) {
     if (isNoneColor(color)) {
-      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
+      widget.getElement().getStyle().setProperty("backgroundColor", "transparent");
     } else {
-      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "#" + getHexString(color, 6));
+      widget.getElement(), "backgroundColor".getStyle().setProperty("#" + getHexString(color, 6));
     }
   }
 
@@ -59,10 +59,10 @@ public final class MockComponentsUtil {
    * @param image  URL
    */
   static void setWidgetBackgroundImage(Widget widget, String image) {
-    DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
-    DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
-    DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
-    DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
+    widget.getElement().getStyle().setProperty("backgroundImage", "url(" + image + ')');
+    widget.getElement().getStyle().setProperty("backgroundRepeat", "no-repeat");
+    widget.getElement().getStyle().setProperty("backgroundPosition", "center");
+    widget.getElement().getStyle().setProperty("backgroundSize", "100% 100%");
   }
 
   /**
@@ -108,8 +108,7 @@ public final class MockComponentsUtil {
    * @param value  {@code true} for bold font and {@code false} for normal font
    */
   static void setWidgetFontBold(Widget widget, String value) {
-    DOM.setStyleAttribute(widget.getElement(), "fontWeight",
-        Boolean.parseBoolean(value) ? "bold" : "normal");
+    widget.getElement().getStyle().setProperty("fontWeight", Boolean.parseBoolean(value) ? "bold" : "normal");
   }
 
   /**
@@ -120,9 +119,9 @@ public final class MockComponentsUtil {
    */
   static void setWidgetTextColor(Widget widget, String color) {
     if (isNoneColor(color)) {
-      DOM.setStyleAttribute(widget.getElement(), "color", "transparent");
+      widget.getElement().getStyle().setProperty("color", "transparent");
     } else {
-      DOM.setStyleAttribute(widget.getElement(), "color", "#" + getHexString(color, 6));
+      widget.getElement(), "color".getStyle().setProperty("#" + getHexString(color, 6));
     }
   }
 
@@ -145,8 +144,7 @@ public final class MockComponentsUtil {
    * @param value  {@code true} for italic font and {@code false} for normal font
    */
   static void setWidgetFontItalic(Widget widget, String value) {
-    DOM.setStyleAttribute(widget.getElement(), "fontStyle",
-        Boolean.parseBoolean(value) ? "italic" : "normal");
+    widget.getElement().getStyle().setProperty("fontStyle", Boolean.parseBoolean(value) ? "italic" : "normal");
   }
 
   /**
@@ -158,8 +156,7 @@ public final class MockComponentsUtil {
   static void setWidgetFontSize(Widget widget, String size) {
     // Fonts on Android are in scaled pixels...
     try {
-      DOM.setStyleAttribute(widget.getElement(), "fontSize",
-          (int)(Float.parseFloat(size) * 0.9) + "px");
+      widget.getElement().getStyle().setProperty("fontSize", (int)(Float.parseFloat(size) * 0.9) + "px");
     } catch (NumberFormatException e) {
       // Ignore this. If we throw an exception here, the project is unrecoverable.
     }
@@ -191,7 +188,7 @@ public final class MockComponentsUtil {
         typeface = "monospace";
         break;
     }
-    DOM.setStyleAttribute(widget.getElement(), "fontFamily", typeface);
+    widget.getElement().getStyle().setProperty("fontFamily", typeface);
   }
 
   /**
@@ -218,7 +215,7 @@ public final class MockComponentsUtil {
         align = "right";
         break;
     }
-    DOM.setStyleAttribute(widget.getElement(), "textAlign", align);
+    widget.getElement().getStyle().setProperty("textAlign", align);
   }
 
   /**
@@ -281,13 +278,13 @@ public final class MockComponentsUtil {
     String heightStyle = DOM.getStyleAttribute(element, "height");
     String lineHeightStyle = DOM.getStyleAttribute(element, "line-height");
     if (widthStyle != null) {
-      DOM.setStyleAttribute(element, "width", null);
+      element.getStyle().setProperty("width", null);
     }
     if (heightStyle != null) {
-      DOM.setStyleAttribute(element, "height", null);
+      element.getStyle().setProperty("height", null);
     }
     if (lineHeightStyle != null) {
-      DOM.setStyleAttribute(element, "line-height", "initial");
+      element.getStyle().setProperty("lineHeight", "initial");
     }
     return new String[] { widthStyle, heightStyle, lineHeightStyle };
   }
@@ -302,13 +299,13 @@ public final class MockComponentsUtil {
   static void restoreSizeStyle(Widget w, String[] style) {
     Element element = w.getElement();
     if (style[0] != null) {
-      DOM.setStyleAttribute(element, "width", style[0]);
+      element.getStyle().setProperty("width", style[0]);
     }
     if (style[1] != null) {
-      DOM.setStyleAttribute(element, "height", style[1]);
+      element.getStyle().setProperty("height", style[1]);
     }
     if (style[2] != null) {
-      DOM.setStyleAttribute(element, "line-height", style[2]);
+      element.getStyle().setProperty("lineHeight", style[2]);
     }
   }
 

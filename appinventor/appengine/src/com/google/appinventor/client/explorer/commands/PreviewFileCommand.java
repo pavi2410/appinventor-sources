@@ -97,7 +97,7 @@ public class PreviewFileCommand extends ChainableCommand {
       if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif")
           || fileType.endsWith("bmp")) {
         Image img = new Image(fileUrl);
-        img.getElement().getStyle().setProperty("maxWidth","600px");
+        img.getElement().getStyle().setProperty("maxWidth", "600px");
         return img;
       }
     } else if (StorageUtil.isAudioFile(fileSuffix)) { // Audio Preview

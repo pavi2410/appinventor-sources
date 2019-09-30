@@ -88,7 +88,7 @@ public final class MockCanvas extends MockContainer {
       // We set the background image of the canvasWidget so it displays the image. We do it inside
       // the if because we need to override the background-size property only for this case
       MockComponentsUtil.setWidgetBackgroundImage(this, canvasWidget, url);
-      DOM.setStyleAttribute(canvasWidget.getElement(), "backgroundSize", "");
+      canvasWidget.getElement().getStyle().setProperty("backgroundSize", "");
     } else {
       ((MockCanvasLayout) layout).setBackgroundImageUrl(url);
       // We set the background image of the canvasWidget so it displays the image.

@@ -132,7 +132,7 @@ final class MockTableLayout extends MockLayout {
     if (dropTargetArea == null) {
       dropTargetArea = DOM.createDiv();
       setDropTargetAreaVisible(false);
-      DOM.setStyleAttribute(dropTargetArea, "border", "2px solid " + DROP_TARGET_AREA_COLOR);
+      dropTargetArea.getStyle().setProperty("border", "2px solid " + DROP_TARGET_AREA_COLOR);
       DOM.appendChild(container.getRootPanel().getElement(), dropTargetArea);
     }
   }
@@ -150,15 +150,15 @@ final class MockTableLayout extends MockLayout {
   }
 
   private void setDropTargetAreaVisible(boolean visible) {
-    DOM.setStyleAttribute(dropTargetArea, "visibility", visible ? "visible" : "hidden");
+    dropTargetArea.getStyle().setProperty("visibility", visible ? "visible" : "hidden");
   }
 
   private void setDropTargetAreaBoundsAndShow(int x, int y, int width, int height) {
-    DOM.setStyleAttribute(dropTargetArea, "position", "absolute");
-    DOM.setStyleAttribute(dropTargetArea, "left", x + "px");
-    DOM.setStyleAttribute(dropTargetArea, "top", y + "px");
-    DOM.setStyleAttribute(dropTargetArea, "width", width + "px");
-    DOM.setStyleAttribute(dropTargetArea, "height", height + "px");
+    dropTargetArea.getStyle().setProperty("position", "absolute");
+    dropTargetArea.getStyle().setProperty("left", x + "px");
+    dropTargetArea.getStyle().setProperty("top", y + "px");
+    dropTargetArea.getStyle().setProperty("width", width + "px");
+    dropTargetArea.getStyle().setProperty("height", height + "px");
     setDropTargetAreaVisible(true);
   }
 

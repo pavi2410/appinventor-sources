@@ -213,9 +213,9 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
    */
   public static void configureDragWidgetToAppearWithCursorAt(Widget w, int x, int y) {
     Element e = w.getElement();
-    DOM.setStyleAttribute(e, "position", "absolute");
-    DOM.setStyleAttribute(e, "left", -x + "px");
-    DOM.setStyleAttribute(e, "top", -y + "px");
+    e.getStyle().setProperty("position", "absolute");
+    e.getStyle().setProperty("left", -x + "px");
+    e.getStyle().setProperty("top", -y + "px");
   }
 
   /**
