@@ -121,7 +121,7 @@ public final class MockComponentsUtil {
     if (isNoneColor(color)) {
       widget.getElement().getStyle().setProperty("color", "transparent");
     } else {
-      widget.getElement(), "color".getStyle().setProperty("#" + getHexString(color, 6));
+      widget.getElement().getStyle().setProperty("color", "#" + getHexString(color, 6));
     }
   }
 
