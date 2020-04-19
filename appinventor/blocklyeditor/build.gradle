@@ -1,19 +1,11 @@
-defaultTasks 'BlocklyCompile', 'BlocklyTestbed'
-
-task BlocklyCompile(type: JavaExec) {
-	main = '-jar'
-	args '../lib/plovr/plovr-eba786b34df9.jar', 'build', 'ploverConfig.js'
+plugins {
+	id 'java'
 }
 
-task BlocklyTestbed {
-	doLast {
-		def f1 = file("${rootProject.buildDir}/component-types.js")
-		def f2 = file("$buildDir/components/simple_components.json")
-		f1.text = 'var componentTypeJson =' + f2.text
-		
-		copy {
-			from "$blocklySrcDir/media"
-			into "$publicBuildDir/media"
-		}
-	}
+defaultTasks 'BlocklyCompile'
+
+task BlocklyCompile(type: JavaExec) {
+	// TODO: map inputs and outputs
+	classpath = files('../lib/plovr/plovr-eba786b34df9.jar')
+	args = ['build', 'ploverConfig.js']
 }
