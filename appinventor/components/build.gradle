@@ -1,0 +1,111 @@
+apply plugin: 'application'
+
+defaultTasks 'CommonConstants',
+	'AndroidRuntime',
+	'JsonComponentDescription',
+	'XmlComponentDescription',
+	'ComponentList',
+	'ComponentTranslation',
+	'Barcode'
+
+ext {
+	componentsPkg = 'com/google/appinventor/components'
+	zxingPkg = 'com/google/zxing'
+	barcodePkg = 'com/google/zxing/client/android'
+	
+	projectDir = "${project.projectDir}"   // basedir
+	//localBuildDir = "$projectDir/build"  // local.build.dir
+	classDir = "$buildDir/classes"         // class.dir
+	//reportsDir = "$projectDir/reports"   // reports.dir
+	//srcDir = "$projectDir/src"           // src.dir
+	//testsDir = "$projectDir/tests"       // tests.dir
+	// projectDir = "$projectDir"           // basedir
+	// localBuildDir = "$buildDir"          // local.build.dir
+	classDir = "$buildDir/classes"          // class.dir
+	// reportsDir = "$projectDir/reports"   // reports.dir
+	// srcDir = "$projectDir/src"           // src.dir
+	// testsDir = "$projectDir/tests"       // tests.dir
+	
+	ExternalComponentGeneratorClassDir =
+			"$classDir/ExternalComponentGenerator"
+	ExternalComponentDir = "$buildDir/externalComponents"
+	ExternalComponentClassDir = "$buildDir/externalComponents-class"
+	ExtensionsDir = "$buildDir/extensions"
+	extensionsPackageFqcn = false // Can be used by extension authors to use the old-style AIX package layout
+}
+
+task CommonConstants {
+	doLast {
+		def CommonConstantsClassDir = "$classDir/CommonConstants"
+		
+		compileJava {
+			include "$componentsPkg/common/*.java"
+			exclude "$componentsPkg/common/HtmlEntities.java"
+			destinationDir = file(CommonConstantsClassDir)
+		}
+		
+		jar {
+			include CommonConstantsClassDir
+			destinationDir = file(buildDir)
+		}
+	}
+}
+
+task Barcode {
+	description = 'Generate ZXing embedded library'
+
+	doLast {
+		def BarcodeClassDir = "$classDir/Barcode"
+
+		compileJava {
+			include "$barcodePkg/**/*.java"
+			classpath = files('libs/QRGenerator/core.jar',
+			'libs/android/5.1.1/android.jar')
+
+			destinationDir = file(BarcodeClassDir)
+		}
+		
+		jar {
+			include fileTree(dir: BarcodeClassDir)
+			destinationDir = file("build")
+		}
+	
+	jar {
+		include fileTree(dir: CommonConstantsClassDir)
+		destinationDir = file("$buildDir")
+	}
+}
+
+def unjarExtensionLibs() {
+	task "unzip" {
+		doLast {
+			unzip {
+				
+			}
+		}
+	}
+}
+
+task UnjarAllExtensionLibs {
+	doLast {
+		for (extension : )
+	}
+}
+
+task ExternalComponentGenerator {
+	def buildserverFilesLibDir = '../buildserver/build/classes/BuildServer/files'
+
+	new File(ext.ExternalComponentGeneratorClassDir).mkdirs()
+	new File(ext.ExternalComponentDir).mkdirs()
+	new File(ext.ExternalComponentClassDir).mkdirs()
+
+	java {
+		
+	}
+}
+
+def unjarExtensionLibraries() {
+	unzip {
+		
+	}
+}
