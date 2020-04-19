@@ -1,127 +1,85 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-defaultTasks 'CommonUtils',
-	'CommonVersion',
-	'BlocksEditorHttpConstants'
-
-ext.commonPkg = 'com/google/appinventor/common'
-
-task CommonUtils {
-	doLast {
-		def CommonUtilsClassDir = "$buildDir/classes/CommonUtils"
-		
-		compileJava {
-			include "$commonPkg/utils/*.java"
-			classpath = file('../lib/guava/guava-14.0.1.jar"')
-			destinationDir = file(CommonUtilsClassDir)
-		}
-		
-		jar {
-			from CommonUtilsClassDir
-			destinationDir = file('../build/CommonUtils')
-		}
-
-		jar {
-			from CommonUtilsClassDir
-			from "$projectDir/src" {
-				includes "$commonPkg/utils/*.java"
-				includes "$commonPkg/CommonUtils.gwt.xml"
-			}
-			destinationDir = file("../build/CommonUtils-gwt")
-
-		}
-	}
+plugins {
+    id 'java'
 }
 
-task CommonTranslations {
-	doLast {
-		def CommonTranslationsClassDir = "$buildDir/classes/CommonTranslations"
-		
-		compileJava {
-			include "$commonPkg/translations/*.java"
-			destinationDir = file(CommonTranslationsClassDir)
-		}
-		
-		jar {
-			from CommonTranslationsClassDir
-			destinationDir = file("../build/CommonTranslations")
-		}
-	}
+sourceSets {
+    commonUtils {
+        java {
+            srcDirs = ['src/com/google/appinventor/common/utils/']
+            // TODO: compiledBy <task>
+        }
+// TODO: breaks when commonUtils & commonVersion both have same resources dir
+//        resources {
+//            srcDirs = ['src/com/google/appinventor/common/']
+//            include 'CommonUtils.gwt.xml'
+//        }
+    }
+    commonVersion {
+        java {
+            srcDirs = [
+                    'src/com/google/appinventor/common/version/',
+                    "$buildDir/gen/src/com/google/appinventor/common/version/"
+            ]
+        }
+// TODO: see above
+//        resources {
+//            srcDirs = ['src/com/google/appinventor/common/']
+//            include 'CommonVersion.gwt.xml'
+//        }
+    }
 }
 
-task CommonVersion {
-	doLast {
-		def CommonVersionClassDir = "$buildDir/classes/CommonVersion"
-		
-		def gitBuildVersion = 'git describe --dirty'.execute().text.trim()
-		def gitBuildFingerprint = 'git rev-parse HEAD'.execute().text.trim()
-		def antBuildDate = new Date().format('MMMM dd yyyy')
-		def acraUri = ''
-		
-		copy {
-			from 'GitBuildId.template'
-			into "$buildDir/src/$commonPkg/version/"
-			
-			filter ReplaceTokens, tokens: [
-					"git.build.version": gitBuildVersion,
-					"git.build.fingerprint": gitBuildFingerprint,
-					"ant.build.date": antBuildDate,
-					"acra.uri": acraUri
-			]
-			filteringCharset = 'UTF-8'
-			
-			rename '(GitBuildId).template', '$1.java'
-		}
-		
-		compileJava {
-			source 'src', "$buildDir/src"
-			include "$commonPkg/version/*.java"
-			destinationDir = file(CommonVersionClassDir)
-		}
-		
-		jar {
-			from CommonVersionClassDir
-			destinationDir = file('../build/CommonVersion')
-		}
-		
-		jar {
-			from CommonVersionClassDir
-			from 'src' {
-				includes "$commonPkg/version/*.java"
-				includes "$commonPkg/CommonVersion.gwt.xml"
-			}
-			from "$buildDir/src" {
-				includes "$commonPkg/version/*.java"
-			}
-			destinationDir = file("../build/$name/CommonVersion-gwt")
-		}
-	}
+dependencies {
+    commonUtilsImplementation files('../lib/guava/guava-14.0.1.jar')
 }
 
-task BlocksEditorHttpConstants {
-	doLast {
-		def BlocksEditorHttpConstantsClassDir = "$buildDir/class/BlockEditorHttpConstants"
+defaultTasks 'CommonUtilsJar', 'CommonUtilsGwtJar', 'CommonVersionJar', 'CommonVersionGwtJar'
 
-		compileJava {
-			source 'src'
-			include "$commonPkg/jsonp/JsonpConstants.java"
-			include "$commonPkg/youngandroid/YaHttpServerConstants.java"
-			destinationDir = file(BlocksEditorHttpConstantsClassDir)
-		}
+task GitBuildId(type: Copy) {
+    from 'GitBuildId.template'
+    into "$buildDir/gen/src/com/google/appinventor/common/version/"
 
-		jar {
-			from BlocksEditorHttpConstantsClassDir
-			destinationDir = file('../build/BlocksEditorHttpConstants')
-		}
+    filter ReplaceTokens, tokens: [
+            "git.build.version"    : 'git describe --dirty'.execute().text.trim(),
+            "git.build.fingerprint": 'git rev-parse HEAD'.execute().text.trim(),
+            "ant.build.date"       : new Date().format('MMMM dd yyyy'),
+            "acra.uri"             : ''
+    ]
+    filteringCharset = 'UTF-8'
 
-		jar {
-			from BlocksEditorHttpConstantsClassDir
-			from "src/$commonPkg" {
-				include 'jsonp/JsonpConstants.java'
-				include 'youngandroid/YaHttpServerConstants.java'
-				include 'BlocksEditorHttpConstants.gwt.xml'
-			}
-			destinationDir = file('../build/BlocksEditorHttpConstants-gwt')
-		}
-	}
+    rename '(GitBuildId).template', '$1.java'
+}
+
+compileCommonVersionJava.dependsOn GitBuildId
+
+task CommonUtilsJar(type: Jar) {
+    from sourceSets.commonUtils.output
+
+    archiveFileName = 'CommonUtils-gwt.jar'
+}
+
+task CommonUtilsGwtJar(type: Jar) {
+    from sourceSets.commonUtils.output
+    // TODO: all Java files are flattened in the JAR!
+    from sourceSets.commonUtils.allJava
+    from 'src/com/google/appinventor/common/CommonUtils.gwt.xml'
+
+    archiveFileName = 'CommonUtils-gwt.jar'
+}
+
+task CommonVersionJar(type: Jar) {
+    from sourceSets.commonVersion.output
+
+    archiveFileName = 'CommonVersion.jar'
+}
+
+task CommonVersionGwtJar(type: Jar) {
+    from sourceSets.commonVersion.output
+    // TODO: see above
+    from sourceSets.commonVersion.allJava
+    from 'src/com/google/appinventor/common/CommonVersion.gwt.xml'
+
+    archiveFileName = 'CommonVersion-gwt.jar'
 }
