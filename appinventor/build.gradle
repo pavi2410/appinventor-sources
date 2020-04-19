@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+description = 'Definitions common to multiple App Inventor build.xml files.'
+
+ext {
+	debug = true
+	PUBLIC_BUILD_DIR = "$buildDir/${-> name}" // lazy
+}
+
+task clean {
+	doLast {
+		delete {
+			files 'build', 'reports'
+		}
+	}
+}
