@@ -8,7 +8,6 @@ sourceSets {
     commonUtils {
         java {
             srcDirs = ['src/com/google/appinventor/common/utils/']
-            // TODO: compiledBy <task>
         }
 // TODO: breaks when commonUtils & commonVersion both have same resources dir
 //        resources {
@@ -20,7 +19,7 @@ sourceSets {
         java {
             srcDirs = [
                     'src/com/google/appinventor/common/version/',
-                    "$buildDir/gen/src/com/google/appinventor/common/version/"
+                    "$buildDir/generated/src/com/google/appinventor/common/version/"
             ]
         }
 // TODO: see above
@@ -39,7 +38,7 @@ defaultTasks 'CommonUtilsJar', 'CommonUtilsGwtJar', 'CommonVersionJar', 'CommonV
 
 task GitBuildId(type: Copy) {
     from 'GitBuildId.template'
-    into "$buildDir/gen/src/com/google/appinventor/common/version/"
+    into "$buildDir/generated/src/com/google/appinventor/common/version/"
 
     filter ReplaceTokens, tokens: [
             "git.build.version"    : 'git describe --dirty'.execute().text.trim(),
