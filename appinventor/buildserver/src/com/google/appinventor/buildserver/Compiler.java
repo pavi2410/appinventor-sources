@@ -136,10 +136,9 @@ public final class Compiler {
 
   private static final Set<String> CRITICAL_JARS =
       new HashSet<>(Arrays.asList(
-          RUNTIME_FILES_DIR + "appcompat-v7.jar",
-          RUNTIME_FILES_DIR + "common.jar",
-          RUNTIME_FILES_DIR + "lifecycle-common.jar",
-          RUNTIME_FILES_DIR + "support-compat.jar"
+          RUNTIME_FILES_DIR + "appcompat.jar",
+          RUNTIME_FILES_DIR + "core-common.jar",
+          RUNTIME_FILES_DIR + "lifecycle-common.jar"
       ));
 
   private static final String LINUX_AAPT_TOOL =
