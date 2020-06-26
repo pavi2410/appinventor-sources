@@ -1013,6 +1013,10 @@ public final class Compiler {
         out.write("android:label=\"" + aName + "\" ");
       }
       out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
+      out.write("android:requestLegacyExternalStorage=\"true\" ");  // For SDK 29 (Android Q)
+      if (YaVersion.TARGET_SDK_VERSION >= 30) {
+        out.write("android:preserveLegacyExternalStorage=\"true\" ");  // For SDK 30 (Android R)
+      }
       out.write("android:icon=\"@mipmap/ic_launcher\" ");
       out.write("android:roundIcon=\"@mipmap/ic_launcher\" ");
       if (isForCompanion) {              // This is to hook into ACRA
