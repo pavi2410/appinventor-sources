@@ -137,6 +137,7 @@ public final class Compiler {
   private static final Set<String> CRITICAL_JARS =
       new HashSet<>(Arrays.asList(
           RUNTIME_FILES_DIR + "appcompat.jar",
+          RUNTIME_FILES_DIR + "core.jar",
           RUNTIME_FILES_DIR + "core-common.jar",
           RUNTIME_FILES_DIR + "lifecycle-common.jar"
       ));
