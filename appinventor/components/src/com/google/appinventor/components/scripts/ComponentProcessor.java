@@ -735,6 +735,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private String versionName;
     private String dateBuilt;
 
+    private boolean hasCustomMock;
+
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
             elementUtils.getDocComment(element),
@@ -766,6 +768,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                       .getTypeElement("com.google.appinventor.components.runtime.ComponentContainer")
                       .asType()
       );
+
+      hasCustomMock = false;
 
       for (AnnotationMirror am : element.getAnnotationMirrors()) {
         DeclaredType dt = am.getAnnotationType();
@@ -828,6 +832,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           androidMinSdk = designerComponentAnnotation.androidMinSdk();
           versionName = designerComponentAnnotation.versionName();
           userVisible = designerComponentAnnotation.showOnPalette();
+
+          hasCustomMock = designerComponentAnnotation.hasCustomMock();
         }
       }
     }
@@ -910,6 +916,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     protected boolean getIsContainer() {
       return isContainer;
+    }
+
+    protected boolean getHasCustomMock() {
+      return hasCustomMock;
     }
 
     /**
