@@ -134,12 +134,48 @@ public final class Compiler {
   private static final String APKSIGNER_JAR =
       RUNTIME_FILES_DIR + "apksigner.jar";
 
+  /*
+   * Note for future updates: This list can be obtained from an Android Studio project running the
+   * following command:
+   *
+   * ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain | \
+   *     awk 'BEGIN {FS="--- "} {print $2}' | cut -d : -f2 | sort -u
+   */
   private static final Set<String> CRITICAL_JARS =
       new HashSet<>(Arrays.asList(
+          // Minimum required for Android 4.x
           RUNTIME_FILES_DIR + "appcompat.jar",
+          RUNTIME_FILES_DIR + "collection.jar",
           RUNTIME_FILES_DIR + "core.jar",
           RUNTIME_FILES_DIR + "core-common.jar",
-          RUNTIME_FILES_DIR + "lifecycle-common.jar"
+          RUNTIME_FILES_DIR + "lifecycle-common.jar",
+          RUNTIME_FILES_DIR + "vectordrawable.jar",
+          RUNTIME_FILES_DIR + "vectordrawable-animated.jar",
+
+          // Extras that may be pulled
+          RUNTIME_FILES_DIR + "annotation.jar",
+          RUNTIME_FILES_DIR + "asynclayoutinflater.jar",
+          RUNTIME_FILES_DIR + "coordinatorlayout.jar",
+          RUNTIME_FILES_DIR + "core-runtime.jar",
+          RUNTIME_FILES_DIR + "cursoradapter.jar",
+          RUNTIME_FILES_DIR + "customview.jar",
+          RUNTIME_FILES_DIR + "documentfile.jar",
+          RUNTIME_FILES_DIR + "drawerlayout.jar",
+          RUNTIME_FILES_DIR + "fragment.jar",
+          RUNTIME_FILES_DIR + "interpolator.jar",
+          RUNTIME_FILES_DIR + "legacy-support-core-ui.jar",
+          RUNTIME_FILES_DIR + "legacy-support-core-utils.jar",
+          RUNTIME_FILES_DIR + "lifecycle-livedata.jar",
+          RUNTIME_FILES_DIR + "lifecycle-livedata-core.jar",
+          RUNTIME_FILES_DIR + "lifecycle-runtime.jar",
+          RUNTIME_FILES_DIR + "lifecycle-viewmodel.jar",
+          RUNTIME_FILES_DIR + "loader.jar",
+          RUNTIME_FILES_DIR + "localbroadcastmanager.jar",
+          RUNTIME_FILES_DIR + "print.jar",
+          RUNTIME_FILES_DIR + "slidingpanelayout.jar",
+          RUNTIME_FILES_DIR + "swiperefreshlayout.jar",
+          RUNTIME_FILES_DIR + "versionedparcelable.jar",
+          RUNTIME_FILES_DIR + "viewpager.jar"
       ));
 
   private static final String LINUX_AAPT_TOOL =
