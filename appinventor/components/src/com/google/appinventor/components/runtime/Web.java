@@ -426,21 +426,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, null, "GET", METHOD);
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
-        }
+        performRequest(webProps, null, null, "GET", METHOD);
       }
     });
   }
@@ -524,20 +510,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, path, "POST", METHOD);
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
-        }
+        performRequest(webProps, null, path, "POST", METHOD);
       }
     });
   }
@@ -621,20 +594,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, path, "PUT", METHOD);
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
-        }
+        performRequest(webProps, null, path, "PUT", METHOD);
       }
     });
   }
@@ -663,20 +623,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, null, "DELETE", METHOD);
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
-        }
+        performRequest(webProps, null, null, "DELETE", METHOD);
       }
     });
   }
@@ -723,20 +670,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           return;
         }
 
-        try {
-          performRequest(webProps, requestData, null, httpVerb, functionName);
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, functionName, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
-        }
+        performRequest(webProps, requestData, null, httpVerb, functionName);
       }
     });
   }
@@ -1118,8 +1052,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @throws IOException
    */
   private void performRequest(final CapturedProperties webProps, final byte[] postData,
-    final String postFile, final String httpVerb, final String method)
-      throws RequestTimeoutException, IOException {
+    final String postFile, final String httpVerb, final String method) {
 
     // Make sure we have permissions we may need
     if (saveResponse & !havePermission) {
@@ -1129,75 +1062,75 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           @Override
           public void onGranted() {
             me.havePermission = true;
-            try {
-              me.performRequest(webProps, postData, postFile, httpVerb, method);
-            } catch (PermissionException e) {
-              form.dispatchPermissionDeniedEvent(Web.this, method, e);
-            } catch (FileUtil.FileException e) {
-              form.dispatchErrorOccurredEvent(Web.this, method,
-                e.getErrorMessageNumber());
-            } catch (RequestTimeoutException e) {
-              form.dispatchErrorOccurredEvent(Web.this, method,
-                ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-            } catch (Exception e) {
-              form.dispatchErrorOccurredEvent(Web.this, method,
-                ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
-            }
+            me.performRequest(webProps, postData, postFile, httpVerb, method);
           }
         });
       return;
     }
 
-    // Open the connection.
-    HttpURLConnection connection = openConnection(webProps, httpVerb);
-    if (connection != null) {
-      try {
-        if (postData != null) {
-          writeRequestData(connection, postData);
-        } else if (postFile != null) {
-          writeRequestFile(connection, postFile);
-        }
+    try {
+      // Open the connection.
+      HttpURLConnection connection = openConnection(webProps, httpVerb);
+      if (connection != null) {
+        try {
+          if (postData != null) {
+            writeRequestData(connection, postData);
+          } else if (postFile != null) {
+            writeRequestFile(connection, postFile);
+          }
 
-        // Get the response.
-        final int responseCode = connection.getResponseCode();
-        final String responseType = getResponseType(connection);
-        processResponseCookies(connection);
+          // Get the response.
+          final int responseCode = connection.getResponseCode();
+          final String responseType = getResponseType(connection);
+          processResponseCookies(connection);
 
-        if (saveResponse) {
-          final String path = saveResponseContent(connection, webProps.responseFileName,
+          if (saveResponse) {
+            final String path = saveResponseContent(connection, webProps.responseFileName,
               responseType);
 
-          // Dispatch the event.
-          activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              GotFile(webProps.urlString, responseCode, responseType, path);
-            }
-          });
-        } else {
-          final String responseContent = getResponseContent(connection);
+            // Dispatch the event.
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                  GotFile(webProps.urlString, responseCode, responseType, path);
+                }
+              });
+          } else {
+            final String responseContent = getResponseContent(connection);
 
-          // Dispatch the event.
-          activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              GotText(webProps.urlString, responseCode, responseType, responseContent);
-            }
-          });
-        }
-
-      } catch (SocketTimeoutException e) {
-        // Dispatch timeout event.
-        activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            TimedOut(webProps.urlString);
+            // Dispatch the event.
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                  GotText(webProps.urlString, responseCode, responseType, responseContent);
+                }
+              });
           }
-        });
-        throw new RequestTimeoutException();
-      } finally {
-        connection.disconnect();
+
+        } catch (SocketTimeoutException e) {
+          // Dispatch timeout event.
+          activity.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                TimedOut(webProps.urlString);
+              }
+            });
+          throw new RequestTimeoutException();
+        } finally {
+          connection.disconnect();
+        }
       }
+    } catch (PermissionException e) {
+      form.dispatchPermissionDeniedEvent(Web.this, method, e);
+    } catch (FileUtil.FileException e) {
+      form.dispatchErrorOccurredEvent(Web.this, method,
+        e.getErrorMessageNumber());
+    } catch (RequestTimeoutException e) {
+      form.dispatchErrorOccurredEvent(Web.this, method,
+        ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
+    } catch (Exception e) {
+      form.dispatchErrorOccurredEvent(Web.this, method,
+        ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
     }
   }
 
