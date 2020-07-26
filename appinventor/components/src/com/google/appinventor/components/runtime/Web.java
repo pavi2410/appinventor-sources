@@ -6,10 +6,15 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import android.app.Activity;
+
 import android.text.TextUtils;
+
 import android.util.Log;
+
 import androidx.annotation.VisibleForTesting;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -19,17 +24,23 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.HtmlEntities;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
+
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
+
 import com.google.appinventor.components.runtime.repackaged.org.json.XML;
+
 import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
@@ -49,6 +60,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+
 import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -58,12 +70,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.json.JSONException;
+
 import org.xml.sax.InputSource;
 
 /**
@@ -197,6 +212,12 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private boolean saveResponse;
   private String responseFileName = "";
   private int timeout = 0;
+
+  // wether or not we have permission to manipulate external storage
+
+  private boolean havePermission = false;
+
+
 
   /**
    * Creates a new Web component.
@@ -406,7 +427,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         try {
-          performRequest(webProps, null, null, "GET");
+          performRequest(webProps, null, null, "GET", METHOD);
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
@@ -504,7 +525,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         try {
-          performRequest(webProps, null, path, "POST");
+          performRequest(webProps, null, path, "POST", METHOD);
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
@@ -601,7 +622,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         try {
-          performRequest(webProps, null, path, "PUT");
+          performRequest(webProps, null, path, "PUT", METHOD);
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
@@ -643,7 +664,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         try {
-          performRequest(webProps, null, null, "DELETE");
+          performRequest(webProps, null, null, "DELETE", METHOD);
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
@@ -703,7 +724,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         }
 
         try {
-          performRequest(webProps, requestData, null, httpVerb);
+          performRequest(webProps, requestData, null, httpVerb, functionName);
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(Web.this, functionName, e);
         } catch (FileUtil.FileException e) {
@@ -1096,8 +1117,36 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    *
    * @throws IOException
    */
-  private void performRequest(final CapturedProperties webProps, byte[] postData, String postFile, String httpVerb)
+  private void performRequest(final CapturedProperties webProps, final byte[] postData,
+    final String postFile, final String httpVerb, final String method)
       throws RequestTimeoutException, IOException {
+
+    // Make sure we have permissions we may need
+    if (saveResponse & !havePermission) {
+      final Web me = this;
+      form.askPermission(new BulkPermissionRequest(this, "Web",
+          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+          @Override
+          public void onGranted() {
+            me.havePermission = true;
+            try {
+              me.performRequest(webProps, postData, postFile, httpVerb, method);
+            } catch (PermissionException e) {
+              form.dispatchPermissionDeniedEvent(Web.this, method, e);
+            } catch (FileUtil.FileException e) {
+              form.dispatchErrorOccurredEvent(Web.this, method,
+                e.getErrorMessageNumber());
+            } catch (RequestTimeoutException e) {
+              form.dispatchErrorOccurredEvent(Web.this, method,
+                ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
+            } catch (Exception e) {
+              form.dispatchErrorOccurredEvent(Web.this, method,
+                ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
+            }
+          }
+        });
+      return;
+    }
 
     // Open the connection.
     HttpURLConnection connection = openConnection(webProps, httpVerb);
