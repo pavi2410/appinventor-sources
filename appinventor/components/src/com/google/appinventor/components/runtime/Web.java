@@ -1129,8 +1129,20 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       form.dispatchErrorOccurredEvent(Web.this, method,
         ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
     } catch (Exception e) {
+      int message;
+      if (method.equals("Get")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_GET;
+      } else if (method.equals("PostFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+      } else if (method.equals("PutFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+      } else if (method.equals("Delete")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE;
+      } else {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+      }
       form.dispatchErrorOccurredEvent(Web.this, method,
-        ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
+        message, webProps.urlString);
     }
   }
 
