@@ -1062,7 +1062,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           @Override
           public void onGranted() {
             me.havePermission = true;
-            me.performRequest(webProps, postData, postFile, httpVerb, method);
+            // onGranted is running on the UI thread, and we are about to do network i/o, so
+            // we have to run this asynchronously to get off the UI thread!
+            AsynchUtil.runAsynchronously(new Runnable() {
+                @Override
+                public void run() {
+                  me.performRequest(webProps, postData, postFile, httpVerb, method);
+                }
+              });
           }
         });
       return;
