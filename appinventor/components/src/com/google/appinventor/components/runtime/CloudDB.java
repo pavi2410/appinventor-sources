@@ -588,8 +588,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           @Override
           public void onGranted() {
             me.havePermission = true;
-            // onGranted is running on the UI thread, and we are about to do network i/o, so
-            // we have to run this asynchronously to get off the UI thread!
             StoreValue(tag, valueToStore);
           }
         });
@@ -762,8 +760,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           @Override
           public void onGranted() {
             me.havePermission = true;
-            // onGranted is running on the UI thread, and we are about to do network i/o, so
-            // we have to run this asynchronously to get off the UI thread!
             GetValue(tag, valueIfTagNotThere);
           }
         });
