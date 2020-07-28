@@ -53,7 +53,7 @@ public class JetifierTask {
         mChildProcessRamMb = mb;
     }
 
-    public boolean run(File fileToJetify) {
+    public boolean execute(String fileToJetify) {
         int mx = mChildProcessRamMb - 200;
 
 //        java -cp <classpath> com.android.tools.build.jetifier.standalone.Main \
@@ -67,15 +67,14 @@ public class JetifierTask {
         cmd.add(classpath);
         cmd.add("com.android.tools.build.jetifier.standalone.Main");
         cmd.add("-i");
-        cmd.add(fileToJetify.getAbsolutePath());
+        cmd.add(fileToJetify);
         cmd.add("-o");
-        cmd.add(getJetifiedFilePath(fileToJetify)); // should we overwrite the original file?
+        cmd.add(fileToJetify); // should we overwrite the original file?
 
         return Execution.execute(null, cmd.toArray(new String[0]), System.out, System.err);
     }
 
-    private static String getJetifiedFilePath(File file) {
-        String absolutePath = file.getAbsolutePath();
-        return PathUtil.trimOffExtension(absolutePath) + "_jetified." + PathUtil.getFileExtension(absolutePath);
+    private static String getJetifiedFilePath(String file) {
+        return PathUtil.trimOffExtension(file) + "_jetified." + PathUtil.getFileExtension(file);
     }
 }
