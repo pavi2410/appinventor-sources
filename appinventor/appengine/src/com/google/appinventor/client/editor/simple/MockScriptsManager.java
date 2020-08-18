@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.simple.components.MockVisibleExtension;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
@@ -13,7 +14,9 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ScriptElement;
+import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,21 +107,13 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
                             OdeLog.log("<MSM:load:110> loading success for type = " + type + " project = " + projectId);
 
                             String mockJsFile = result.getContent();
-                            mockJsFile = "(function(){'use strict';" + mockJsFile + "})();";
+                            mockJsFile = "<html><body><script>(function(){'use strict';" + mockJsFile + "})();</script></body></html>";
 
-//                            ScriptInjector.fromString(mockJsFile).setWindow(ScriptInjector.TOP_WINDOW).setRemoveTag(false).inject();
-
-//                            IFrameElement iFrameElement = Document.get().createIFrameElement();
-//                            iFrameElement.setId("Mock_" + uniqueId);
-//                            iFrameElement.setAttribute("sandbox", "allow-scripts");
-//                            iFrameElement.setInnerHTML(mockJsFile); // append script element inside
-//                            Document.get().getBody().appendChild(iFrameElement);
-
-                            ScriptElement scriptElement = Document.get().createScriptElement();
-                            scriptElement.setId("Mock_for_" + type);
-                            scriptElement.setType("text/javascript");
-                            scriptElement.setInnerHTML(mockJsFile);
-                            Document.get().getBody().appendChild(scriptElement);
+                            IFrameElement iFrameElement = Document.get().createIFrameElement();
+                            iFrameElement.setId("Mock_for_" + type);
+                            iFrameElement.setAttribute("sandbox", "allow-scripts");
+                            iFrameElement.setInnerHTML(mockJsFile); // append script element inside
+                            Document.get().getBody().appendChild(iFrameElement);
 
                             loadedMocks.add(type);
                         } catch (ChecksumedFileException e) {
@@ -160,6 +155,37 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         console.log("<MSM:cleanup:159>", $wnd["Mock" + name]);
         delete $wnd["Mock" + name];
         console.log("<MSM:cleanup:161>", $wnd["Mock" + name]);
+    }-*/;
+
+    private native void iframeListener() /*-{
+        function htmlToElem(html) {
+            let temp = document.createElement('template');
+            html = html.trim();
+            temp.innerHTML = html;
+            return temp.content.firstChild;
+        }
+
+        $wnd.addEventListener('message', function (event) {
+            console.log("<MSM:iframeListener:169>", event.source.id);
+            let iframeId = event.source.id
+            if (event.data['MCR.register']) {
+                let type = event.data['MCR.register']
+                @MockComponentRegistry::register(*)(type, Mock)
+                @MockVceManager::insert(*)(iframeId, @java.util.UUID::randomUUID()())
+            } else if (event.data['update']) {
+                let $el = htmlToElem(event.data['update'])
+                let $existing = document.getElementById($el.id)
+
+
+                // How to add arbitrary elements to MockForm?
+                // Will MockForm recognize them as MockComponents?
+                if (!$existing) {
+//                    @com.google.appinventor.client.editor.simple.components.MockForm
+                } else {
+                    MockForm.replaceChild($el, $existing)
+                }
+            }
+        })
     }-*/;
 
     //// ComponentDatabaseChangeListener
