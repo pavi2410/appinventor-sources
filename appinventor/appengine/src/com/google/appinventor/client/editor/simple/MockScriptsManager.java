@@ -2,7 +2,6 @@ package com.google.appinventor.client.editor.simple;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.editor.simple.components.MockVisibleExtension;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
@@ -15,8 +14,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +51,14 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         }
         INSTANCE = new MockScriptsManager(projectId, projectEditor);
 
+        INSTANCE.initIframeListener();
         OdeLog.log("<MSM:init:57> inited! projectId = " + projectId);
     }
 
     public static void destroy() {
         OdeLog.log("<MSM:destroy:63> destroying project = " + INSTANCE.projectId);
+        INSTANCE.removeIframeListener();
+
         INSTANCE.projectEditor.removeComponentDatbaseListener(INSTANCE);
         Ode.getInstance()
                 .getProjectManager()
@@ -157,7 +157,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         console.log("<MSM:cleanup:161>", $wnd["Mock" + name]);
     }-*/;
 
-    private native void iframeListener() /*-{
+    private native void initIframeListener() /*-{
         function htmlToElem(html) {
             let temp = document.createElement('template');
             html = html.trim();
@@ -170,8 +170,8 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             let iframeId = event.source.id
             if (event.data['MCR.register']) {
                 let type = event.data['MCR.register']
-                @MockComponentRegistry::register(*)(type, Mock)
-                @MockVceManager::insert(*)(iframeId, @java.util.UUID::randomUUID()())
+                @MockComponentRegistry::register(*)(type, null)
+                @MockVceManager::insert(*)(iframeId, @MockScriptsManager::genUuid()())
             } else if (event.data['update']) {
                 let $el = htmlToElem(event.data['update'])
                 let $existing = document.getElementById($el.id)
@@ -182,10 +182,14 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
                 if (!$existing) {
 //                    @com.google.appinventor.client.editor.simple.components.MockForm
                 } else {
-                    MockForm.replaceChild($el, $existing)
+
                 }
             }
         })
+    }-*/;
+
+    private native void removeIframeListener() /*-{
+        $wnd.removeEventListener('message')
     }-*/;
 
     //// ComponentDatabaseChangeListener
@@ -259,4 +263,11 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 //        destroy();
 //        MockComponentRegistry.reset();
     }
+
+    private static native String genUuid() /*-{
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }-*/;
 }
