@@ -32,6 +32,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     private final List<String> loadedMocks = new ArrayList<>(); // list of component types
 
     // TODO Minify
+    // Sauce https://gist.github.com/pavi2410/18195e3e6096aa257aa0341524d0da9e
     private static final String SDK_CODE_START = "<html><body><script>'use strict';let mockInstances={};let MockComponentRegistry={register:(type,clazz,uuid)=>{$wnd.postMessage(type);mockInstances[uuid]=new clazz()}};window.addEventListener('message',event=>{let{action,args,type,uuid}=event.data;messageInterpreter(action,args,type,uuid)});function messageInterpreter(action,args,type,uuid){switch(action){case 'onPropertyChanged':{mockInstances[uuid].onPropertyChanged(...args);break}}}class MockVisibleExtension{initComponent(element){this.refresh(element)}refresh(element){window.top.postMessage(element.outerHTML)}}";
     private static final String SDK_CODE_END = "</script></body></html>";
 
