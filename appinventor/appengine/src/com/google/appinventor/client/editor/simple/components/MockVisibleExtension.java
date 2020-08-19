@@ -17,12 +17,6 @@ public class MockVisibleExtension extends MockVisibleComponent {
         super(editor, type, new Image(images.extension()));
     }
 
-    public void initComponent(Element component) {
-        HTMLPanel componentElement = HTMLPanel.wrap(component);
-        componentElement.setStylePrimaryName("ode-SimpleMockComponent");
-        super.initComponent(componentElement);
-    }
-
     public void initComponent(SafeHtml html) {
         HTMLPanel componentElement = new HTMLPanel(html);
         componentElement.setStylePrimaryName("ode-SimpleMockComponent");

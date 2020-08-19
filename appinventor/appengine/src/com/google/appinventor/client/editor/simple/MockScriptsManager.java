@@ -14,6 +14,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,39 +159,40 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }-*/;
 
     private native void initIframeListener() /*-{
-        function htmlToElem(html) {
-            let temp = document.createElement('template');
-            html = html.trim();
-            temp.innerHTML = html;
-            return temp.content.firstChild;
-        }
-
         $wnd.addEventListener('message', function (event) {
             console.log("<MSM:iframeListener:169>", event.source.id);
-            let iframeId = event.source.id
-            if (event.data['MCR.register']) {
-                let type = event.data['MCR.register']
-                @MockComponentRegistry::register(*)(type, null)
-                @MockVceManager::insert(*)(iframeId, @MockScriptsManager::genUuid()())
-            } else if (event.data['update']) {
-                let $el = htmlToElem(event.data['update'])
-                let $existing = document.getElementById($el.id)
-
-
-                // How to add arbitrary elements to MockForm?
-                // Will MockForm recognize them as MockComponents?
-                if (!$existing) {
-//                    @com.google.appinventor.client.editor.simple.components.MockForm
-                } else {
-
-                }
-            }
+            let sourceIframeId = event.source.id
+            let { action, args, type, uuid } = event.data
+            [@MockScriptsManager::INSTANCE].@MockScriptsManager::messageInterpreter(*)(sourceIframeId, action, args, type, uuid)
         })
     }-*/;
 
     private native void removeIframeListener() /*-{
         $wnd.removeEventListener('message')
     }-*/;
+
+    public native void postMessage(String action, String[] args, String type, String uuid) /*-{
+        var iframeEl = $doc.getElementById('Mock_for_' + type)
+        var iframeWindow = iframeEl.contentWindow
+        var msg = JSON.stringify({
+            action,
+            args,
+            type,
+            uuid
+        })
+        iframeWindow.postMessage(msg, '*') // @TODO: figure out target origin
+    }-*/;
+
+    public void messageInterpreter(String sourceIframeId, String action, String[] args, String type, String uuid) {
+        switch (action) {
+            case "MCR.register": // @TODO Look into creating this an enum
+                MockVceManager.create(type, sourceIframeId);
+                break;
+            case "update":
+                HTMLPanel $el = new HTMLPanel(args[0]);
+                break;
+        }
+    }
 
     //// ComponentDatabaseChangeListener
 
@@ -263,11 +265,4 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 //        destroy();
 //        MockComponentRegistry.reset();
     }
-
-    private static native String genUuid() /*-{
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }-*/;
 }
