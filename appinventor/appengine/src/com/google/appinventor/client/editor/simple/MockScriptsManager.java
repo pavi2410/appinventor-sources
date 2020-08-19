@@ -31,6 +31,9 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     private final List<String> loadedMocks = new ArrayList<>(); // list of component types
 
+    private static final String SDK_CODE_START = "<html><body><script>'use strict';let mockInstances={};let MockComponentRegistry={register:(type,clazz,uuid)=>{$wnd.postMessage(type);mockInstances[uuid]=new clazz()}};window.addEventListener('message',event=>{let{action,args,type,uuid}=event.data;messageInterpreter(action,args,type,uuid)});function messageInterpreter(action,args,type,uuid){switch(action){case 'onPropertyChanged':{mockInstances[uuid].onPropertyChanged(...args);break}}}class MockVisibleExtension{initComponent(element){this.refresh(element)}refresh(element){window.top.postMessage(element.outerHTML)}}";
+    private static final String SDK_CODE_END = "</script></body></html>";
+
     private MockScriptsManager(long projectId, YaProjectEditor projectEditor) {
         this.projectId = projectId;
         this.projectEditor = projectEditor;
@@ -108,7 +111,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
                             OdeLog.log("<MSM:load:110> loading success for type = " + type + " project = " + projectId);
 
                             String mockJsFile = result.getContent();
-                            mockJsFile = "<html><body><script>(function(){'use strict';" + mockJsFile + "})();</script></body></html>";
+                            mockJsFile = SDK_CODE_START + mockJsFile + SDK_CODE_END;
 
                             IFrameElement iFrameElement = Document.get().createIFrameElement();
                             iFrameElement.setId("Mock_for_" + type);
