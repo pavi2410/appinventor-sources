@@ -31,6 +31,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     private final List<String> loadedMocks = new ArrayList<>(); // list of component types
 
+    // TODO Minify
     private static final String SDK_CODE_START = "<html><body><script>'use strict';let mockInstances={};let MockComponentRegistry={register:(type,clazz,uuid)=>{$wnd.postMessage(type);mockInstances[uuid]=new clazz()}};window.addEventListener('message',event=>{let{action,args,type,uuid}=event.data;messageInterpreter(action,args,type,uuid)});function messageInterpreter(action,args,type,uuid){switch(action){case 'onPropertyChanged':{mockInstances[uuid].onPropertyChanged(...args);break}}}class MockVisibleExtension{initComponent(element){this.refresh(element)}refresh(element){window.top.postMessage(element.outerHTML)}}";
     private static final String SDK_CODE_END = "</script></body></html>";
 
@@ -183,12 +184,12 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             type,
             uuid
         })
-        iframeWindow.postMessage(msg, '*') // @TODO: figure out target origin
+        iframeWindow.postMessage(msg, '*') // TODO figure out target origin
     }-*/;
 
     public void messageInterpreter(String sourceIframeId, String action, String[] args, String type, String uuid) {
         switch (action) {
-            case "MCR.register": // @TODO Look into creating this an enum
+            case "MCR.register": // TODO Look into creating this an enum
                 MockVceManager.create(type, sourceIframeId);
                 break;
             case "update":
