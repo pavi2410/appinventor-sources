@@ -5,5 +5,5 @@ import jsinterop.annotations.JsFunction;
 
 @JsFunction
 public interface MockComponentFactory {
-    MockComponent create(SimpleEditor editor);
+    MockComponent create(SimpleEditor editor, String uuid);
 }
