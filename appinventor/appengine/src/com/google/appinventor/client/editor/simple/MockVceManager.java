@@ -7,11 +7,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MockVceManager {
-    // mapping for uuid to iframe id
-    private static final Map<String, String> uuidToIframeMap = new HashMap<>();
 
-    // maps uuid to MVE
-    private static final Map<String, MockComponentFactory> vceInstances = new HashMap<>();
+    /*
+        Each iframe contains a single type
+        Each type has a MockComponentFactory
+        Each type can have multiple UUIDs
+        Each a MockVisibleExtension has a UUID
+    */
+
+    // map of type to iframe id
+    private static final Map<String, String> typeToIframeMap = new HashMap<>();
+
+    // map of type to MCF
+    private static final Map<String, MockComponentFactory> factoryMap = new HashMap<>();
+
+    // map of uuid to type
+    private static final Map<String, String> uuidToTypeMap = new HashMap<>();
+
+    // map of uuid to MVE
+    private static final Map<String, MockVisibleExtension> vceInstancesMap = new HashMap<>();
 
     public static void create(String type, String iframeId) {
         final String uuid = genUuid();
@@ -19,29 +33,42 @@ public class MockVceManager {
         MockComponentFactory mcf = createFactoryForMVE(type);
         MockComponentRegistry.register(type, mcf);
 
-        uuidToIframeMap.put(uuid, iframeId);
-        vceInstances.put(uuid, mcf);
+        typeToIframeMap.put(uuid, iframeId);
+        factoryMap.put(type, mcf);
+        uuidToTypeMap.put(uuid, type);
     }
 
     public static MockComponentFactory createFactoryForMVE(String type) {
         return new MockComponentFactory() {
             @Override
-            public MockComponent create(SimpleEditor editor) {
-                return new MockVisibleExtension(editor, type);
+            public MockComponent create(SimpleEditor editor, String uuid) {
+                MockVisibleExtension mve = new MockVisibleExtension(editor, type);
+                vceInstancesMap.put(uuid, mve);
+                return mve;
             }
         };
     }
 
-    public static void remove(String iframeId) {
-        vceInstances.remove(iframeId);
+    public static MockVisibleExtension getMveFromUuid(String uuid) {
+        return vceInstancesMap.get(uuid);
     }
 
-    public static boolean isPresent(String iframeId) {
-        return vceInstances.containsKey(iframeId);
+    public String getIframeIdfromType(String type) {
+        return typeToIframeMap.get(type);
+    }
+
+    public String getIframeIdfromUuid(String uuid) {
+        return typeToIframeMap.get(uuidToTypeMap.get(uuid));
+    }
+
+    public static void remove(String iframeId) {
+        factoryMap.remove(iframeId);
     }
 
     public static void reset() {
-        vceInstances.clear();
+        typeToIframeMap.clear();
+        factoryMap.clear();
+        vceInstancesMap.clear();
     }
 
     private static native String genUuid() /*-{
