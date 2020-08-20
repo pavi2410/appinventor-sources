@@ -22,7 +22,7 @@ import java.util.Map;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-public final class MockScriptsManager implements ComponentDatabaseChangeListener, ProjectChangeListener {
+public final class MockScriptsManager implements ComponentDatabaseChangeListener {
 
     public static MockScriptsManager INSTANCE;
 
@@ -41,7 +41,6 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         this.projectEditor = projectEditor;
 
         projectEditor.addComponentDatbaseListener(this);
-        Ode.getInstance().getProjectManager().getProject(projectId).addProjectChangeListener(this);
     }
 
     /**
@@ -64,12 +63,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     public static void destroy() {
         OdeLog.log("<MSM:destroy:63> destroying project = " + INSTANCE.projectId);
         INSTANCE.removeIframeListener();
-
         INSTANCE.projectEditor.removeComponentDatbaseListener(INSTANCE);
-        Ode.getInstance()
-                .getProjectManager()
-                .getProject(INSTANCE.projectId)
-                .removeProjectChangeListener(INSTANCE);
         INSTANCE.unloadAll();
         INSTANCE = null;
 
@@ -146,7 +140,6 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
         String simpleName = type.substring(type.lastIndexOf('.') + 1); // todo: See MCR#register
         MockComponentRegistry.unregister(simpleName);
-        cleanup(simpleName); // todo: check if it's required
     }
 
     private void unloadAll() {
@@ -155,13 +148,6 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             unload(type);
         }
     }
-
-    private static native void cleanup(String name)/*-{
-        // fixme: it doesn't delete the Mock class!!
-        console.log("<MSM:cleanup:159>", $wnd["Mock" + name]);
-        delete $wnd["Mock" + name];
-        console.log("<MSM:cleanup:161>", $wnd["Mock" + name]);
-    }-*/;
 
     private native void initIframeListener() /*-{
         $wnd.addEventListener('message', function (event) {
@@ -234,40 +220,5 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     @Override
     public void onResetDatabase() {
         unloadAll();
-    }
-
-    //// ProjectChangeListener
-
-    @Override
-    public void onProjectLoaded(Project project) {
-        // todo: figure out when this is called
-        OdeLog.log("<MSM:onProjectLoaded:192> " + "loadedProject = " + project.getProjectId() + " project = " + projectId);
-        // init only if the project is different
-//        if (project.getProjectId() != projectId) {
-//            YaProjectEditor projectEditor = (YaProjectEditor) Ode.getInstance().getEditorManager()
-//                    .getOpenProjectEditor(project.getProjectId());
-//            MockScriptsManager.init(project.getProjectId(), projectEditor, project.getRootNode());
-//        }
-    }
-
-    @Override
-    public void onProjectNodeAdded(Project project, ProjectNode node) {
-        // called when a form/block editor (new screen) is added
-        OdeLog.log("<MSM:onProjectNodeAdded:203> " + "loadedProject = " + project.getProjectId() + " node = " + node.getProjectId() + " project = " + projectId);
-        // todo: handle project change
-//        if (project.getProjectId() == projectId) { // ensure this is the same project
-//            if (node.getProjectId() != projectId) { // res
-//                destroy();
-//                MockComponentRegistry.reset();
-//            }
-//        }
-    }
-
-    @Override
-    public void onProjectNodeRemoved(Project project, ProjectNode node) {
-        // called when a form/block editor (new screen) is removed
-        OdeLog.log("<MSM:onProjectNodeRemoved:215> " + "loadedProject = " + project.getProjectId() + " node = " + node.getProjectId() + " project = " + projectId);
-//        destroy();
-//        MockComponentRegistry.reset();
     }
 }
