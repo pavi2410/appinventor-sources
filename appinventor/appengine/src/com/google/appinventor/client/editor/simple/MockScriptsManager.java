@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.simple.components.MockVisibleExtension;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
@@ -14,6 +15,8 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
@@ -162,6 +165,14 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         $wnd.removeEventListener('message')
     }-*/;
 
+    /**
+     * Posts message to the iframe which is related by the type.
+     *
+     * @param action action to perform in the iframe
+     * @param args arguments to accompany the action
+     * @param type Used to find the iframe
+     * @param uuid UUID of the MVCE
+     */
     public native void postMessage(String action, String[] args, String type, String uuid) /*-{
         var iframeEl = $doc.getElementById('Mock_for_' + type)
         var iframeWindow = iframeEl.contentWindow
@@ -175,13 +186,40 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }-*/;
 
     public void messageInterpreter(String sourceIframeId, String action, String[] args, String type, String uuid) {
-        switch (action) {
-            case "MCR.register": // TODO Look into creating this an enum
+        switch (action) { // TODO Look into creating this an enum
+            case "registerMockComponent": {
                 MockVceManager.create(type, sourceIframeId);
                 break;
-            case "update":
-                HTMLPanel $el = new HTMLPanel(args[0]);
+            }
+            case "initializeComponent": {
+                MockVisibleExtension mve = MockVceManager.getMveFromUuid(uuid);
+                mve.initComponent(SafeHtmlUtils.fromString(args[0]));
                 break;
+            }
+            case "updateMockComponent": {
+                MockVisibleExtension mve = MockVceManager.getMveFromUuid(uuid);
+                mve.getElement().setInnerSafeHtml(SafeHtmlUtils.fromString(args[0]));
+                break;
+            }
+            case "getName": {
+                MockVisibleExtension mve = MockVceManager.getMveFromUuid(uuid);
+                final String name = mve.getName();
+
+                postMessage("getName.callback", new String[]{name}, type, uuid);
+                break;
+            }
+            case "getPropertyValue": {
+                MockVisibleExtension mve = MockVceManager.getMveFromUuid(uuid);
+                final String propertyValue = mve.getPropertyValue(args[0]);
+
+                postMessage("getPropertyValue.callback", new String[]{propertyValue}, type, uuid);
+                break;
+            }
+            case "changeProperty": {
+                MockVisibleExtension mve = MockVceManager.getMveFromUuid(uuid);
+                mve.changeProperty(args[0], args[1]);
+                break;
+            }
         }
     }
 
