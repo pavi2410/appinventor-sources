@@ -298,4 +298,18 @@
     <servlet-name>componentService</servlet-name>
   </filter-mapping>
 
+  <!--Get Mock scripts-->
+  <servlet>
+    <servlet-name>mockScriptsServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.MockScriptsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>mockScriptsServlet</servlet-name>
+    <url-pattern>/ode/mockScripts</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>mockScriptsServlet</servlet-name>
+  </filter-mapping>
+
 </web-app>

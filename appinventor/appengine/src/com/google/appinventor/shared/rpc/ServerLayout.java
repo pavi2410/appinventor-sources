@@ -213,6 +213,12 @@ public class ServerLayout {
    */
   public static final String CLOUD_DB_AUTH_SERVICE = "cloudDBAuth";
 
+  /**
+   * Relative path of the {@link MockScriptsServlet}
+   * within the ODE GWT module.
+   */
+  public static final String GET_MOCK_SCRIPTS_SERVLET = "mockScripts";
+
   public static String genRelativeDownloadPath(long projectId, String target) {
     return DOWNLOAD_SERVLET_BASE + DOWNLOAD_PROJECT_OUTPUT + "/" + projectId + "/" + target;
   }

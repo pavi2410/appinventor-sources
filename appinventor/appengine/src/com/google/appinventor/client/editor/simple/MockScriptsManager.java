@@ -1,29 +1,19 @@
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.components.MockVisibleExtension;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
-import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 public final class MockScriptsManager implements ComponentDatabaseChangeListener {
 
@@ -33,11 +23,6 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     private final YaProjectEditor projectEditor;
 
     private final List<String> loadedMocks = new ArrayList<>(); // list of component types
-
-    // TODO Minify
-    // Sauce https://gist.github.com/pavi2410/18195e3e6096aa257aa0341524d0da9e
-    private static final String SDK_CODE_START = "<html><body><script>'use strict';let mockInstances={};let MockComponentRegistry={register:(type,clazz,uuid)=>{$wnd.postMessage(type);mockInstances[uuid]=new clazz()}};window.addEventListener('message',event=>{let{action,args,type,uuid}=event.data;messageInterpreter(action,args,type,uuid)});function messageInterpreter(action,args,type,uuid){switch(action){case 'onPropertyChanged':{mockInstances[uuid].onPropertyChanged(...args);break}}}class MockVisibleExtension{initComponent(element){this.refresh(element)}refresh(element){window.top.postMessage(element.outerHTML)}}";
-    private static final String SDK_CODE_END = "</script></body></html>";
 
     private MockScriptsManager(long projectId, YaProjectEditor projectEditor) {
         this.projectId = projectId;
@@ -54,17 +39,17 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
      */
     public static void init(long projectId, YaProjectEditor projectEditor) {
         if (INSTANCE != null) {
-            OdeLog.log("<MSM:init:45> INSTANCE != null; destroying...");
+            OdeLog.log("<MSM:init:40> INSTANCE != null; destroying...");
             destroy();
         }
         INSTANCE = new MockScriptsManager(projectId, projectEditor);
 
         INSTANCE.initIframeListener();
-        OdeLog.log("<MSM:init:57> inited! projectId = " + projectId);
+        OdeLog.log("<MSM:init:46> inited! projectId = " + projectId);
     }
 
     public static void destroy() {
-        OdeLog.log("<MSM:destroy:63> destroying project = " + INSTANCE.projectId);
+        OdeLog.log("<MSM:destroy:50> destroying project = " + INSTANCE.projectId);
         INSTANCE.removeIframeListener();
         INSTANCE.projectEditor.removeComponentDatbaseListener(INSTANCE);
         INSTANCE.unloadAll();
@@ -93,38 +78,15 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             return; // Component doesn't have its own custom Mock, so don't try to load it
         }
 
-        OdeLog.log("<MSM:load:91> loading for type = " + type + " pkgName = " + pkgName + " simpleName = " + simpleName + " package = " + projectId);
+        OdeLog.log("<MSM:load:79> loading for type = " + type + " pkgName = " + pkgName + " simpleName = " + simpleName + " package = " + projectId);
 
-        YoungAndroidProjectNode youngAndroidProjectNode = (YoungAndroidProjectNode) Ode.getInstance()
-                .getProjectManager()
-                .getProject(projectId)
-                .getRootNode();
-        String componentsFolder = youngAndroidProjectNode.getComponentsFolder().getFileId();
-        String fileId = componentsFolder + "/" + pkgName + "/Mock" + simpleName + ".js";
+        IFrameElement iFrameElement = Document.get().createIFrameElement();
+        iFrameElement.setId("Mock_for_" + type);
+        iFrameElement.setAttribute("sandbox", "allow-scripts");
+        iFrameElement.setSrc(GWT.getModuleBaseURL() + ServerLayout.GET_MOCK_SCRIPTS_SERVLET + "?projectId=" + projectId + "&type=" + type);
+        Document.get().getBody().appendChild(iFrameElement);
 
-        Ode.getInstance().getProjectService().load2(projectId, fileId,
-                new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
-                    @Override
-                    public void onSuccess(ChecksumedLoadFile result) {
-                        try {
-                            OdeLog.log("<MSM:load:110> loading success for type = " + type + " project = " + projectId);
-
-                            String mockJsFile = result.getContent();
-                            mockJsFile = SDK_CODE_START + mockJsFile + SDK_CODE_END;
-
-                            IFrameElement iFrameElement = Document.get().createIFrameElement();
-                            iFrameElement.setId("Mock_for_" + type);
-                            iFrameElement.setAttribute("sandbox", "allow-scripts");
-                            iFrameElement.setInnerHTML(mockJsFile); // append script element inside
-                            Document.get().getBody().appendChild(iFrameElement);
-
-                            loadedMocks.add(type);
-                        } catch (ChecksumedFileException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        );
+        loadedMocks.add(type);
     }
 
     public void upgrade(String type) {
@@ -135,7 +97,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     public void unload(String type) {
-        OdeLog.log("<MSM:unload:132> unloading type = " + type + " project = " + projectId);
+        OdeLog.log("<MSM:unload:98> unloading type = " + type + " project = " + projectId);
         loadedMocks.remove(type);
 
         Element iframeElement = Document.get().getElementById("Mock_for_" + type);
@@ -146,7 +108,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     private void unloadAll() {
-        OdeLog.log("<MSM:unloadAll:140> unloading all... project = " + projectId);
+        OdeLog.log("<MSM:unloadAll:109> unloading all... project = " + projectId);
         for (String type : loadedMocks) {
             unload(type);
         }
@@ -154,10 +116,13 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     private native void initIframeListener() /*-{
         $wnd.addEventListener('message', function (event) {
-            console.log("<MSM:iframeListener:169>", event.source.id);
-            let sourceIframeId = event.source.id
-            let { action, args, type, uuid } = event.data
-            [@MockScriptsManager::INSTANCE].@MockScriptsManager::messageInterpreter(*)(sourceIframeId, action, args, type, uuid)
+            console.log("<MSM:iframeListener:117>", event.source.id);
+            var sourceIframeId = event.source.id;
+            var action = event.data["action"];
+            var args = event.data["args"];
+            var type = event.data["type"];
+            var uuid = event.data["uuid"];
+            [@MockScriptsManager::INSTANCE].@MockScriptsManager::messageInterpreter(*)(sourceIframeId, action, args, type, uuid);
         })
     }-*/;
 
@@ -169,26 +134,26 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
      * Posts message to the iframe which is related by the type.
      *
      * @param action action to perform in the iframe
-     * @param args arguments to accompany the action
-     * @param type Used to find the iframe
-     * @param uuid UUID of the MVCE
+     * @param args   arguments to accompany the action
+     * @param type   Used to find the iframe
+     * @param uuid   UUID of the MVCE
      */
     public native void postMessage(String action, String[] args, String type, String uuid) /*-{
-        var iframeEl = $doc.getElementById('Mock_for_' + type)
-        var iframeWindow = iframeEl.contentWindow
+        var iframeEl = $doc.getElementById('Mock_for_' + type);
+        var iframeWindow = iframeEl.contentWindow;
         var msg = JSON.stringify({
-            action,
-            args,
-            type,
-            uuid
-        })
-        iframeWindow.postMessage(msg, '*') // TODO figure out target origin
+            action: action,
+            args: args,
+            type: type,
+            uuid: uuid
+        });
+        iframeWindow.postMessage(msg, '*'); // TODO figure out target origin
     }-*/;
 
     public void messageInterpreter(String sourceIframeId, String action, String[] args, String type, String uuid) {
         switch (action) { // TODO Look into creating this an enum
             case "registerMockComponent": {
-                MockVceManager.create(type, sourceIframeId);
+                MockVceManager.create(type, sourceIframeId, uuid);
                 break;
             }
             case "initializeComponent": {
@@ -228,10 +193,10 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     @Override
     public void onComponentTypeAdded(List<String> componentTypes) {
         SimpleComponentDatabase scd = SimpleComponentDatabase.getInstance(this.projectId);
-        OdeLog.log("<MSM:onCompAdded:156> components added: project = " + projectId);
+        OdeLog.log("<MSM:onCompAdded:194> components added: project = " + projectId);
         for (String componentType : componentTypes) {
             String fqcn = scd.getComponentType(componentType); // Ensure [componentType] is a FQCN
-            OdeLog.log("<MSM:onCompAdded:159> fqcn = " + fqcn);
+            OdeLog.log("<MSM:onCompAdded:197> fqcn = " + fqcn);
             if (loadedMocks.contains(fqcn)) {
                 upgrade(fqcn);
             } else {
@@ -248,9 +213,9 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     @Override
     public void onComponentTypeRemoved(Map<String, String> componentTypes) {
         // returns map??
-        OdeLog.log("<MSM:onCompRemoved:176> components removed: project = " + projectId);
+        OdeLog.log("<MSM:onCompRemoved:214> components removed: project = " + projectId);
         for (String fqcn : componentTypes.values()) {
-            OdeLog.log("<MSM:onCompRemoved:178> fqcn = " + fqcn);
+            OdeLog.log("<MSM:onCompRemoved:216> fqcn = " + fqcn);
             unload(fqcn);
         }
     }

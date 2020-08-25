@@ -27,10 +27,10 @@ public class MockVceManager {
     // map of uuid to MVE
     private static final Map<String, MockVisibleExtension> vceInstancesMap = new HashMap<>();
 
-    public static void create(String type, String iframeId) {
-        final String uuid = genUuid();
+    public static void create(String type, String iframeId, String uuid) {
+//        final String uuid = genUuid();
 
-        MockComponentFactory mcf = createFactoryForMVE(type);
+        MockComponentFactory mcf = createFactoryForMVE(type, uuid);
         MockComponentRegistry.register(type, mcf);
 
         typeToIframeMap.put(uuid, iframeId);
@@ -38,10 +38,10 @@ public class MockVceManager {
         uuidToTypeMap.put(uuid, type);
     }
 
-    public static MockComponentFactory createFactoryForMVE(String type) {
+    public static MockComponentFactory createFactoryForMVE(final String type, final String uuid) {
         return new MockComponentFactory() {
             @Override
-            public MockComponent create(SimpleEditor editor, String uuid) {
+            public MockComponent create(SimpleEditor editor) {
                 MockVisibleExtension mve = new MockVisibleExtension(editor, type);
                 vceInstancesMap.put(uuid, mve);
                 return mve;
