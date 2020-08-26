@@ -492,7 +492,7 @@ public final class SimpleComponentDescriptor {
           Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
                   pkgName,
                   editor.getProjectId());
-          return new MockVisibleExtension(editor, name);
+          return new MockVisibleExtension(editor, name, "-1");
         }
       }
     }

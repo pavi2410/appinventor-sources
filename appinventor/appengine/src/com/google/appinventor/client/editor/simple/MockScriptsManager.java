@@ -10,7 +10,6 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +116,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     private native void initIframeListener() /*-{
-        function iframeListener(event) {
+        $wnd.iframeListener = function iframeListener(event) {
 //            console.log("<MSM:iframeListener:117>", event.source.id);
 //            var sourceIframeId = event.source.id;
 
@@ -129,11 +128,11 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             @MockScriptsManager::INSTANCE.@MockScriptsManager::messageInterpreter(*)(action, args, type, uuid);
         }
 
-        $wnd.addEventListener('message', iframeListener)
+        $wnd.addEventListener('message', iframeListener, false);
     }-*/;
 
     private native void removeIframeListener() /*-{
-        $wnd.removeEventListener('message', iframeListener, false); // TODO
+        $wnd.removeEventListener('message', $wnd['iframeListener'], false);
     }-*/;
 
     /**
@@ -158,13 +157,14 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }-*/;
 
     public void messageInterpreter(String action, String[] args, String type, String uuid) {
-        OdeLog.log("<MSM:messageInterpreter:157> action = " + action + " uuid = " + uuid);
+        OdeLog.log("<MSM:messageInterpreter:157> action = " + action + " type = " + type + " uuid = " + uuid);
         switch (action) { // TODO Look into creating this an enum
             case "registerMockComponent": {
-                MockVceManager.create(type, uuid);
+                MockVceManager.createMVE(type, uuid);
                 break;
             }
             case "initializeComponent": {
+                OdeLog.log("<MSM:messageInterpreter:167> initializeComponent html = " + args[0]);
                 MockVisibleExtension mve = MockVceManager.getMveFromUuid(uuid);
                 mve.initComponent(SafeHtmlUtils.fromString(args[0]));
                 break;
