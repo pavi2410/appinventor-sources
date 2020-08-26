@@ -10,6 +10,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,8 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         this.projectEditor = projectEditor;
 
         projectEditor.addComponentDatbaseListener(this);
+
+        initIframeListener();
     }
 
     /**
@@ -44,7 +47,6 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         }
         INSTANCE = new MockScriptsManager(projectId, projectEditor);
 
-        INSTANCE.initIframeListener();
         OdeLog.log("<MSM:init:46> inited! projectId = " + projectId);
     }
 
@@ -115,19 +117,23 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     private native void initIframeListener() /*-{
-        $wnd.addEventListener('message', function (event) {
-            console.log("<MSM:iframeListener:117>", event.source.id);
-            var sourceIframeId = event.source.id;
-            var action = event.data["action"];
-            var args = event.data["args"];
-            var type = event.data["type"];
-            var uuid = event.data["uuid"];
-            [@MockScriptsManager::INSTANCE].@MockScriptsManager::messageInterpreter(*)(sourceIframeId, action, args, type, uuid);
-        })
+        function iframeListener(event) {
+//            console.log("<MSM:iframeListener:117>", event.source.id);
+//            var sourceIframeId = event.source.id;
+
+            var msg = JSON.parse(event.data);
+            var action = msg["action"];
+            var args = msg["args"];
+            var type = msg["type"];
+            var uuid = msg["uuid"];
+            @MockScriptsManager::INSTANCE.@MockScriptsManager::messageInterpreter(*)(action, args, type, uuid);
+        }
+
+        $wnd.addEventListener('message', iframeListener)
     }-*/;
 
     private native void removeIframeListener() /*-{
-        $wnd.removeEventListener('message')
+        $wnd.removeEventListener('message', iframeListener, false); // TODO
     }-*/;
 
     /**
@@ -147,13 +153,15 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             type: type,
             uuid: uuid
         });
-        iframeWindow.postMessage(msg, '*'); // TODO figure out target origin
+        console.log("<MSM:postMessage:151> sending msg to iframe for type = " + type + ", msg = " + msg);
+        iframeWindow.postMessage(msg, '*');
     }-*/;
 
-    public void messageInterpreter(String sourceIframeId, String action, String[] args, String type, String uuid) {
+    public void messageInterpreter(String action, String[] args, String type, String uuid) {
+        OdeLog.log("<MSM:messageInterpreter:157> action = " + action + " uuid = " + uuid);
         switch (action) { // TODO Look into creating this an enum
             case "registerMockComponent": {
-                MockVceManager.create(type, sourceIframeId, uuid);
+                MockVceManager.create(type, uuid);
                 break;
             }
             case "initializeComponent": {
