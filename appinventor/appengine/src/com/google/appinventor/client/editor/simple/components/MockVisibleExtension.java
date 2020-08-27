@@ -1,6 +1,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.MockScriptsManager;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -28,7 +29,11 @@ public class MockVisibleExtension extends MockVisibleComponent {
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
 
-        MockScriptsManager.INSTANCE.postMessage("onPropertyChange", new String[]{propertyName, newValue}, getType(), mockUuid);
+        MockScriptsManager.INSTANCE.postMessage(
+                "onPropertyChange",
+                new String[]{propertyName, newValue},
+                SimpleComponentDatabase.getInstance().getComponentType(getType()),
+                mockUuid);
     }
 
     public String getName() {

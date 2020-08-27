@@ -71,6 +71,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
+
+  public SimplePaletteItem getSimplePaletteItem(String simpleName) {
+    return simplePaletteItems.get(simpleName);
+  }
+
   // store Component Type along with SimplePaleteItem to enable removal of components
   private final Map<String, SimplePaletteItem> simplePaletteItems;
 

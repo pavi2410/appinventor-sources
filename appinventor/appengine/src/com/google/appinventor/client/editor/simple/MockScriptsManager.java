@@ -144,6 +144,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
      * @param uuid   UUID of the MVCE
      */
     public native void postMessage(String action, String[] args, String type, String uuid) /*-{
+        console.log('<MSM:postMessage> action =', action, 'type =', type)
         var iframeEl = $doc.getElementById('Mock_for_' + type);
         var iframeWindow = iframeEl.contentWindow;
         var msg = JSON.stringify({
@@ -160,7 +161,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         OdeLog.log("<MSM:messageInterpreter:157> action = " + action + " type = " + type + " uuid = " + uuid);
         switch (action) { // TODO Look into creating this an enum
             case "registerMockComponent": {
-                MockVceManager.createMVE(type, uuid);
+                MockVceManager.createMVE(type);
                 break;
             }
             case "initializeComponent": {
