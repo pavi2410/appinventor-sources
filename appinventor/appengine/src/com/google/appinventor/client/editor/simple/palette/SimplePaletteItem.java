@@ -129,6 +129,9 @@ public class SimplePaletteItem extends DragSourcePanel {
     MockComponent returnedComponentPrototype = componentPrototype;
     if (!scd.getExternal()) {
       componentPrototype = null;
+    } else {
+      componentPrototype = null;
+      cacheInternalComponentPrototype();
     }
     return returnedComponentPrototype;
   }
