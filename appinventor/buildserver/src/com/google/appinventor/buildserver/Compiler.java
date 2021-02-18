@@ -42,17 +42,17 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -130,8 +130,8 @@ public final class Compiler {
   private static final String[] SUPPORT_AARS;
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
-  private static final String DX_JAR =
-      RUNTIME_FILES_DIR + "dx.jar";
+  private static final String D8_JAR =
+      RUNTIME_FILES_DIR + "d8.jar";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
@@ -209,6 +209,8 @@ public final class Compiler {
 
   @VisibleForTesting
   static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
+
+  private static final String MAIN_DEX_LIST = RUNTIME_FILES_DIR + "mainDexList.txt";
 
   private final ConcurrentMap<String, Set<String>> assetsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
@@ -366,6 +368,8 @@ public final class Compiler {
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
+
+  private int minSdkForCompilation;
 
   /*
    * Generate the set of Android permissions needed by this project.
@@ -1066,6 +1070,7 @@ public final class Compiler {
           }
         }
       }
+      minSdkForCompilation = minSdk;
 
       // make permissions unique by putting them in one set
       Set<String> permissions = Sets.newHashSet();
@@ -1531,7 +1536,7 @@ public final class Compiler {
     }
 
     // Invoke dx on class files
-    out.println("________Invoking DX");
+    out.println("________Invoking D8");
     // TODO(markf): Running DX is now pretty slow (~25 sec overhead the first time and ~15 sec
     // overhead for subsequent runs).  I think it's because of the need to dx the entire
     // kawa runtime every time.  We should probably only do that once and then copy all the
@@ -1547,7 +1552,7 @@ public final class Compiler {
     // method of identifying via a hash of the path won't work when files
     // are copied into temporary storage) and processed via a hacked up version of
     // Android SDK's Dex Ant task
-    if (!compiler.runMultidex(classesDir, dexedClassesDir)) {
+    if (!compiler.runD8(classesDir, dexedClassesDir)) {
       return false;
     }
     if (reporter != null) {
@@ -1713,7 +1718,7 @@ public final class Compiler {
    * create a class file for every source file in the project.
    *
    * As a side effect, we generate uniqueLibsNeeded which contains a set of libraries used by
-   * runDx. Each library appears in the set only once (which is why it is a set!). This is
+   * runD8. Each library appears in the set only once (which is why it is a set!). This is
    * important because when we Dex the libraries, a given library can only appear once.
    *
    */
@@ -2269,6 +2274,76 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "DX"));
     }
     return success;
+  }
+
+  private boolean runD8(File classesDir, String dexedClassesDir) {
+    int mx = childProcessRamMb - 200;
+
+    List<String> classes = getFilesWithExtensionRecursively(classesDir, ".class");
+
+    Set<String> input = new LinkedHashSet<>(classes); // any combination of dex, class, zip, jar, or apk files
+    input.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    input.add(getResource(KAWA_RUNTIME));
+    input.add(getResource(ACRA_RUNTIME));
+
+    for (String SUPPORT_JAR : SUPPORT_JARS) {
+      input.add(getResource(SUPPORT_JAR));
+    }
+
+    input.addAll(uniqueLibsNeeded);
+
+    for (String type : extCompTypes) {
+      String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
+      input.add(sourcePath);
+    }
+
+    // d8 --release --lib ANDROID_RUNTIME --main-dex-list MAIN_DEX_LIST --output dexedClassesDir ...input
+    List<String> d8Command = new ArrayList<>();
+    d8Command.add(System.getProperty("java.home") + "/bin/java");
+    d8Command.add("-mx" + mx + "M");
+    d8Command.add("-cp");
+    d8Command.add(getResource(D8_JAR));
+    d8Command.add("com.android.tools.r8.D8");
+    d8Command.add("--release");
+//    d8Command.add("--no-desugaring");
+    d8Command.add("--lib");
+    d8Command.add(getResource(ANDROID_RUNTIME));
+    d8Command.add("--min-api");
+    d8Command.add(minSdkForCompilation + "");
+
+    // D8 does not require main-dex for APIs >= 21
+    if (minSdkForCompilation < 21) {
+      d8Command.add("--main-dex-list");
+      d8Command.add(getResource(MAIN_DEX_LIST));
+    }
+
+    d8Command.add("--output");
+    d8Command.add(dexedClassesDir);
+
+    File argfile = null;
+    try {
+      argfile = File.createTempFile("argfile", ".txt");
+      java.nio.file.Files.write(argfile.toPath(), input, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    if (argfile != null)
+      d8Command.add("@" + argfile.getAbsolutePath());
+
+    String[] d8CommandLine = d8Command.toArray(new String[0]);
+
+    long startD8 = System.currentTimeMillis();
+    if (!Execution.execute(null, d8CommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - D8 execution failed.");
+      err.println("YAIL compiler - D8 execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "D8"));
+      return false;
+    }
+    String d8TimeMessage = "D8 time: " +
+            ((System.currentTimeMillis() - startD8) / 1000.0) + " seconds";
+    out.println(d8TimeMessage);
+    LOG.info(d8TimeMessage);
+    return true;
   }
 
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName, File sourceOutputDir, File symbolOutputDir) {
@@ -2882,6 +2957,22 @@ public final class Compiler {
       dir.mkdir();
     }
     return dir;
+  }
+
+  private static List<String> getFilesWithExtensionRecursively(File path, String extension) {
+    List<String> tmp = new ArrayList<>();
+
+    File[] files = path.listFiles();
+    if (files == null) return Collections.emptyList();
+
+    for (File file : files) {
+      if (file.isFile() && file.getName().endsWith(extension)) {
+        tmp.add(file.getAbsolutePath());
+      } else if (file.isDirectory()) {
+        tmp.addAll(getFilesWithExtensionRecursively(file, extension));
+      }
+    }
+    return tmp;
   }
 
   private void setProgress(int increments) {
