@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClass.set("com.google.appinventor.buildserver.BuildServer.java")
+    mainClass.set("com.google.appinventor.buildserver.BuildServer")
 }
 
 sourceSets {
