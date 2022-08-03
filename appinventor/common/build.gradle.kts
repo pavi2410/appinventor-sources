@@ -11,43 +11,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-val commonUtils = sourceSets.creating {
-    compileClasspath += sourceSets.getByName("main").output
-    runtimeClasspath += sourceSets.getByName("main").output
-    java {
-        setSrcDirs(listOf("src/com/google/appinventor/common/utils/"))
-    }
-// TODO: breaks when commonUtils & commonVersion both have same resources dir
-//        resources {
-//            srcDirs = ["src/com/google/appinventor/common/"]
-//            include "CommonUtils.gwt.xml"
-//        }
-}
-val commonVersion = sourceSets.creating {
-    java {
-        setSrcDirs(
-            listOf(
-                "src/com/google/appinventor/common/version/",
-                "$buildDir/generated/src/com/google/appinventor/common/version/"
-            )
-        )
-    }
-// TODO: see above
-//        resources {
-//            srcDirs = ["src/com/google/appinventor/common/"]
-//            include "CommonVersion.gwt.xml"
-//        }
-}
-
-//val commonUtilsImplementation by configurations
-
-dependencies {
-    implementation("com.google.guava:guava:14.0.1")
-}
-
-defaultTasks("CommonUtilsJar", "CommonUtilsGwtJar", "CommonVersionJar", "CommonVersionGwtJar")
-
-val taskGitBuildId = tasks.registering(Copy::class) {
+val taskGitBuildId by tasks.creating(Copy::class) {
     from("GitBuildId.template")
     into("$buildDir/generated/")
 
@@ -65,37 +29,85 @@ val taskGitBuildId = tasks.registering(Copy::class) {
     rename("GitBuildId.template", "GitBuildId.java")
 }
 
-val compileJava by tasks.existing(JavaCompile::class)
-compileJava.get().dependsOn(taskGitBuildId)
+val commonUtilsImplementation: Configuration by configurations.creating
 
-tasks.register<Jar>("CommonUtilsJar") {
-    from(commonUtils)
-
-    archiveFileName.set("CommonUtils-gwt.jar")
+val commonUtils: SourceSet by sourceSets.creating {
+    compileClasspath += commonUtilsImplementation
+    runtimeClasspath += commonUtilsImplementation
+    java {
+        setSrcDirs(listOf("src/com/google/appinventor/common/utils/"))
+    }
+    // TODO: breaks when commonUtils & commonVersion both have same resources dir
+    //        resources {
+    //            srcDirs = ["src/com/google/appinventor/common/"]
+    //            include "CommonUtils.gwt.xml"
+    //        }
 }
-
-tasks.register<Jar>("CommonUtilsGwtJar") {
-    from(commonUtils)
-    // TODO: all Java files are flattened in the JAR!
-//    from(commonUtils.allJava)
-    from("src/com/google/appinventor/common/CommonUtils.gwt.xml")
-
-    archiveFileName.set("CommonUtils-gwt.jar")
-}
-
-tasks.register<Jar>("CommonVersionJar") {
-    from(commonVersion)
-
-    archiveFileName.set("CommonVersion.jar")
-}
-
-tasks.register<Jar>("CommonVersionGwtJar") {
-    from(commonVersion)
+val commonVersion: SourceSet by sourceSets.creating {
+    java {
+        setSrcDirs(
+            listOf(
+                "src/com/google/appinventor/common/version/",
+                "$buildDir/generated/src/com/google/appinventor/common/version/"
+            )
+        )
+        compiledBy(taskGitBuildId)
+    }
     // TODO: see above
-//    from(commonVersion.allJava)
-    from("src/com/google/appinventor/common/CommonVersion.gwt.xml")
+    //        resources {
+    //            srcDirs = ["src/com/google/appinventor/common/"]
+    //            include "CommonVersion.gwt.xml"
+    //        }
+}
 
-    archiveFileName.set("CommonVersion-gwt.jar")
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    commonUtilsImplementation("com.google.guava:guava:14.0.1")
+}
+
+//defaultTasks("CommonUtilsJar", "CommonUtilsGwtJar", "CommonVersionJar", "CommonVersionGwtJar")
+
+tasks {
+
+    val taskCommonUtilsJar by creating(Jar::class) {
+        from(commonUtils.allSource)
+
+        archiveFileName.set("CommonUtils.jar")
+    }
+
+    val taskCommonUtilsGwtJar by creating(Jar::class) {
+        from(commonUtils.allSource)
+//        // TODO: all Java files are flattened in the JAR!
+//        from(commonUtils.allJava)
+        from("src/com/google/appinventor/common/CommonUtils.gwt.xml")
+
+        archiveFileName.set("CommonUtils-gwt.jar")
+    }
+
+    val taskCommonVersionJar by creating(Jar::class) {
+        from(commonVersion.allSource)
+
+        archiveFileName.set("CommonVersion.jar")
+    }
+
+    val taskCommonVersionGwtJar by creating(Jar::class) {
+        from(commonVersion.allSource)
+//        // TODO: see above
+//        from(commonVersion.allJava)
+        from("src/com/google/appinventor/common/CommonVersion.gwt.xml")
+
+        archiveFileName.set("CommonVersion-gwt.jar")
+    }
+
+    artifacts {
+        archives(taskCommonUtilsJar)
+        archives(taskCommonUtilsGwtJar)
+        archives(taskCommonVersionJar)
+        archives(taskCommonVersionGwtJar)
+    }
 }
 
 fun execute(command: String): String {
