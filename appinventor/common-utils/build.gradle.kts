@@ -4,7 +4,6 @@ plugins {
 
 gwt {
     gwtVersion = "2.8.1"
-    
 }
 
 sourceSets {

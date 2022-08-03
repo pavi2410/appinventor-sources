@@ -25,7 +25,8 @@ repositories {
 }
 
 dependencies {
-    implementation(projects.utils)
+    implementation(projects.commonUtils)
+    implementation(projects.commonVersion)
     implementation(fileTree("lib") { include("*.jar") })
     implementation("org.json:json:20220320")
     implementation("args4j:args4j:2.0.22")
