@@ -1,2 +1,0 @@
-rootProject.name = 'appinventor'
-include 'blocklyeditor', 'common', 'components'
