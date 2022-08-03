@@ -1,5 +1,10 @@
 plugins {
     `java-library`
+    id("org.docstr.gwt") version "1.1.21"
+}
+
+gwt {
+    gwtVersion = "2.8.1"
 }
 
 repositories {
