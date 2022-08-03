@@ -12,26 +12,27 @@ gwt {
 
 val taskGitBuildId by tasks.creating(Copy::class) {
     from("GitBuildId.template")
-    into("$buildDir/generated/")
-
-    filter(
-        ReplaceTokens::class, mapOf(
-            "git.build.version" to execute("git describe --dirty"),
-            "git.build.fingerprint" to execute("git rev-parse HEAD"),
-            "ant.build.date" to getDate(),
-            "acra.uri" to ""
-        )
-    )
+    into("$buildDir/generated/sources/java")
+    rename("GitBuildId.template", "GitBuildId.java")
 
     filteringCharset = "UTF-8"
 
-    rename("GitBuildId.template", "GitBuildId.java")
+    filter(
+        ReplaceTokens::class, mapOf(
+            "tokens" to mapOf(
+                "git.build.version" to execute("git describe --dirty"),
+                "git.build.fingerprint" to execute("git rev-parse HEAD"),
+                "ant.build.date" to getDate(),
+                "acra.uri" to ""
+            )
+        )
+    )
 }
 
 sourceSets {
     main {
         java {
-            setSrcDirs(listOf("src"))
+            setSrcDirs(listOf("src", "$buildDir/generated/sources/java"))
         }
     }
 
@@ -40,6 +41,10 @@ sourceSets {
             setSrcDirs(listOf("tests"))
         }
     }
+}
+
+val compileJava by tasks.existing(JavaCompile::class) {
+    dependsOn(taskGitBuildId)
 }
 
 repositories {
