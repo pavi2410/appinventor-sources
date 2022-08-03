@@ -1,3 +1,9 @@
 rootProject.name = "appinventor"
-include("blocklyeditor", "common-utils", "common-version", "components", "buildserver", "appengine")
+include("appengine")
+include("blocklyeditor")
+include("common-utils")
+include("common-version")
+include("component-constants")
+include("components")
+include("buildserver")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

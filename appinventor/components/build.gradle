@@ -39,7 +39,6 @@ sourceSets {
 dependencies {
 	barcodeLibCompileOnly files('../lib/QRGenerator/core.jar')
 	barcodeLibCompileOnly files('../lib/android/android-28/android.jar')
-
 }
 
 defaultTasks 'CommonConstants',
