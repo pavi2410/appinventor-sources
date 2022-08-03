@@ -15,30 +15,12 @@ sourceSets {
 			include 'com/google/appinventor/components/annotations/**/*.java'
 		}
 	}
-	commonConstants {
-		java {
-			srcDirs = ['src']
-			include 'com/google/appinventor/components/common/*.java'
-			exclude 'com/google/appinventor/components/common/HtmlEntities.java'
-		}
-	}
 	htmlEntities {
 		java {
 			srcDirs = ['src']
 			include 'com/google/appinventor/components/common/HtmlEntities.java'
 		}
 	}
-	barcodeLib {
-		java {
-			srcDirs = ['src']
-			include 'com/google/zxing/client/android/**/*.java'
-		}
-	}
-}
-
-dependencies {
-	barcodeLibCompileOnly files('../lib/QRGenerator/core.jar')
-	barcodeLibCompileOnly files('../lib/android/android-28/android.jar')
 }
 
 defaultTasks 'CommonConstants',

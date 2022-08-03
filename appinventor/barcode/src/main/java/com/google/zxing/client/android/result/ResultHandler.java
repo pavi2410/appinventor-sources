@@ -64,7 +64,7 @@ public abstract class ResultHandler {
       "&referrer=utm_source%3Dbarcodescanner%26utm_medium%3Dapps%26utm_campaign%3Dscan";
 
   private static final String[] EMAIL_TYPE_STRINGS = {"home", "work", "mobile"};
-  private static final String[] PHONE_TYPE_STRINGS = {"home", "work", "mobile", "fax", "pager", "main"};
+  private static final String[] PHONE_TYPE_STRINGS = {"home", "work", "mobile", "fax", "pager", ""};
   private static final String[] ADDRESS_TYPE_STRINGS = {"home", "work"};
   private static final int[] EMAIL_TYPE_VALUES = {
       ContactsContract.CommonDataKinds.Email.TYPE_HOME,
