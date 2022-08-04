@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 30
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 30
 
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -20,15 +20,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
 dependencies {
     implementation(files("../lib/QRGenerator/core.jar"))
-    implementation("com.android.support:appcompat-v7:28.0.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
 }
