@@ -39,5 +39,7 @@ android {
 
 dependencies {
     implementation(projects.componentConstants)
+    implementation(projects.componentAnnotations)
     implementation(projects.barcode)
+    annotationProcessor(projects.componentScripts)
 }
