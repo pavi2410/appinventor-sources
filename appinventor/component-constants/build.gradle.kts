@@ -7,10 +7,6 @@ gwt {
     gwtVersion = "2.8.1"
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
 }
 

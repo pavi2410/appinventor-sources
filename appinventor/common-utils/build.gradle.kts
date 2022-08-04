@@ -20,10 +20,6 @@ sourceSets {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation("com.google.guava:guava:14.0.1")
 }

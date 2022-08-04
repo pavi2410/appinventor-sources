@@ -20,10 +20,6 @@ sourceSets {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(projects.commonUtils)
     implementation(projects.commonVersion)
