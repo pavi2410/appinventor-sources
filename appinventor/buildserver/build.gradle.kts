@@ -11,6 +11,9 @@ sourceSets {
         java {
             setSrcDirs(listOf("src"))
         }
+//        resources {
+//            setSrcDirs(projects.components.artifacts.get("component-resources").outputs.files.map { it.absolutePath })
+//        }
     }
 
     test {
