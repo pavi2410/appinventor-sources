@@ -38,6 +38,12 @@ android {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
 dependencies {
 //    println("component constants: ${projects.componentConstants.artifacts}")
     implementation(projects.commonVersion)

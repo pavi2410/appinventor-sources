@@ -1,9 +1,16 @@
 plugins {
-    id("org.docstr.gwt") version "1.1.21"
+    `java-library`
+//    id("org.docstr.gwt") version "1.1.21"
 }
 
-gwt {
-    gwtVersion = "2.8.1"
+//gwt {
+//    gwtVersion = "2.8.1"
+//}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }
 
 sourceSets {
