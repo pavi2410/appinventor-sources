@@ -86,9 +86,10 @@ import java.util.Queue;
     "     0 when perpendicular to the ground, and +9.8 when facing down.  " +
     "     The value can also be affected by accelerating it with or against " +
     "     gravity. </li></ul>",
-    category = ComponentCategory.SENSORS,
-    nonVisible = true,
-    iconName = "images/accelerometersensor.png")
+    category = ComponentCategory.LAYOUT,
+    nonVisible = false,
+    androidMinSdk = 24,
+    iconName = "images/sensor.png")
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
@@ -248,7 +249,6 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   /**
    * Indicates the acceleration changed in the X, Y, and/or Z dimensions.
    */
-  @SimpleEvent
   public void AccelerationChanged(float xAccel, float yAccel, float zAccel) {
     this.xAccel = xAccel;
     this.yAccel = yAccel;
