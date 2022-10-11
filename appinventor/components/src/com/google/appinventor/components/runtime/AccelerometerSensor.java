@@ -69,7 +69,7 @@ import java.util.Queue;
  *
  */
 // TODO(user): ideas - event for knocking
-@DesignerComponent(version = YaVersion.ACCELEROMETERSENSOR_COMPONENT_VERSION,
+@DesignerComponent(version = 123,
     description = "Non-visible component that can detect shaking and " +
     "measure acceleration approximately in three dimensions using SI units " +
     "(m/s<sup>2</sup>).  The components are: <ul>\n" +
