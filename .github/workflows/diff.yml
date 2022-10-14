@@ -78,7 +78,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "### Diff \`simple_components_build_info.json\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "```diff" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`diff" >> "$GITHUB_STEP_SUMMARY"
           diff --unified --color=always \
             <(jq 'del(.[] | .dateBuilt)' master/appinventor/build/components/simple_components_build_info.json) \
             <(jq 'del(.[] | .dateBuilt)' current/appinventor/build/components/simple_components_build_info.json) \
