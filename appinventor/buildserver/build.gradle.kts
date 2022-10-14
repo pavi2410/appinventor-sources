@@ -12,22 +12,14 @@ java {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            setSrcDirs(listOf("src"))
-        }
-        resources {
-//            setSrcDirs(projects.components.artifacts)
-        }
-    }
-
-    test {
-        java {
-            setSrcDirs(listOf("tests"))
-        }
-    }
-}
+//sourceSets {
+//    main {
+//        resources {
+////            setSrcDirs(projects.components.artifacts)
+//            include("${projects.components.dependencyProject.layout.buildDirectory}/outputs/aar/components-release.aar")
+//        }
+//    }
+//}
 
 dependencies {
     implementation(projects.commonUtils)

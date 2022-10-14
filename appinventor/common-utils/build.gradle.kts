@@ -13,20 +13,6 @@ java {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            setSrcDirs(listOf("src"))
-        }
-    }
-
-    test {
-        java {
-            setSrcDirs(listOf("tests"))
-        }
-    }
-}
-
 dependencies {
     implementation("com.google.guava:guava:14.0.1")
 }

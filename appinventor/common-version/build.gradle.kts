@@ -39,13 +39,7 @@ val taskGitBuildId by tasks.creating(Copy::class) {
 sourceSets {
     main {
         java {
-            setSrcDirs(listOf("src", "$buildDir/generated/sources/java"))
-        }
-    }
-
-    test {
-        java {
-            setSrcDirs(listOf("tests"))
+            srcDirs("$buildDir/generated/sources/java")
         }
     }
 }

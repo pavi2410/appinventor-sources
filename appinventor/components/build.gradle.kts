@@ -23,19 +23,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    sourceSets {
-        named("main") {
-            manifest.srcFile("src/AndroidManifest.xml")
-            java {
-                setSrcDirs(listOf("src"))
-            }
-        }
-        named("test") {
-            java {
-                setSrcDirs(listOf("tests"))
-            }
-        }
-    }
 }
 
 java {
