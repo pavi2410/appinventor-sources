@@ -1,5 +1,7 @@
 rootProject.name = "appinventor"
-include("appengine")
+include("appengine-shared")
+include("appengine-frontend")
+include("appengine-backend")
 include("blocklyeditor")
 include("common-utils")
 include("common-version")
@@ -16,6 +18,13 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("com.google.cloud.tools.appengine")) {
+                useModule("com.google.cloud.tools:appengine-gradle-plugin:${requested.version}")
+            }
+        }
     }
 }
 
