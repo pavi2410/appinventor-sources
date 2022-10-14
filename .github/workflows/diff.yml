@@ -60,7 +60,7 @@ jobs:
           diff --unified --color=always \
             <(jq 'del(.[] | .dateBuilt)' master/appinventor/build/components/simple_components.json) \
             <(jq 'del(.[] | .dateBuilt)' current/appinventor/build/components/simple_components.json) \
-            | tee -a "$GITHUB_STEP_SUMMARY"
+            | tee >(sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' >> "$GITHUB_STEP_SUMMARY")
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Diff simple_components.txt
@@ -71,7 +71,7 @@ jobs:
           diff --unified --color=always \
             <(jq 'del(.[] | .dateBuilt)' master/appinventor/build/components/simple_components.txt) \
             <(jq 'del(.[] | .dateBuilt)' current/appinventor/build/components/simple_components.txt) \
-            | tee -a "$GITHUB_STEP_SUMMARY"
+            | tee >(sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' >> "$GITHUB_STEP_SUMMARY")
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Diff simple_components_build_info.json
@@ -82,5 +82,5 @@ jobs:
           diff --unified --color=always \
             <(jq 'del(.[] | .dateBuilt)' master/appinventor/build/components/simple_components_build_info.json) \
             <(jq 'del(.[] | .dateBuilt)' current/appinventor/build/components/simple_components_build_info.json) \
-            | tee -a "$GITHUB_STEP_SUMMARY"
+            | tee >(sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' >> "$GITHUB_STEP_SUMMARY")
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
