@@ -1,11 +1,12 @@
 plugins {
     `java-library`
-//    id("org.docstr.gwt") version "1.1.21"
+    id("org.docstr.gwt") version "1.1.21" // TODO: should apply gwt-base
 }
 
-//gwt {
-//    gwtVersion = "2.8.1"
-//}
+gwt {
+    gwtVersion = "2.10.0"
+    modules("com.google.appinventor.common.CommonVersion")
+}
 
 java {
     toolchain {
@@ -16,7 +17,6 @@ java {
 dependencies {
 }
 
-tasks.withType(JavaCompile::class).forEach {
-    // add utf-8 encoding to all source files
-    it.options.encoding = "UTF-8"
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }

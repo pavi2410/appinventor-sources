@@ -1454,7 +1454,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   public Future<YailList> getDataValue(final String key) {
     return background.submit(new Callable<YailList>() {
       @Override
-      public YailList call() {
+      public YailList call() throws JSONException {
         // Get the value identified by the tag (key) or an empty
         // YailList if not present
         AtomicReference<Object> valueReference = getValueByTag(key, new YailList());

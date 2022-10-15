@@ -2904,6 +2904,23 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
+    // TODO: temporary fix!!
+
+    // split at whitespace
+    final String type_ = typeString.substring(typeString.lastIndexOf(' ') + 1);
+
+    switch (type_) {
+      case "float":
+      case "double":
+      case "short":
+      case "byte":
+      case "long":
+      case "int":
+        return "number";
+      case "java.lang.String":
+        return "text";
+    }
+
     throw new IllegalArgumentException("Cannot convert Java type '" + typeString
         + "' to Yail type");
   }

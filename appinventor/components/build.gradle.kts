@@ -66,7 +66,9 @@ dependencies {
     implementation("org.twitter4j:twitter4j-media-support:3.0.5")
     implementation("com.caverock:androidsvg-aar:1.4")
     implementation("org.json:json:20220320")
-
+    implementation(files("../lib/mpandroidchart/mpandroidchart.jar"))
+    implementation("com.google.api-client:google-api-client-android:1.30.2")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev604-1.25.0")
 }
 
 // Ref: https://docs.gradle.org/current/userguide/cross_project_publications.html#cross_project_publications
