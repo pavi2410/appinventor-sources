@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 
 plugins {
     `java-library`
-    id("org.docstr.gwt") version "1.1.21" // TODO: should apply gwt-base
+    id("org.docstr.gwt.base")
 }
 
 gwt {

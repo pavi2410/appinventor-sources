@@ -14,6 +14,12 @@ include("barcode")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    plugins {
+        id("org.docstr.gwt") version "1.1.22" apply false
+        id("org.docstr.gwt.base") version "1.1.22" apply false
+        id("org.docstr.gwt.compiler") version "1.1.22" apply false
+        id("org.docstr.gwt.war") version "1.1.22" apply false
+    }
     repositories {
         gradlePluginPortal()
         google()

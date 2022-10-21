@@ -1,7 +1,7 @@
 plugins {
     java
     war
-    id("org.docstr.gwt") version "1.1.21"
+    id("org.docstr.gwt")
 }
 
 group = "com.google.appinventor"
@@ -39,14 +39,21 @@ tasks.withType<JavaCompile> {
 gwt {
     gwtVersion = "2.10.0"
     modules("com.google.appinventor.YaClient")
+
+    maxHeapSize = "1G"
 }
 
 dependencies {
+    gwt(projects.commonUtils)
+    gwt(projects.commonVersion)
+    gwt(projects.componentConstants)
+    gwt(projects.appengineShared)
     implementation(projects.commonUtils)
     implementation(projects.commonVersion)
     implementation(projects.componentConstants)
     implementation(projects.appengineShared)
     implementation("com.google.gwt:gwt-user:2.10.0")
+    implementation("com.google.gwt:gwt-dev:2.10.0")
     implementation("com.allen-sauer.gwt.dnd:gwt-dnd:3.2.3")
     implementation("com.googlecode.gwtquery:gwtquery:1.5-beta1")
     implementation("com.google.gwt:gwt-incubator:2.0.1")
