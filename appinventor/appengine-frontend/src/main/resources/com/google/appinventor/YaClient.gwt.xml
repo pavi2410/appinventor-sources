@@ -29,6 +29,7 @@
   <inherits name="com.google.appinventor.components.CommonConstants" />
   <inherits name="com.google.appinventor.common.CommonUtils" />
   <inherits name="com.google.appinventor.common.CommonVersion" />
+  <inherits name="com.google.appinventor.shared.AppengineShared"/>
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.google.gwt.query.Query" />
   <inherits name="org.pepstock.charba.Charba"/>
@@ -76,35 +77,8 @@
   <source path="client/editor/youngandroid/i18n"/>
   <source path="client/editor/youngandroid/i18n/msg"/>
   <source path="images"/>
-  <source path="shared/jsonp"/>
-  <source path="shared/rpc"/>
-  <source path="shared/settings"/>
-  <source path="shared/simple"/>
-  <source path="shared/storage"/>
-  <source path="shared/util"/>
-  <source path="shared/youngandroid"/>
-  <source path="shared/properties/json"/>
-  <source path="shared/rpc/component"/>
-  <source path="shared/rpc/launch"/>
-  <source path="shared/rpc/project"/>
-  <source path="shared/rpc/user"/>
-  <source path="shared/rpc/project/youngandroid"/>
 
   <!-- extra_module_contents -->
-
-  <!-- ExtendedProxy -->
-  <!--
-    || GWT by default automatically generates code for remote services that provides the client with
-    || an asynchronous proxy for server-side service implementations. The following configurations
-    || registers an extended proxy generator that generates proxies with one additional feature:
-    ||
-    ||   1) Attach RpCListeners to be notified of RPC events
-    ||
-    || See package com.google.appinventor.client.ExtendedServiceProxy for details.
-  -->
-  <generate-with class="com.google.appinventor.rebind.ExtendedServiceProxyGenerator">
-    <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
-  </generate-with>
 
   <replace-with class="com.google.appinventor.client.utils.FocusImplStandard">
     <when-type-is class="com.google.gwt.user.client.ui.impl.FocusImpl"/>

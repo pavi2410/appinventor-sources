@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.5.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.5.1/distro-source/core/src/gwt-module.dtd">
+<module>
+    <inherits name="com.google.gwt.user.User" />
+    <inherits name="com.google.gwt.i18n.I18N"/>
+    <inherits name="com.google.gwt.json.JSON" />
+    <inherits name="com.google.gwt.resources.Resources" />
+    <inherits name="com.google.common.base.Base" />
+    <inherits name="com.google.common.collect.Collect" />
+    <inherits name="com.google.appinventor.components.CommonConstants" />
+    <inherits name="com.google.appinventor.common.CommonUtils" />
+    <inherits name="com.google.common.annotations.Annotations" />
+    <inherits name="com.google.gwt.xml.XML" />
+
+    <source path="jsonp"/>
+    <source path="rpc"/>
+    <source path="settings"/>
+    <source path="simple"/>
+    <source path="storage"/>
+    <source path="util"/>
+    <source path="youngandroid"/>
+    <source path="properties/json"/>
+    <source path="rpc/component"/>
+    <source path="rpc/launch"/>
+    <source path="rpc/project"/>
+    <source path="rpc/user"/>
+    <source path="rpc/project/youngandroid"/>
+
+    <!-- ExtendedProxy -->
+    <!--
+      || GWT by default automatically generates code for remote services that provides the client with
+      || an asynchronous proxy for server-side service implementations. The following configurations
+      || registers an extended proxy generator that generates proxies with one additional feature:
+      ||
+      ||   1) Attach RpCListeners to be notified of RPC events
+      ||
+      || See package com.google.appinventor.client.ExtendedServiceProxy for details.
+    -->
+    <generate-with class="com.google.appinventor.rebind.ExtendedServiceProxyGenerator">
+        <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
+    </generate-with>
+</module>

@@ -19,6 +19,9 @@ pluginManagement {
         id("org.docstr.gwt.base") version "1.1.22" apply false
         id("org.docstr.gwt.compiler") version "1.1.22" apply false
         id("org.docstr.gwt.war") version "1.1.22" apply false
+
+        id("com.android.application") version "7.3.0" apply false
+        id("com.android.library") version "7.3.0" apply false
     }
     repositories {
         gradlePluginPortal()

@@ -18,6 +18,12 @@ java {
     }
 }
 
+tasks.named<Jar>("jar") {
+    from(project.sourceSets.main.get().allSource)
+    from(project.sourceSets.main.get().output)
+    this.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 val taskGitBuildId by tasks.creating(Copy::class) {
     from("GitBuildId.template")
     into("$buildDir/generated/sources/java")

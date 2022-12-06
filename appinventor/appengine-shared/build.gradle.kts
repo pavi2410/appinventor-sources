@@ -9,8 +9,15 @@ java {
     }
 }
 
+tasks.named<Jar>("jar") {
+    from(project.sourceSets.main.get().allSource)
+    from(project.sourceSets.main.get().output)
+    this.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 gwt {
     gwtVersion = "2.10.0"
+    modules("com.google.appinventor.shared.AppengineShared")
 }
 
 dependencies {

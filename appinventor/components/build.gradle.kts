@@ -73,15 +73,11 @@ dependencies {
 
 // Ref: https://docs.gradle.org/current/userguide/cross_project_publications.html#cross_project_publications
 
-//val androidRuntimeJar: Configuration by configurations.creating {
-//    isCanBeConsumed = true
-//    isCanBeResolved = false
-//    // If you want this configuration to share the same dependencies, otherwise omit this line
-//    extendsFrom(configurations["implementation"], configurations["runtimeOnly"])
-//}
-//
-//artifacts {
-//    archives(androidRuntimeJar)
-//}
+val androidRuntimeJar: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    // If you want this configuration to share the same dependencies, otherwise omit this line
+    extendsFrom(configurations["implementation"], configurations["runtimeOnly"])
+}
 
 android.libraryVariants.forEach(::println)
