@@ -41,6 +41,7 @@ maven_install(
         "org.json:json:20220320",
         "args4j:args4j:2.0.22",
         "com.google.guava:guava:14.0.1",
+        #        "com.google.guava:guava:27.0.1-android",
         "commons-io:commons-io:2.0.1",
         "org.bouncycastle:bcprov-jdk15on:1.49",
         "org.bouncycastle:bcpkix-jdk15on:1.49",
@@ -50,6 +51,9 @@ maven_install(
         "com.android.tools:sdklib:24.3.0",
         "com.android.tools.build:builder:1.3.0",
         "com.android.tools.build:builder-model:1.3.0",
+        "com.sun.grizzly:grizzly-http:1.9.18-i",
+        "com.sun.jersey:jersey-bundle:1.3",
+        "org.codehaus.jettison:jettison:1.1",
     ],
     repositories = [
         "https://maven.google.com",
