@@ -1,0 +1,11 @@
+plugins {
+	id 'java'
+}
+
+defaultTasks 'BlocklyCompile'
+
+task BlocklyCompile(type: JavaExec) {
+	// TODO: map inputs and outputs
+	classpath = files('../lib/plovr/plovr-eba786b34df9.jar')
+	args = ['build', 'ploverConfig.js']
+}
