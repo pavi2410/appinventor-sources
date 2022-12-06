@@ -1,0 +1,26 @@
+java_library(
+    name = "java_maven_deps",
+    exports = [
+        "@maven//:args4j_args4j",
+        "@maven//:com_android_tools_build_builder",
+        "@maven//:com_android_tools_build_builder_model",
+        "@maven//:com_android_tools_common",
+        "@maven//:com_android_tools_sdk_common",
+        "@maven//:com_android_tools_sdklib",
+        "@maven//:com_google_guava_guava",
+        "@maven//:commons_io_commons_io",
+        "@maven//:org_bouncycastle_bcpkix_jdk15on",
+        "@maven//:org_bouncycastle_bcprov_jdk15on",
+        "@maven//:org_eclipse_jdt_core_compiler_ecj",
+        "@maven//:org_json_json",
+    ],
+)
+
+java_binary(
+    name = "main",
+    srcs = glob(["src/**/*.java"]),
+    main_class = "com.google.appinventor.buildserver.Main",
+    deps = glob(["libs/*.jar"]) + [
+        ":java_maven_deps",
+    ],
+)
