@@ -1,5 +1,74 @@
 java_library(
     name = "CommonConstants",
-    srcs = glob(["src/com/google/appinventor/components/common/*.java"]),
+    srcs = glob(
+        ["src/com/google/appinventor/components/common/*.java"],
+        exclude = ["src/com/google/appinventor/components/common/HtmlEntities.java"],
+    ),
     visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_library(
+    name = "HtmlEntities",
+    srcs = glob(["src/com/google/appinventor/components/common/HtmlEntities.java"]),
+)
+
+android_library(
+    name = "Barcode",
+    srcs = glob(["src/com/google/zxing/client/android/**/*.java"]),
+    deps = [
+        "@maven//:com_google_zxing_core",
+    ],
+)
+
+java_plugin(
+    name = "AnnotationProcessors",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/scripts/annotations/*.java",
+        "src/com/google/appinventor/components/scripts/annotations/androidmanifest/*.java",
+    ]),
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+    ],
+)
+
+android_library(
+    name = "AndroidRuntime",
+    srcs = glob([
+        "src/com/google/appinventor/components/runtime/**/*.java",
+        "src/com/google/appinventor/components/annotations/**/*.java",
+    ]),
+    plugins = [":AnnotationProcessors"],
+    deps = [
+        ":Barcode",
+        ":CommonConstants",
+        ":HtmlEntities",
+        "//appinventor/common:CommonVersion",
+        "//appinventor/lib:LocalJarsForAndroidRuntime",
+        "@maven//:androidx_annotation_annotation",
+        "@maven//:androidx_appcompat_appcompat",
+        "@maven//:androidx_cardview_cardview",
+        "@maven//:androidx_core_core",
+        "@maven//:androidx_recyclerview_recyclerview",
+        "@maven//:ch_acra_acra",
+        "@maven//:com_caverock_androidsvg_aar",
+        "@maven//:com_firebase_firebase_client_android",
+        "@maven//:com_firebase_firebase_client_jvm",
+        "@maven//:com_github_PhilJay_MPAndroidChart",
+        "@maven//:com_google_api_client_google_api_client",
+        "@maven//:com_google_api_client_google_api_client_android",
+        "@maven//:com_google_apis_google_api_services_fusiontables",
+        "@maven//:com_google_apis_google_api_services_sheets",
+        "@maven//:com_google_http_client_google_http_client",
+        "@maven//:com_google_http_client_google_http_client_jackson2",
+        "@maven//:com_google_protobuf_protobuf_java",
+        "@maven//:org_apache_httpcomponents_httpclient",
+        "@maven//:org_apache_httpcomponents_httpcore",
+        "@maven//:org_apache_httpcomponents_httpmime",
+        "@maven//:org_locationtech_jts_jts_core",
+        "@maven//:org_osmdroid_osmdroid_android",
+        "@maven//:org_twitter4j_twitter4j_core",
+        "@maven//:redis_clients_jedis",
+    ],
 )

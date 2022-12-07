@@ -1,0 +1,9 @@
+java_import(
+    name = "LocalJarsForAndroidRuntime",
+    jars = glob(["oauth/*.jar"]) + [
+        "kawa/kawa-1.11-modified.jar",
+        "webrtc/webrtc.jar",
+        "physicaloid/physicaloid-library.jar",
+    ],
+    visibility = ["//appinventor/components:__pkg__"],
+)
