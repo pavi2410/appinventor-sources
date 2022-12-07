@@ -14,13 +14,19 @@ expand_template(
 java_library(
     name = "CommonVersion",
     srcs = glob(["src/com/google/appinventor/common/version/*.java"]) + [":GitBuildId"],
-    visibility = ["//appinventor/buildserver:__pkg__"],
+    visibility = [
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
 )
 
 java_library(
     name = "CommonUtils",
     srcs = glob(["src/com/google/appinventor/common/utils/*.java"]),
-    visibility = ["//appinventor/buildserver:__pkg__"],
+    visibility = [
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
     deps = [
         "@maven//:com_google_guava_guava",
     ],
