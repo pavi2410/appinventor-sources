@@ -1,3 +1,5 @@
+load("@com_github_johnynek_bazel_jar_jar//:jar_jar.bzl", "jar_jar")
+
 java_library(
     name = "CommonConstants",
     srcs = glob(
@@ -24,13 +26,21 @@ java_plugin(
     name = "AnnotationProcessors",
     srcs = glob([
         "src/com/google/appinventor/components/scripts/*.java",
-        "src/com/google/appinventor/components/scripts/annotations/*.java",
-        "src/com/google/appinventor/components/scripts/annotations/androidmanifest/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
     ]),
     deps = [
         ":CommonConstants",
         "//appinventor/common:CommonUtils",
+        "@maven//:com_google_guava_guava",
+        "@maven//:org_json_json",
     ],
+)
+
+jar_jar(
+    name = "shaded_json_lib",
+    inline_rules = ["rule org.json.** com.google.appinventor.components.runtime.repackaged.@0"],
+    input_jar = "@maven//:org_json_json",
 )
 
 android_library(
@@ -44,6 +54,7 @@ android_library(
         ":Barcode",
         ":CommonConstants",
         ":HtmlEntities",
+        ":shaded_json_lib",
         "//appinventor/common:CommonVersion",
         "//appinventor/lib:LocalJarsForAndroidRuntime",
         "@maven//:androidx_annotation_annotation",
@@ -60,6 +71,7 @@ android_library(
         "@maven//:com_google_api_client_google_api_client_android",
         "@maven//:com_google_apis_google_api_services_fusiontables",
         "@maven//:com_google_apis_google_api_services_sheets",
+        "@maven//:com_google_guava_guava",
         "@maven//:com_google_http_client_google_http_client",
         "@maven//:com_google_http_client_google_http_client_jackson2",
         "@maven//:com_google_protobuf_protobuf_java",

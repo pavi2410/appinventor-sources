@@ -13,8 +13,6 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 RULES_JVM_EXTERNAL_TAG = "4.5"
 
 RULES_JVM_EXTERNAL_SHA = "b17d7388feb9bfa7f2fa09031b32707df529f26c91ab9e5d909eb1676badd9a6"
@@ -72,6 +70,7 @@ maven_install(
         "com.google.api-client:google-api-client-android:1.30.2",
         "com.google.apis:google-api-services-sheets:v4-rev604-1.25.0",
         "com.google.apis:google-api-services-fusiontables:v1-rev19-1.13.2-beta",
+        "org.json:json:20220320",
     ],
     repositories = [
         "https://maven.google.com",
@@ -81,3 +80,14 @@ maven_install(
 )
 
 android_sdk_repository(name = "androidsdk")
+
+http_archive(
+    name = "com_github_johnynek_bazel_jar_jar",
+    sha256 = "e736c5249541470a9ef2b829a15d4ac314f0341ef97e2b270b8f7ecfb7171567",
+    strip_prefix = "bazel_jar_jar-e6923d31e016f49345bbd1c7d83de1898796b3ea",
+    url = "https://github.com/johnynek/bazel_jar_jar/archive/e6923d31e016f49345bbd1c7d83de1898796b3ea.zip",
+)
+
+load("@com_github_johnynek_bazel_jar_jar//:jar_jar.bzl", "jar_jar_repositories")
+
+jar_jar_repositories()
