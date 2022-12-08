@@ -33,6 +33,7 @@ public final class KitkatUtil {
    * @return A list of SmsMessages. The list will be non-null but zero length if the intent lacks
    *   SMS content.
    */
+  @SuppressWarnings("SizeGreaterThanOrEqualsZero")
   public static List<SmsMessage> getMessagesFromIntent(Intent intent) {
     List<SmsMessage> result = new ArrayList<SmsMessage>();
     SmsMessage[] messages = Intents.getMessagesFromIntent(intent);
