@@ -666,7 +666,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     /**
      * Returns the HelperKey associated with the return type of this method, if one exists. Null
      * otherwise.
-     * 
+     *
      * @return the helper key associated with the return type of this method.
      */
     protected HelperKey getReturnHelperKey() {
@@ -675,7 +675,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     /**
      * Returns true if this method's return type is an integer which represents a color.
-     * 
+     *
      * @return true if this method's return type is an integer which represents a color.
      */
     protected boolean isColor() {
@@ -766,7 +766,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     /**
      * Returns the string representaiton of this property's java type.
-     * 
+     *
      * @return the string representaiton of this property's java type.
      */
     protected String getType() {
@@ -776,7 +776,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     /**
      * Returns this property's Yail type (e.g., "number", "text", "list", etc).
-     * 
+     *
      * @return this property's Yail type (e.g., "number", "text", "list", etc).
      */
     protected String getYailType() {
@@ -852,7 +852,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * A key that allows you to access info about a helper block.
-   * 
+   *
    * <p>This class could be generic, and we could use subtyping to define the different HelperTypes
    * but I (Beka) think it makes more sense to make this closely match the JavaScript
    * implementation.
@@ -893,7 +893,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   /**
    * Represents a list of Options associated with some (enum) class. The data in this OptionList
    * is used to create OptionList helper blocks.
-   * 
+   *
    * <p>Here JSON-ified example of such data, in this case we are looking at the Direction enum with
    * a default value of East.
    * {
@@ -955,7 +955,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     /**
      * Creates an OptionList (which is a definition of a option list helper-block) that can be
      * populated with options.
-     * 
+     *
      * @param className The fully qualified class name this OptionList is associated with.
      * @param tagName The tag name this OptionList is associated with. This goes in front of the
      *     dropdown in the blocks editor. It is usually the simplified class name.
@@ -1998,7 +1998,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Converts an element representing a function (for return types) or a parameter into a HelperKey.
-   * 
+   *
    * @param elem the Element which represents a function (for return types) or a parameter.
    * @param type the TypeMirror representing the type of that element.
    * @return The created HelperKey if the element does indeed define a helper, null otherwise.
@@ -2099,7 +2099,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Adds a new OptionList (based on the passed option list element) to the optionLists list.
-   * 
+   *
    * @param optionElem The element representing the enum defining the options.
    * @return Returns true if the Optionlist was successfully added. False otherwise.
    */
@@ -2147,7 +2147,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                 + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
       }
     }
-  
+
     // Create a map of enum const names -> values. This is used to filter the below elements
     // returned by getEnclosedElements().
     Map<String, String> namesToValues = Maps.newTreeMap();
@@ -3060,6 +3060,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Check if it's a component.
     if (componentTypes.contains(typeString)) {
       return "component";
+    }
+
+    // todo: hack to make it compile
+    if (typeString.startsWith("@com.google.appinventor.components.annotations.Options")) {
+      return "any";
     }
 
     throw new IllegalArgumentException("Cannot convert Java type '" + type.toString()
