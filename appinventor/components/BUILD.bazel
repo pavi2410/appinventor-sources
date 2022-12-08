@@ -23,12 +23,61 @@ android_library(
 )
 
 java_plugin(
-    name = "AnnotationProcessors",
+    name = "ComponentDescriptorGenerator",
     srcs = glob([
         "src/com/google/appinventor/components/scripts/*.java",
         "src/com/google/appinventor/components/annotations/*.java",
         "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
     ]),
+    processor_class = "com.google.appinventor.components.scripts.ComponentDescriptorGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "@maven//:com_google_guava_guava",
+        "@maven//:org_json_json",
+    ],
+)
+
+java_plugin(
+    name = "ComponentListGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    processor_class = "com.google.appinventor.components.scripts.ComponentListGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "@maven//:com_google_guava_guava",
+        "@maven//:org_json_json",
+    ],
+)
+
+java_plugin(
+    name = "ComponentTranslationGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    processor_class = "com.google.appinventor.components.scripts.ComponentTranslationGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "@maven//:com_google_guava_guava",
+        "@maven//:org_json_json",
+    ],
+)
+
+java_plugin(
+    name = "MarkdownDocumentationGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    processor_class = "com.google.appinventor.components.scripts.MarkdownDocumentationGenerator",
     deps = [
         ":CommonConstants",
         "//appinventor/common:CommonUtils",
@@ -50,7 +99,12 @@ android_library(
         "src/com/google/appinventor/components/annotations/**/*.java",
     ]),
     #    javacopts = ["-XepDisableAllChecks"],
-    plugins = [":AnnotationProcessors"],
+    plugins = [
+        ":ComponentDescriptorGenerator",
+        ":ComponentListGenerator",
+        ":ComponentTranslationGenerator",
+        ":MarkdownDocumentationGenerator",
+    ],
     deps = [
         ":Barcode",
         ":CommonConstants",
