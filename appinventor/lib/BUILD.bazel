@@ -4,6 +4,9 @@ java_import(
         "kawa/kawa-1.11-modified.jar",
         "webrtc/webrtc.jar",
         "physicaloid/physicaloid-library.jar",
+        #        "osmdroid/osmdroid-5.6.6.aar",
+        "osmdroid/osmdroid-5.6.6.jar",
+        "androidsvg/androidsvg-d4ec6d8.jar",
     ],
     visibility = ["//appinventor/components:__pkg__"],
 )
