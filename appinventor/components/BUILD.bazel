@@ -6,7 +6,10 @@ java_library(
         ["src/com/google/appinventor/components/common/*.java"],
         exclude = ["src/com/google/appinventor/components/common/HtmlEntities.java"],
     ),
-    visibility = ["//appinventor/buildserver:__pkg__"],
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+    ],
 )
 
 java_library(

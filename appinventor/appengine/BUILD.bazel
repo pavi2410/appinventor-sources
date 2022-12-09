@@ -1,0 +1,27 @@
+load("@io_bazel_rules_gwt//gwt:gwt.bzl", "gwt_application")
+
+java_library(
+    name = "AiShared",
+    srcs = glob(["src/com/google/appinventor/shared/**/*.java"]),
+    deps = [
+        "//appinventor/common:CommonUtils",
+        "//appinventor/components:CommonConstants",
+        "//appinventor/lib:LocalJarsForAiShared",
+        "//external:gwt-user",
+    ],
+)
+
+gwt_application(
+    name = "GwtApp",
+    srcs = glob(["src/com/google/appinventor/client/**/*.java"]),
+    modules = ["com.google.appinventor.YaClient"],
+    pubs = glob(["war/*"]),
+    resources = glob(["*.gwt.xml"]),
+    deps = [
+        ":AiShared",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/common:CommonVersion",
+        "//appinventor/components:CommonConstants",
+        "//appinventor/lib:LocalJarsForGwtApp",
+    ],
+)
