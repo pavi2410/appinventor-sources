@@ -1,3 +1,5 @@
+load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
+
 java_import(
     name = "LocalJarsForAndroidRuntime",
     jars = glob(["oauth/*.jar"]) + [
@@ -9,4 +11,49 @@ java_import(
         "androidsvg/androidsvg-d4ec6d8.jar",
     ],
     visibility = ["//appinventor/components:__pkg__"],
+)
+
+closure_js_library(
+    name = "ClosureLibrary",
+    srcs = glob(
+        [
+            "closure-library/closure/goog/**/*.js",
+        ],
+        exclude = [
+            "closure-library/closure/goog/**/*test*.js",
+            "closure-library/closure/goog/testing/**/*.js",
+            "closure-library/closure/goog/module/testdata/**/*.js",
+            "closure-library/closure/goog/json/json_perf.js",
+            "closure-library/closure/goog/labs/mock/mock.js",
+        ],
+    ),
+    no_closure_library = True,
+    suppress = [
+        #        "JSC_DEFINE_CALL_WITHOUT_ASSIGNMENT",
+        "lintChecks",
+        "nonStandardJsDocs",
+        "strictDependencies",
+        "superfluousSuppress",
+        "misplacedTypeAnnotation",
+    ],
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
+)
+
+closure_js_library(
+    name = "BlocklyCoreLibrary",
+    srcs = glob([
+        "blockly/core/**/*.js",
+    ]),
+    #    no_closure_library = True,
+    suppress = [
+        "lintChecks",
+        "nonStandardJsDocs",
+        "strictDependencies",
+        "checkVars",
+        "missingProvide",
+        "missingSourcesWarnings",
+        "checkTypes",
+        "accessControls",
+    ],
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
 )

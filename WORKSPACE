@@ -91,3 +91,19 @@ http_archive(
 load("@com_github_johnynek_bazel_jar_jar//:jar_jar.bzl", "jar_jar_repositories")
 
 jar_jar_repositories()
+
+http_archive(
+    name = "io_bazel_rules_closure",
+    sha256 = "9498e57368efb82b985db1ed426a767cbf1ba0398fd7aed632fc3908654e1b1e",
+    strip_prefix = "rules_closure-0.12.0",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_closure/archive/0.12.0.tar.gz",
+        "https://github.com/bazelbuild/rules_closure/archive/0.12.0.tar.gz",
+    ],
+)
+
+load("@io_bazel_rules_closure//closure:repositories.bzl", "rules_closure_dependencies", "rules_closure_toolchains")
+
+rules_closure_dependencies()
+
+rules_closure_toolchains()

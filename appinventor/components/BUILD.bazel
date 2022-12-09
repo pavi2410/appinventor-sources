@@ -29,6 +29,7 @@ java_plugin(
         "src/com/google/appinventor/components/annotations/*.java",
         "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
     ]),
+    generates_api = True,
     processor_class = "com.google.appinventor.components.scripts.ComponentDescriptorGenerator",
     deps = [
         ":CommonConstants",

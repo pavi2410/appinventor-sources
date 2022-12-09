@@ -1,0 +1,38 @@
+load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
+load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_binary")
+
+closure_js_library(
+    name = "BlocklyEditorLibrary",
+    srcs = glob([
+        "src/**/*.js",
+    ]),
+    #    no_closure_library = True,
+    suppress = [
+        "lintChecks",
+        "nonStandardJsDocs",
+        "strictDependencies",
+        "checkTypes",
+        "superfluousSuppress",
+        "uselessCode",
+        "checkVars",
+        "missingProvide",
+        "missingSourcesWarnings",
+        "accessControls",
+    ],
+    deps = [
+        "//appinventor/lib:BlocklyCoreLibrary",
+        #        "//appinventor/lib:ClosureLibrary",
+    ],
+)
+
+closure_js_binary(
+    name = "BlocklyEditor",
+    compilation_level = "SIMPLE",
+    entry_points = [
+        "Blockly",
+    ],
+    language = "ECMASCRIPT5",
+    deps = [
+        ":BlocklyEditorLibrary",
+    ],
+)
