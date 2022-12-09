@@ -52,7 +52,7 @@ public class AdminUser implements IsSerializable, Serializable {
     this.name = name;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
-    this.type = type;
+//    this.type = type;
     this.visited = visited;
   }
 

@@ -107,3 +107,14 @@ load("@io_bazel_rules_closure//closure:repositories.bzl", "rules_closure_depende
 rules_closure_dependencies()
 
 rules_closure_toolchains()
+
+http_archive(
+    name = "io_bazel_rules_gwt",
+    sha256 = "701aaced56dc82c3e74d7194034d146521c85f94006897324a5968626d092852",
+    strip_prefix = "rules_gwt-28d48b0277d047cc4be3346507cff12ad50db5c9",
+    url = "https://github.com/bazelbuild/rules_gwt/archive/28d48b0277d047cc4be3346507cff12ad50db5c9.zip",
+)
+
+load("@io_bazel_rules_gwt//gwt:gwt.bzl", "gwt_repositories")
+
+gwt_repositories()
