@@ -36,6 +36,15 @@ public final class ViewUtil {
     return (int) (view.getContext().getResources().getDisplayMetrics().density * sizeInDP);
   }
 
+  public static void setPaddingInDp(View view, int left, int top, int right, int bottom) {
+    view.setPadding(
+            calculatePixels(view, left),
+            calculatePixels(view, top),
+            calculatePixels(view, right),
+            calculatePixels(view, bottom)
+    );
+  }
+
 
   public static void setChildWidthForHorizontalLayout(View view, int width) {
     // In a horizontal layout, if a child's width is set to fill parent, we must set the
