@@ -143,3 +143,19 @@ android_library(
         "@maven//:redis_clients_jedis",
     ],
 )
+
+# todo: replace with copy_directory rule
+genrule(
+    name = "ComponentsTranslationJavaFile",
+    srcs = [":AndroidRuntime"],
+    outs = ["ComponentsTranslation.java"],
+    cmd_bash = """
+    cp "$(RULEDIR)/_javac/AndroidRuntime/libAndroidRuntime_sources/ComponentsTranslation.java" "$(RULEDIR)"
+    """,
+    cmd_bat = """
+    copy "$(RULEDIR)\\_javac\\AndroidRuntime\\libAndroidRuntime_sources\\ComponentsTranslation.java" "$(RULEDIR)"
+    """,
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+    ],
+)
