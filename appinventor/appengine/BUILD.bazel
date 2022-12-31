@@ -13,7 +13,15 @@ java_library(
 
 gwt_application(
     name = "GwtApp",
-    srcs = glob(["src/com/google/appinventor/client/**/*.java"]),
+    srcs = glob(["src/com/google/appinventor/client/**/*.java"]) + [
+        "//appinventor/components:ComponentsTranslationJavaFile",
+    ],
+    compiler_jvm_flags = [
+        "-Dfile.encoding=UTF-8",
+    ],
+    dev_jvm_flags = [
+        "-Dfile.encoding=UTF-8",
+    ],
     modules = ["com.google.appinventor.YaClient"],
     pubs = glob(["war/*"]),
     resources = glob(["*.gwt.xml"]),
