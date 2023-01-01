@@ -14,7 +14,7 @@ java_library(
 gwt_application(
     name = "GwtApp",
     srcs = glob(["src/com/google/appinventor/client/**/*.java"]) + [
-        "//appinventor/components:ComponentsTranslationJavaFile",
+        "//appinventor/components:GeneratedTranslationFiles",
     ],
     compiler_jvm_flags = [
         "-Dfile.encoding=UTF-8",

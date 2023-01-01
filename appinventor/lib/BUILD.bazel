@@ -35,7 +35,8 @@ java_import(
 java_import(
     name = "LocalJarsForGwtApp",
     jars = [
-        "charba/charba-2.5-sources.jar",
+        #        "charba/charba-2.5-sources.jar",
+        "charba/charba-2.5.jar",
         "guava/error_prone_annotations-2.0.12.jar",
         "guava/j2objc-annotations-1.1.jar",
         "gwt_dragdrop/gwt-dnd-3.2.3.jar",
