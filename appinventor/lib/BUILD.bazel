@@ -1,5 +1,3 @@
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
-
 java_import(
     name = "WarLibs",
     jars = glob(["appengine/appengine-java-sdk-1.9.46/lib/user/**/*.jar"]) + [
@@ -37,72 +35,27 @@ java_import(
 java_import(
     name = "LocalJarsForAiShared",
     jars = [
-        #        "commons-fileupload/commons-fileupload-1.2.2.jar",
-        #        "findbugs/jsr305.jar",
         "guava/guava-20.0.jar",
-        #        "firebase/firebase-token-generator-2.0.0.jar",
-        #        "commons-codec/commons-codec-1.7.jar",
-        #        "json/json.jar",
-        #        "keyczar/keyczar-0.66-080111-java-1.6.jar",
-        #        "objectify-3.1/objectify-3.1.jar",
-        #        "gson/gson-2.1.jar",
-        #        "log4j/log4j-1.2.16.jar",
-        #        "commons-lang3/commons-lang3-3.10.jar",
-        #        "gcs/appengine-gcs-client-0.6.jar",
-        #        "gcs/jackson-core-2.1.3.jar",
-        #        "gcs/google-api-client-1.22.0.jar",
-        #        "gcs/google-api-client-jackson2-1.20.0.jar",
-        #        "gcs/google-api-client-appengine-1.22.0.jar",
-        #        "gcs/google-http-client-1.22.0.jar",
-        #        "gcs/google-http-client-appengine-1.22.0.jar",
-        #        "gcs/google-http-client-jackson-1.22.0.jar",
-        #        "gcs/google-http-client-jackson2-1.22.0.jar",
-        #        "gcs/google-api-services-storage-v1-rev91-1.22.0.jar",
-        #        "gcs/httpclient-4.0.1.jar",
-        #        "gcs/joda-time-2.6.jar",
-        #        "protobuf/protobuf-java-3.0.0.jar",
-        #        "owasp/owasp-java-html-sanitizer-20160628.1.jar",
     ],
     visibility = ["//appinventor/appengine:__pkg__"],
 )
 
 java_import(
-    name = "LocalJarsForGwtApp",
+    name = "LocalJarsForBlocklyTranslationGenerator",
     jars = [
-        #        "charba/charba-2.5-sources.jar",
-        "charba/charba-2.5.jar",
-        "guava/error_prone_annotations-2.0.12.jar",
-        "guava/j2objc-annotations-1.1.jar",
-        "gwt_dragdrop/gwt-dnd-3.2.3.jar",
-        "gwt_incubator/gwt-incubator-20101117-r1766.jar",
-        "gwt_query/gwtquery-1.5-beta1.jar",
-        "commons-fileupload/commons-fileupload-1.2.2.jar",
-        "findbugs/jsr305.jar",
-        "guava/guava-20.0.jar",
-        "firebase/firebase-token-generator-2.0.0.jar",
-        "commons-codec/commons-codec-1.7.jar",
+        "gwt/2.8.1-patched/gwt-dev.jar",
         "json/json.jar",
-        "keyczar/keyczar-0.66-080111-java-1.6.jar",
-        "objectify-3.1/objectify-3.1.jar",
-        "gson/gson-2.1.jar",
-        "log4j/log4j-1.2.16.jar",
-        "commons-lang3/commons-lang3-3.10.jar",
-        #        "gcs/appengine-gcs-client-0.6.jar",
-        #        "gcs/jackson-core-2.1.3.jar",
-        #        "gcs/google-api-client-1.22.0.jar",
-        #        "gcs/google-api-client-jackson2-1.20.0.jar",
-        #        "gcs/google-api-client-appengine-1.22.0.jar",
-        #        "gcs/google-http-client-1.22.0.jar",
-        #        "gcs/google-http-client-appengine-1.22.0.jar",
-        #        "gcs/google-http-client-jackson-1.22.0.jar",
-        #        "gcs/google-http-client-jackson2-1.22.0.jar",
-        #        "gcs/google-api-services-storage-v1-rev91-1.22.0.jar",
-        #        "gcs/httpclient-4.0.1.jar",
-        #        "gcs/joda-time-2.6.jar",
-        #        "protobuf/protobuf-java-3.0.0.jar",
-        #        "owasp/owasp-java-html-sanitizer-20160628.1.jar",
     ],
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
+)
+
+java_binary(
+    name = "Plovr",
+    main_class = "org.plovr.cli.Main",
     visibility = ["//appinventor/appengine:__pkg__"],
+    runtime_deps = [
+        "plovr/plovr-eba786b34df9.jar",
+    ],
 )
 
 java_import(
@@ -143,51 +96,4 @@ java_import(
         "androidsvg/androidsvg-d4ec6d8.jar",
     ],
     visibility = ["//appinventor/components:__pkg__"],
-)
-
-closure_js_library(
-    name = "ClosureLibrary",
-    srcs = glob(
-        [
-            "closure-library/closure/goog/**/*.js",
-        ],
-        exclude = [
-            "closure-library/closure/goog/**/*test*.js",
-            "closure-library/closure/goog/testing/**/*.js",
-            "closure-library/closure/goog/module/testdata/**/*.js",
-            "closure-library/closure/goog/json/json_perf.js",
-            "closure-library/closure/goog/labs/mock/mock.js",
-        ],
-    ),
-    no_closure_library = True,
-    suppress = [
-        #        "JSC_DEFINE_CALL_WITHOUT_ASSIGNMENT",
-        "lintChecks",
-        "nonStandardJsDocs",
-        "strictDependencies",
-        "superfluousSuppress",
-        "misplacedTypeAnnotation",
-    ],
-    visibility = ["//appinventor/blocklyeditor:__pkg__"],
-)
-
-# Not working... too many errors
-# todo: try again by using plovr.jar directly as in Ant
-closure_js_library(
-    name = "BlocklyCoreLibrary",
-    srcs = glob([
-        "blockly/core/**/*.js",
-    ]),
-    #    no_closure_library = True,
-    suppress = [
-        "lintChecks",
-        "nonStandardJsDocs",
-        "strictDependencies",
-        "checkVars",
-        "missingProvide",
-        "missingSourcesWarnings",
-        "checkTypes",
-        "accessControls",
-    ],
-    visibility = ["//appinventor/blocklyeditor:__pkg__"],
 )
