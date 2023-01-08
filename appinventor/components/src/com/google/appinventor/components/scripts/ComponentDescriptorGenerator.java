@@ -59,7 +59,7 @@ import org.json.JSONObject;
  *        "type": "YAIL-TYPE",
  *        "helper": {
  *          "type": HELPER-TYPE,
- *          "data": { ARBITRARY-DATA } 
+ *          "data": { ARBITRARY-DATA }
  *        },
  *        "rw": "read-only"|"read-write"|"write-only"|"invisible"},*
  *   ],
@@ -67,12 +67,12 @@ import org.json.JSONObject;
  *     { "name": "EVENT-NAME",
  *       "description": "DESCRIPTION",
  *       "params": [
- *         { 
+ *         {
  *           "name": "PARAM-NAME",
  *           "type": "YAIL-TYPE"
  *           "helper": {
  *             "type": HELPER-TYPE,
- *             "data": { ARBITRARY-DATA } 
+ *             "data": { ARBITRARY-DATA }
  *           }
  *         },*
  *       ]},+
@@ -83,7 +83,7 @@ import org.json.JSONObject;
  *       "returnType": "YAIL-TYPE",
  *       "helper": {
  *         "type": HELPER-TYPE,
- *         "data": { ARBITRARY-DATA } 
+ *         "data": { ARBITRARY-DATA }
  *       },
  *       "params": [
  *         {
@@ -91,14 +91,14 @@ import org.json.JSONObject;
  *           "type": "YAIL-TYPE"
  *           "helper": {
  *             "type": HELPER-TYPE,
- *             "data": { ARBITRARY-DATA } 
+ *             "data": { ARBITRARY-DATA }
  *           }
  *         },*
  *     ]},+
  *   ],
  *   ("assets": ["FILENAME",*])?
  * }
- * 
+ *
  * <p>A note on helper "ARBITRARY-DATA". The structure given above outlines a system where helper
  * data is duplicated every time that helper is used by a feature of a Component. Ideally this would
  * not be necessary and helper data could be stored in some kind of dictionary structure. The issue
@@ -106,7 +106,7 @@ import org.json.JSONObject;
  * have already been released, and adding more dictionaries or arrays to this structure would
  * require it to export an /object/ not an /array/. As such the simplest solution is to simply
  * duplicate data related to the helpers.
- * 
+ *
  * <p>It may make sense in the future to revisit this choice, but making this decision now would
  * only make it harder to support a more "lean" concept of data in the future, as we would still
  * have to deal with .aia files that use this duplicated format. So it is probably best to continue
@@ -118,7 +118,7 @@ import org.json.JSONObject;
  */
 public final class ComponentDescriptorGenerator extends ComponentProcessor {
   // Where to write results.
-  private static final String OUTPUT_FILE_NAME = "simple_components.json";
+  private static final String OUTPUT_FILE_NAME = "com/google/appinventor/simple_components.json";
 
   private void outputComponent(ComponentInfo component, JSONArray parent) {
     JSONObject json = new JSONObject();
