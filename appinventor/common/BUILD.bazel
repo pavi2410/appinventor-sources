@@ -2,7 +2,7 @@ load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 
 expand_template(
     name = "GitBuildId",
-    out = "GitBuildId.java",
+    out = "src/com/google/appinventor/common/version/GitBuildId.java",
     substitutions = {
         "@git.build.version@": "0.0.1",
         "@git.build.fingerprint@": "0.0.1",
@@ -13,7 +13,14 @@ expand_template(
 
 java_library(
     name = "CommonVersion",
-    srcs = glob(["src/com/google/appinventor/common/version/*.java"]) + [":GitBuildId"],
+    srcs = glob(["src/com/google/appinventor/common/version/*.java"]) + [
+        ":GitBuildId",
+    ],
+    resource_strip_prefix = "appinventor/common/src",
+    resources = glob(["src/com/google/appinventor/common/version/*.java"]) + [
+        ":GitBuildId",
+        "src/com/google/appinventor/common/CommonVersion.gwt.xml",
+    ],
     visibility = [
         "//appinventor/appengine:__pkg__",
         "//appinventor/buildserver:__pkg__",
@@ -24,6 +31,10 @@ java_library(
 java_library(
     name = "CommonUtils",
     srcs = glob(["src/com/google/appinventor/common/utils/*.java"]),
+    resource_strip_prefix = "appinventor/common/src",
+    resources = glob(["src/com/google/appinventor/common/utils/*.java"]) + [
+        "src/com/google/appinventor/common/CommonUtils.gwt.xml",
+    ],
     visibility = [
         "//appinventor/appengine:__pkg__",
         "//appinventor/buildserver:__pkg__",
