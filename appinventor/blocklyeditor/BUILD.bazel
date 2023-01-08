@@ -1,38 +1,16 @@
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_library")
-load("@io_bazel_rules_closure//closure:defs.bzl", "closure_js_binary")
-
-closure_js_library(
-    name = "BlocklyEditorLibrary",
-    srcs = glob([
-        "src/**/*.js",
-    ]),
-    #    no_closure_library = True,
-    suppress = [
-        "lintChecks",
-        "nonStandardJsDocs",
-        "strictDependencies",
-        "checkTypes",
-        "superfluousSuppress",
-        "uselessCode",
-        "checkVars",
-        "missingProvide",
-        "missingSourcesWarnings",
-        "accessControls",
+java_binary(
+    name = "BlocklyTranslationGenerator",
+    srcs = [
+        "src/msg/BlocklyTranslationGenerator.java",
     ],
+    main_class = "msg.BlocklyTranslationGenerator",
+    visibility = ["//appinventor/appengine:__pkg__"],
     deps = [
-        "//appinventor/lib:BlocklyCoreLibrary",
-        #        "//appinventor/lib:ClosureLibrary",
+        "//appinventor/lib:LocalJarsForBlocklyTranslationGenerator",
     ],
 )
 
-closure_js_binary(
-    name = "BlocklyEditor",
-    compilation_level = "SIMPLE",
-    entry_points = [
-        "Blockly",
-    ],
-    language = "ECMASCRIPT5",
-    deps = [
-        ":BlocklyEditorLibrary",
-    ],
+exports_files(
+    ["ploverConfig.js"],
+    visibility = ["//appinventor/appengine:__pkg__"],
 )

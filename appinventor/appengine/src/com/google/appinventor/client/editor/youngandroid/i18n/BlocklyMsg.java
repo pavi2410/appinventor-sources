@@ -19,7 +19,7 @@ import com.google.gwt.resources.client.TextResource;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 public interface BlocklyMsg extends ClientBundle {
-  @Source("messages.json")
+  @Source("msg/messages.json")
   ExternalTextResource messages();
 
   // Translation loading management
