@@ -1,7 +1,4 @@
 load("@aspect_bazel_lib//lib:run_binary.bzl", "run_binary")
-load("@aspect_bazel_lib//lib:output_files.bzl", "output_files")
-load("@aspect_bazel_lib//lib:directory_path.bzl", "directory_path")
-load("@rules_pkg//:pkg.bzl", "pkg_zip")
 
 java_library(
     name = "AiShared",
@@ -11,7 +8,21 @@ java_library(
         "//appinventor/common:CommonVersion",
         "//appinventor/components:CommonConstants",
         "//appinventor/lib:WarLibs",
-        #        "//appinventor/lib:LocalJarsForAiShared",
+    ],
+)
+
+java_library(
+    name = "AiServer",
+    srcs = glob([
+        "src/com/google/appinventor/server/**/*.java",
+        "src/com/google/appinventor/server/**/*.properties",
+    ]),
+    deps = [
+        "//appinventor/common:CommonUtils",
+        "//appinventor/common:CommonVersion",
+        "//appinventor/components:CommonConstants",
+        "//appinventor/lib:LocalJarsForGwtSdk",
+        "//appinventor/lib:WarLibs",
     ],
 )
 
@@ -59,7 +70,6 @@ java_binary(
         "src/com/google/appinventor/client/languages.json",
         "src/com/google/appinventor/client/utils/html5dnd.js",
         "src/com/google/appinventor/YaClient.gwt.xml",
-        ":blockly_messages_jar",
         ":BlocklyCompile",
     ],
     runtime_deps = [
@@ -97,28 +107,38 @@ AI_BLOCKLY_MSG_DIR = "$(GENDIR)/../../../appinventor/blocklyeditor/src/msg/ai_bl
 
 BLOCKLY_MSG_JSON_DIR = "$(GENDIR)/../../../appinventor/lib/blockly/msg/json"
 
-BLOCKLY_TRANSLATION_DEST = "$(RULEDIR)/src/msg"
+BLOCKLY_TRANSLATION_DEST = "$(RULEDIR)/src/com/google/appinventor/client/editor/youngandroid/i18n"
 
 run_binary(
     name = "GenerateBlocklyTranslation",
+    outs = [
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_ca.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_de.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_es.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_fr.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_he.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_hu.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_hy.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_it.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_ko.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_lt.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_nl.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_pl.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_pt.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_pt_BR.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_ru.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_sv.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_tr.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_zh_CN.json",
+        "src/com/google/appinventor/client/editor/youngandroid/i18n/messages_zh_TW.json",
+    ],
     args = [
         AI_BLOCKLY_MSG_DIR,
         BLOCKLY_MSG_JSON_DIR,
         BLOCKLY_TRANSLATION_DEST,
     ],
-    out_dirs = ["src/msg"],
     tool = "//appinventor/blocklyeditor:BlocklyTranslationGenerator",
-)
-
-pkg_zip(
-    name = "blockly_messages_zip",
-    srcs = [":GenerateBlocklyTranslation"],
-    package_file_name = "src/blockly_messages.jar",
-)
-
-java_import(
-    name = "blockly_messages_jar",
-    jars = [":blockly_messages_zip"],
 )
 
 genrule(
