@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Properties;
 import org.json.JSONObject;
 
+@SuppressWarnings("EqualsHashCode")
 public class YoungAndroidSettingsBuilder {
   private String projectName = "";
   private String qualifiedFormName = "";

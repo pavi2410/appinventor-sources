@@ -92,20 +92,16 @@ load("@com_github_johnynek_bazel_jar_jar//:jar_jar.bzl", "jar_jar_repositories")
 
 jar_jar_repositories()
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "558d70e36425c317c70b19fb0f68241a3747bcf46561b5ffc19bed17527adbb3",
-    strip_prefix = "bazel-lib-1.20.0",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.20.0.tar.gz",
+    sha256 = "931a562afb3ea1d2c828145d8ed65b32245bfb67e4ee7d73092bae7be8dd764f",
+    strip_prefix = "bazel-lib-1.19.2",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v1.19.2.tar.gz",
 )
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_pkg",
