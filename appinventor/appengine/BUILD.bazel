@@ -1,4 +1,5 @@
 load("@aspect_bazel_lib//lib:run_binary.bzl", "run_binary")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
 java_library(
     name = "AiShared",
@@ -18,6 +19,7 @@ java_library(
         "src/com/google/appinventor/server/**/*.properties",
     ]),
     deps = [
+        ":AiShared",
         "//appinventor/common:CommonUtils",
         "//appinventor/common:CommonVersion",
         "//appinventor/components:CommonConstants",
@@ -44,16 +46,16 @@ java_binary(
         "-optimize",
         "9",
         "-war",
-        "war",
+        "../war",
         "-extra",
-        "extra",
+        "../extra",
         "-logLevel",
         "INFO",
         "com.google.appinventor.YaClient",
     ],
     jvm_flags = [
-        "-Xss2M",
-        "-Xmx2G",
+        # "-Xss2M",
+        # "-Xmx2G",
         "-Dfile.encoding=UTF-8",
     ],
     main_class = "com.google.gwt.dev.Compiler",
@@ -98,9 +100,6 @@ genrule(
     cmd_bat = 'xcopy /Y /I /F /E "{}" "$(RULEDIR)\\src\\"'.format(
         GENERATED_FILES_SRC.replace("/", "\\"),
     ),
-    visibility = [
-        "//appinventor/appengine:__pkg__",
-    ],
 )
 
 AI_BLOCKLY_MSG_DIR = "$(GENDIR)/../../../appinventor/blocklyeditor/src/msg/ai_blockly"
@@ -152,4 +151,53 @@ genrule(
     tools = [
         "//appinventor/lib:Plovr",
     ],
+)
+
+run_binary(
+    name = "BuildYaClientApp",
+    out_dirs = [
+        "extra",
+        "war",
+    ],
+    args = [
+        "-XdisableUpdateCheck",
+        "-localWorkers",
+        "8",
+        "-optimize",
+        "9",
+        "-war",
+        "$(GENDIR)/appinventor/appengine/war",
+        "-extra",
+        "$(GENDIR)/appinventor/appengine/extra",
+        "-logLevel",
+        "INFO",
+        "com.google.appinventor.YaClient",
+    ],
+    tool = ":YaClientApp",
+)
+
+filegroup(
+    name = "War",
+    srcs = glob(["war/**"])
+)
+
+copy_to_directory(
+    name = "MakeWar",
+    srcs = glob([
+        "$(GENDIR)/appinventor/appengine/war/**",
+        "$(GENDIR)/appinventor/appengine/extra/**",
+    ]) + [
+        "//appinventor/lib:WarLibs",
+        ":AiShared",
+        ":AiServer",
+        ":BuildYaClientApp",
+        ":War",
+    ],
+    replace_prefixes = {
+        "appinventor/lib/**/": "war/WEB-INF/lib/",
+        "libAiShared.jar": "war/WEB-INF/lib/libAiShared.jar",
+        "libAiServer.jar": "war/WEB-INF/lib/libAiServer.jar",
+        "appinventor/appengine/war/*": "war/",
+        "appinventor/appengine/extra/*": "extra/",
+    },
 )
