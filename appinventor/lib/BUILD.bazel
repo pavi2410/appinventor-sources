@@ -58,6 +58,15 @@ java_binary(
     ],
 )
 
+java_binary(
+    name = "KeyczarTool",
+    main_class = "org.keyczar.KeyczarTool",
+    visibility = ["//appinventor/appengine:__pkg__"],
+    runtime_deps = [
+        "keyczar/KeyczarTool.jar",
+    ],
+)
+
 java_import(
     name = "LocalJarsForYaClientApp",
     jars = [

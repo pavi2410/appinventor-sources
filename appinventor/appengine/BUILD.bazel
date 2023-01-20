@@ -155,10 +155,6 @@ genrule(
 
 run_binary(
     name = "BuildYaClientApp",
-    out_dirs = [
-        "extra",
-        "war",
-    ],
     args = [
         "-XdisableUpdateCheck",
         "-localWorkers",
@@ -173,12 +169,70 @@ run_binary(
         "INFO",
         "com.google.appinventor.YaClient",
     ],
+    out_dirs = [
+        "extra",
+        "war",
+    ],
     tool = ":YaClientApp",
 )
 
 filegroup(
     name = "War",
-    srcs = glob(["war/**"])
+    srcs = glob(["war/**"]),
+)
+
+genrule(
+    name = "AuthKey",
+    outs = [
+        "authkey/meta",
+        "authkey/1",
+    ],
+    cmd_bash = "&&".join([
+        "{keyczar} create --purpose=crypt --location={output_dir}",
+        "{keyczar} addkey --location={output_dir}",
+        "{keyczar} promote --version=1 --location={output_dir}",
+    ]).format(
+        keyczar = "$(location //appinventor/lib:KeyczarTool)",
+        output_dir = "$(RULEDIR)/authkey",
+    ),
+    cmd_bat = "&&".join([
+        "{keyczar} create --purpose=crypt --location=\"{output_dir}\"",
+        "{keyczar} addkey --location=\"{output_dir}\"",
+        "{keyczar} promote --version=1 --location=\"{output_dir}\"",
+    ]).format(
+        keyczar = "$(location //appinventor/lib:KeyczarTool)",
+        output_dir = "$(RULEDIR)/authkey",
+    ),
+    tools = [
+        "//appinventor/lib:KeyczarTool",
+    ],
+)
+
+genrule(
+    name = "Keystore",
+    outs = [
+        "keystore/meta",
+        "keystore/1",
+    ],
+    cmd_bash = "&&".join([
+        "{keyczar} create --purpose=crypt --location=\"{output_dir}\"",
+        "{keyczar} addkey --location=\"{output_dir}\"",
+        "{keyczar} promote --version=1 --location=\"{output_dir}\"",
+    ]).format(
+        keyczar = "$(location //appinventor/lib:KeyczarTool)",
+        output_dir = "$(RULEDIR)/keystore",
+    ),
+    cmd_bat = "&&".join([
+        "{keyczar} create --purpose=crypt --location=\"{output_dir}\"",
+        "{keyczar} addkey --location=\"{output_dir}\"",
+        "{keyczar} promote --version=1 --location=\"{output_dir}\"",
+    ]).format(
+        keyczar = "$(location //appinventor/lib:KeyczarTool)",
+        output_dir = "$(RULEDIR)/keystore",
+    ),
+    tools = [
+        "//appinventor/lib:KeyczarTool",
+    ],
 )
 
 copy_to_directory(
@@ -192,6 +246,8 @@ copy_to_directory(
         ":AiServer",
         ":BuildYaClientApp",
         ":War",
+        ":AuthKey",
+        ":Keystore",
     ],
     replace_prefixes = {
         "appinventor/lib/**/": "war/WEB-INF/lib/",
@@ -199,5 +255,7 @@ copy_to_directory(
         "libAiServer.jar": "war/WEB-INF/lib/libAiServer.jar",
         "appinventor/appengine/war/*": "war/",
         "appinventor/appengine/extra/*": "extra/",
+        "authkey": "war/WEB-INF/authkey/",
+        "keystore": "war/keystore/",
     },
 )
