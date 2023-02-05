@@ -39,23 +39,9 @@ java_library(
 # use config_setting to toggle dev mode
 java_binary(
     name = "YaClientApp",
-    args = [
-        "-XdisableUpdateCheck",
-        "-localWorkers",
-        "8",
-        "-optimize",
-        "9",
-        "-war",
-        "../war",
-        "-extra",
-        "../extra",
-        "-logLevel",
-        "INFO",
-        "com.google.appinventor.YaClient",
-    ],
     jvm_flags = [
-        # "-Xss2M",
-        # "-Xmx2G",
+        "-Xss2M",  # this stands for stack size; the jvm default is 1M
+        "-Xms512M",  # this stands for minimum heap size; the jvm default is 64M
         "-Dfile.encoding=UTF-8",
     ],
     main_class = "com.google.gwt.dev.Compiler",
@@ -158,19 +144,20 @@ run_binary(
     args = [
         "-XdisableUpdateCheck",
         "-localWorkers",
-        "8",
-        "-optimize",
-        "9",
+        "4",
+        #        "-optimize",
+        #        "9",
+        "-draftCompile",
         "-war",
         "$(GENDIR)/appinventor/appengine/war",
-        "-extra",
-        "$(GENDIR)/appinventor/appengine/extra",
+        #        "-extra",
+        #        "$(GENDIR)/appinventor/appengine/extra",
         "-logLevel",
         "INFO",
         "com.google.appinventor.YaClient",
     ],
     out_dirs = [
-        "extra",
+        #        "extra",
         "war",
     ],
     tool = ":YaClientApp",
@@ -237,25 +224,25 @@ genrule(
 
 copy_to_directory(
     name = "MakeWar",
-    srcs = glob([
-        "$(GENDIR)/appinventor/appengine/war/**",
-        "$(GENDIR)/appinventor/appengine/extra/**",
-    ]) + [
-        "//appinventor/lib:WarLibs",
-        ":AiShared",
+    srcs = [
         ":AiServer",
-        ":BuildYaClientApp",
-        ":War",
+        ":AiShared",
         ":AuthKey",
+        ":BuildYaClientApp",
         ":Keystore",
+        ":War",
+        "//appinventor/blocklyeditor:media",
+        "//appinventor/lib:WarLibs",
     ],
     replace_prefixes = {
         "appinventor/lib/**/": "war/WEB-INF/lib/",
         "libAiShared.jar": "war/WEB-INF/lib/libAiShared.jar",
         "libAiServer.jar": "war/WEB-INF/lib/libAiServer.jar",
         "appinventor/appengine/war/*": "war/",
-        "appinventor/appengine/extra/*": "extra/",
+        #        "appinventor/appengine/extra/*": "extra/",
         "authkey": "war/WEB-INF/authkey/",
         "keystore": "war/keystore/",
+        #        "appinventor/blocklyeditor/media/*.css": "war/static/css/",
+        #        "appinventor/blocklyeditor/media/*.[!css]": "war/static/media/",
     },
 )

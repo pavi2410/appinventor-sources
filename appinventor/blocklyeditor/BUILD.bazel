@@ -11,6 +11,26 @@ java_binary(
 )
 
 exports_files(
-    ["ploverConfig.js"],
+    [
+        "ploverConfig.js",
+        "media",
+    ],
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+filegroup(
+    name = "BlocklyMediaCss",
+    srcs = glob(["media/*.css"]),
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+filegroup(
+    name = "BlocklyMedia",
+    srcs = glob(
+        ["media/*"],
+        exclude = [
+            "media/*.css",
+        ],
+    ),
     visibility = ["//appinventor/appengine:__pkg__"],
 )
