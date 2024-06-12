@@ -71,7 +71,7 @@ import java.util.Set;
  *
  */
 // TODO(user): ideas - event for knocking
-@DesignerComponent(version = YaVersion.ACCELEROMETERSENSOR_COMPONENT_VERSION,
+@DesignerComponent(version = 123,
     description = "Non-visible component that can detect shaking and " +
     "measure acceleration approximately in three dimensions using SI units " +
     "(m/s<sup>2</sup>).  The components are: <ul>\n" +
@@ -88,9 +88,10 @@ import java.util.Set;
     "     0 when perpendicular to the ground, and +9.8 when facing down.  " +
     "     The value can also be affected by accelerating it with or against " +
     "     gravity. </li></ul>",
-    category = ComponentCategory.SENSORS,
-    nonVisible = true,
-    iconName = "images/accelerometersensor.png")
+    category = ComponentCategory.LAYOUT,
+    nonVisible = false,
+    androidMinSdk = 24,
+    iconName = "images/sensor.png")
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable,
@@ -254,7 +255,6 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   /**
    * Indicates the acceleration changed in the X, Y, and/or Z dimensions.
    */
-  @SimpleEvent
   public void AccelerationChanged(float xAccel, float yAccel, float zAccel) {
     this.xAccel = xAccel;
     this.yAccel = yAccel;
