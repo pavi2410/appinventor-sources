@@ -1,0 +1,36 @@
+java_binary(
+    name = "BlocklyTranslationGenerator",
+    srcs = [
+        "src/msg/BlocklyTranslationGenerator.java",
+    ],
+    main_class = "msg.BlocklyTranslationGenerator",
+    visibility = ["//appinventor/appengine:__pkg__"],
+    deps = [
+        "//appinventor/lib:LocalJarsForBlocklyTranslationGenerator",
+    ],
+)
+
+exports_files(
+    [
+        "ploverConfig.js",
+        "media",
+    ],
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+filegroup(
+    name = "BlocklyMediaCss",
+    srcs = glob(["media/*.css"]),
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+filegroup(
+    name = "BlocklyMedia",
+    srcs = glob(
+        ["media/*"],
+        exclude = [
+            "media/*.css",
+        ],
+    ),
+    visibility = ["//appinventor/appengine:__pkg__"],
+)

@@ -28,6 +28,14 @@ public class BlocklyTranslationGenerator {
    */
   public static void main(String[] args) throws IOException, JSONException {
 
+    System.out.println(args[0]);
+    System.out.println(args[1]);
+    System.out.println(args[2]);
+
+    // ensure that dest dir exists
+    File destDir = new File(args[2]);
+    destDir.mkdirs();
+
     File blockly_dir = new File(args[1]);
     File ai_dir = new File(args[0]);
     File blockly_english = new File(args[1].concat("/en.json"));

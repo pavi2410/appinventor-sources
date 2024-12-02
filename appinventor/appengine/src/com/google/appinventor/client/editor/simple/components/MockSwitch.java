@@ -58,6 +58,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
    * unchecked positions, each with their own colors.
    *
    */
+  @SuppressWarnings("MathRoundIntLong")
   private void paintSwitch() {
     if (isInitialized) {
       panel.remove(switchGraphic);

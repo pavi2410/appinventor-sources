@@ -42,6 +42,7 @@ public class PaintUtil {
     paint.setXfermode(new PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR));
   }
 
+  @SuppressWarnings("ConstantOverflow")
   public static int hexStringToInt(String argb) {
     String unprefixed = argb;
     if (argb.startsWith("#x") || argb.startsWith("&H")) {

@@ -164,6 +164,5 @@
   "experimental-compiler-options": {
     "languageIn": "ECMASCRIPT5"
   },
-  "closure-library" : "../lib/closure-library/closure/goog",
-  "output-file": "../build/blocklyeditor/blockly-all.js"
+  "closure-library" : "../lib/closure-library/closure/goog"
 }
