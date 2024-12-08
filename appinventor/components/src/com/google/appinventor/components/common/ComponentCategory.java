@@ -58,7 +58,7 @@ public enum ComponentCategory {
   SOCIAL("Social"),
   STORAGE("Storage"),
   CONNECTIVITY("Connectivity"),
-  LEGOMINDSTORMS("LEGO® MINDSTORMS®"),
+  LEGOMINDSTORMS("LEGO MINDSTORMS"),
   EXPERIMENTAL("Experimental"),
   EXTENSION("Extension"),
   FUTURE("Future"),
@@ -82,7 +82,7 @@ public enum ComponentCategory {
     DOC_MAP.put("Social", "social");
     DOC_MAP.put("Storage", "storage");
     DOC_MAP.put("Connectivity", "connectivity");
-    DOC_MAP.put("LEGO® MINDSTORMS®", "legomindstorms");
+    DOC_MAP.put("LEGO MINDSTORMS", "legomindstorms");
     DOC_MAP.put("Experimental", "experimental");
     DOC_MAP.put("Extension", "extension");
     DOC_MAP.put("Future", "future");

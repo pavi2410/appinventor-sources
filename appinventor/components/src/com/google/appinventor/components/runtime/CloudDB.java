@@ -834,7 +834,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
 
     return value;
   }
- 
+
   /**
    * Returns `true`{:.logic.block} if we are on the network and will likely be able to connect to
    * the `CloudDB` server.
@@ -1463,7 +1463,15 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
         String valueString = (String) valueReference.get();
 
         // Parse the value from JSON
-        Object value = JsonUtil.getObjectFromJson(valueString);
+        Object value;
+        try {
+           value = JsonUtil.getObjectFromJson(valueString);
+        } catch (JSONException e) {
+          // caught by errorprone:
+          // error: unreported exception JSONException; must be caught or declared to be thrown
+          Log.e(LOG_TAG, "Error parsing JSON", e);
+          return YailList.makeEmptyList();
+        }
 
         // Value is a List object; Convert and return it
         if (value instanceof YailList) {

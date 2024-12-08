@@ -21,11 +21,11 @@ import javax.tools.FileObject;
 
 public final class ComponentTranslationGenerator extends ComponentProcessor {
   // Where to write results.
-  private static final String OUTPUT_FILE_NAME = "ComponentTranslationTable.java";
-  private static final String AUTOGEN_OUTPUT_FILE_NAME = "ComponentInfoTranslations.java";
-  private static final String AUTOGEN_PROPERTY_FILE_NAME = "ComponentPropertyTranslations.java";
-  private static final String AUTOGEN_METHOD_FILE_NAME = "ComponentMethodTranslations.java";
-  private static final String AUTOGEN_EVENT_FILE_NAME = "ComponentEventTranslations.java";
+  private static final String OUTPUT_FILE_NAME = "com/google/appinventor/client/ComponentTranslationTable.java";
+  private static final String AUTOGEN_OUTPUT_FILE_NAME = "com/google/appinventor/client/ComponentInfoTranslations.java";
+  private static final String AUTOGEN_PROPERTY_FILE_NAME = "com/google/appinventor/client/ComponentPropertyTranslations.java";
+  private static final String AUTOGEN_METHOD_FILE_NAME = "com/google/appinventor/client/ComponentMethodTranslations.java";
+  private static final String AUTOGEN_EVENT_FILE_NAME = "com/google/appinventor/client/ComponentEventTranslations.java";
 
   private Map<String, String> tooltipProperties = new TreeMap<>();
   private Map<String, String> tooltipMethods = new TreeMap<>();
