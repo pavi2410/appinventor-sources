@@ -2,3 +2,19 @@
 bazel = "8"
 buildifier = "latest"
 java = "11"
+
+[tasks.build-components]
+description = "Build App Inventor components"
+run = "bazel build //appinventor/components:AndroidRuntime"
+
+[tasks.build-buildserver]
+description = "Build App Inventor build server"
+run = "bazel build //appinventor/buildserver:main"
+
+[tasks.build-appengine]
+description = "Build App Inventor app engine"
+run = "bazel build //appinventor/appengine:MakeWar"
+
+[tasks.build-all]
+description = "Build all App Inventor components"
+depends = ["build-components", "build-buildserver", "build-appengine"]
