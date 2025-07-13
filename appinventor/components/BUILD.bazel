@@ -1,4 +1,5 @@
-load("@com_github_johnynek_bazel_jar_jar//:jar_jar.bzl", "jar_jar")
+load("@bazel_jar_jar//:jar_jar.bzl", "jar_jar")
+load("@rules_android//rules:rules.bzl", "android_library")
 
 java_library(
     name = "CommonConstants",

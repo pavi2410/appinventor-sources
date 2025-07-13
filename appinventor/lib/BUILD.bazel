@@ -1,6 +1,6 @@
 java_import(
     name = "WarLibs",
-    jars = glob(["appengine/appengine-java-sdk-1.9.46/lib/user/**/*.jar"]) + [
+    jars = glob(["appengine/*.jar"]) + [
         "commons-fileupload/commons-fileupload-1.2.2.jar",
         "findbugs/jsr305.jar",
         "guava/guava-20.0.jar",

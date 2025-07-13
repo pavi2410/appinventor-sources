@@ -1,1 +1,11 @@
 build --nojava_header_compilation
+
+# Enable Bzlmod for Bazel 8 compatibility
+common --enable_bzlmod
+
+# Windows compatibility fixes for Bazel 8
+build --cpu=x64_windows
+build --tool_java_runtime_version=remotejdk_21
+
+# Disable C++ toolchain detection for Java-only builds
+build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1

@@ -29,6 +29,16 @@ java_library(
 )
 
 java_library(
+    name = "CommonConstants",
+    srcs = glob(["src/com/google/appinventor/common/constants/*.java"]),
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
+)
+
+java_library(
     name = "CommonUtils",
     srcs = glob(["src/com/google/appinventor/common/utils/*.java"]),
     resource_strip_prefix = "appinventor/common/src",

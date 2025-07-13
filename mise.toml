@@ -11,8 +11,12 @@ run = "bazel build //appinventor/components:AndroidRuntime"
 description = "Build App Inventor build server"
 run = "bazel build //appinventor/buildserver:main"
 
+[tasks.run-buildserver]
+description = "Run App Inventor build server"
+run = "bazel run //appinventor/buildserver:main"
+
 [tasks.build-appengine]
-description = "Build App Inventor app engine"
+description = "Build App Inventor app engine WAR"
 run = "bazel build //appinventor/appengine:MakeWar"
 
 [tasks.build-all]
