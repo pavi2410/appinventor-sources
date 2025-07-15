@@ -1,3 +1,5 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_import")
+
 java_import(
     name = "WarLibs",
     jars = glob(["appengine/*.jar"]) + [
@@ -47,6 +49,62 @@ java_import(
         "json/json.jar",
     ],
     visibility = ["//appinventor/blocklyeditor:__pkg__"],
+)
+
+exports_files([
+    "blockly/blockly_compressed.js",
+    "blockly-plugins/block-lexical-variables-core-3.0.1.min.js",
+    "closure-compiler/closure-compiler-v20211201.jar",
+    "plovr/plovr.jar",
+], visibility = ["//appinventor/blocklyeditor:__pkg__"])
+
+filegroup(
+    name = "blockly_compressed",
+    srcs = ["blockly/blockly_compressed.js"],
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
+)
+
+filegroup(
+    name = "block_lexical_variables_plugin",
+    srcs = ["blockly-plugins/block-lexical-variables-core-3.0.1.min.js"],
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
+)
+
+filegroup(
+    name = "closure_library",
+    srcs = glob(
+        ["closure-library/closure/goog/**/*.js"],
+        exclude = [
+            "closure-library/closure/goog/**/*_test.js",
+            "closure-library/closure/goog/**/test*.js", 
+            "closure-library/closure/goog/**/*_perf.js",
+            "closure-library/closure/goog/demos/**/*.js",
+        ],
+    ),
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
+)
+
+java_import(
+    name = "closure_compiler_jar",
+    jars = ["closure-compiler/closure-compiler-v20211201.jar"],
+)
+
+java_binary(
+    name = "ClosureCompiler",
+    main_class = "com.google.javascript.jscomp.CommandLineRunner",
+    visibility = ["//appinventor/blocklyeditor:__pkg__"],
+    runtime_deps = [
+        ":closure_compiler_jar",
+    ],
+)
+
+java_binary(
+    name = "GwtCompiler",
+    main_class = "com.google.gwt.dev.Compiler",
+    visibility = ["//appinventor/appengine:__pkg__"],
+    runtime_deps = [
+        ":LocalJarsForGwtSdk",
+    ],
 )
 
 java_binary(
@@ -105,4 +163,190 @@ java_import(
         "androidsvg/androidsvg-d4ec6d8.jar",
     ],
     visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "ProtobufAppEngine",
+    jars = ["protobuf/protobuf-java-4.28.1.jar"],
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+java_import(
+    name = "GuavaForCommon",
+    jars = ["guava/guava-20.0.jar"],
+    visibility = ["//appinventor/common:__pkg__"],
+)
+
+java_import(
+    name = "JUnitForCommon",
+    jars = ["junit/junit-4.13.2.jar"],
+    visibility = ["//appinventor/common:__pkg__"],
+)
+
+# Components module dependencies
+java_import(
+    name = "QRGeneratorForComponents",
+    jars = ["QRGenerator/core.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "GuavaForComponents",
+    jars = ["guava/guava-27.1-android.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "JsonForComponents",
+    jars = ["json/json.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "JsonAndroidForComponents",
+    jars = ["json/json-android.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "AndroidSupportForComponents",
+    jars = glob(["android/support/*.jar"]),
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "AndroidSdkForComponents",
+    jars = ["android/android-34/android.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "AcraForComponents",
+    jars = ["acra/acra-4.4.0.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "FirebaseForComponents",
+    jars = ["firebase/firebase-client-android-2.5.0.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "MpAndroidChartForComponents",
+    jars = ["mpandroidchart/mpandroidchart.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "GoogleApiForComponents",
+    jars = glob(["oauth/google-api-client*.jar"]),
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "FusionTablesForComponents",
+    jars = ["fusiontables/fusiontables.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "GoogleSheetsForComponents",
+    jars = glob(["googlesheets/*.jar"]),
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "GoogleHttpForComponents",
+    jars = glob(["oauth/google-http-client*.jar"]) + glob(["gcs/google-http-client*.jar"]),
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "ProtobufForComponents",
+    jars = ["protobuf/protobuf-java-3.0.0.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "ApacheHttpForComponents",
+    jars = glob(["apache-http/*.jar"]) + ["android/legacy/org.apache.http.legacy.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "JtsForComponents",
+    jars = ["jts/jts-core-1.15.0-20170823.040415-301.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "TwitterForComponents",
+    jars = glob(["twitter/*.jar"]),
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "JedisForComponents",
+    jars = ["jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar"] + glob(["commons-pool/*.jar"]),
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+java_import(
+    name = "CommonsMath3ForComponents",
+    jars = ["commons-math3/commons-math3-3.6.1.jar"],
+    visibility = ["//appinventor/components:__pkg__"],
+)
+
+# BuildServer module dependencies
+java_import(
+    name = "Args4jForBuildServer",
+    jars = ["args4j/args4j-2.0.18.jar"],
+    visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_import(
+    name = "AndroidToolsForBuildServer",
+    jars = [
+        "android/tools/builder-1.3.0.jar",
+        "android/tools/builder-model-1.3.0.jar",
+        "android/tools/common-24.3.0.jar",
+        "android/tools/sdk-common-24.3.0.jar",
+        "android/tools/sdklib.jar",
+        "android/tools/layoutlib-api-24.3.0.jar",
+    ],
+    visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_import(
+    name = "GuavaForBuildServer",
+    jars = ["guava/guava-14.0.1.jar"],
+    visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_import(
+    name = "CommonsIoForBuildServer",
+    jars = ["commons-io/commons-io-2.0.1.jar"],
+    visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_import(
+    name = "BouncyCastleForBuildServer",
+    jars = [
+        "bouncycastle/bcprov-jdk15on-149.jar",
+        "bouncycastle/bcpkix-jdk15on-149.jar",
+    ],
+    visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_import(
+    name = "EcjForBuildServer",
+    jars = ["ecj/ecj-3.23.0.jar"],
+    visibility = ["//appinventor/buildserver:__pkg__"],
+)
+
+java_import(
+    name = "JsonForBuildServer",
+    jars = ["json/json.jar"],
+    visibility = ["//appinventor/buildserver:__pkg__"],
 )

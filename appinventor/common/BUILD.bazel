@@ -1,12 +1,24 @@
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_java//java:defs.bzl", "java_library", "java_test")
+
+genrule(
+    name = "GetGitInfo",
+    outs = ["git_info.txt"],
+    cmd = """
+        echo git.build.version=bazel-build > $@
+        echo git.build.fingerprint=bazel-build >> $@
+        echo ant.build.date=bazel-build >> $@
+    """,
+)
 
 expand_template(
     name = "GitBuildId",
     out = "src/com/google/appinventor/common/version/GitBuildId.java",
     substitutions = {
-        "@git.build.version@": "0.0.1",
-        "@git.build.fingerprint@": "0.0.1",
-        "@ant.build.date@": "2019-01-01",
+        "@git.build.version@": "bazel-build",
+        "@git.build.fingerprint@": "bazel-build", 
+        "@ant.build.date@": "bazel-build",
+        "@acra.uri@": "",
     },
     template = "GitBuildId.template",
 )
@@ -51,6 +63,36 @@ java_library(
         "//appinventor/components:__pkg__",
     ],
     deps = [
-        "@maven//:com_google_guava_guava",
+        "//appinventor/lib:GuavaForCommon",
+    ],
+)
+
+java_library(
+    name = "CommonTestUtils",
+    srcs = glob(["src/com/google/appinventor/common/testutils/*.java"]),
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
+)
+
+java_test(
+    name = "StringUtilsTest",
+    srcs = ["tests/com/google/appinventor/common/utils/StringUtilsTest.java"],
+    test_class = "com.google.appinventor.common.utils.StringUtilsTest",
+    deps = [
+        ":CommonUtils",
+        "//appinventor/lib:JUnitForCommon",
+    ],
+)
+
+java_test(
+    name = "FilenameUtilsTest", 
+    srcs = ["tests/com/google/appinventor/common/utils/FilenameUtilsTest.java"],
+    test_class = "com.google.appinventor.common.utils.FilenameUtilsTest",
+    deps = [
+        ":CommonUtils",
+        "//appinventor/lib:JUnitForCommon",
     ],
 )

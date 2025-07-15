@@ -5,10 +5,23 @@ module(
 
 # Core Bazel dependencies
 bazel_dep(name = "bazel_skylib", version = "1.8.1")
+bazel_dep(name = "rules_java", version = "8.13.0")
 bazel_dep(name = "rules_jvm_external", version = "6.8")
 bazel_dep(name = "aspect_bazel_lib", version = "2.19.4")
 bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_android", version = "0.6.5")
+
+remote_android_extensions = use_extension(
+    "@rules_android//bzlmod_extensions:android_extensions.bzl",
+    "remote_android_tools_extensions")
+use_repo(remote_android_extensions, "android_tools")
+
+android_sdk_repository_extension = use_extension(
+    "@rules_android//rules/android_sdk_repository:rule.bzl",
+    "android_sdk_repository_extension")
+use_repo(android_sdk_repository_extension, "androidsdk")
+
+register_toolchains("@androidsdk//:sdk-toolchain", "@androidsdk//:all")
 
 # Maven dependencies
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
@@ -42,11 +55,13 @@ maven.install(
         "ch.acra:acra:4.4.0",
         "redis.clients:jedis:3.0.0",
         "org.twitter4j:twitter4j-core:3.0.5",
+        "junit:junit:4.13.2",
         "com.firebase:firebase-client-android:2.5.0",
-        "com.google.protobuf:protobuf-java:3.0.0",
         "com.google.api-client:google-api-client-android:1.30.2",
         "com.google.apis:google-api-services-sheets:v4-rev604-1.25.0",
         "com.google.apis:google-api-services-fusiontables:v1-rev19-1.13.2-beta",
+        "com.google.protobuf:protobuf-java:3.0.0",
+        "com.google.protobuf:protobuf-java:4.28.1",
     ],
     version_conflict_policy = "pinned",
     repositories = [

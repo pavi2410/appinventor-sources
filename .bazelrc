@@ -9,3 +9,4 @@ build --tool_java_runtime_version=remotejdk_21
 
 # Disable C++ toolchain detection for Java-only builds
 build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build --noincompatible_enable_cc_toolchain_resolution
