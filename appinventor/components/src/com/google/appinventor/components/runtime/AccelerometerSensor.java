@@ -388,7 +388,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the X-dimension in SI units (m/s²).
+   * Returns the acceleration in the X-dimension in SI units (m/s2).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  X acceleration
@@ -400,7 +400,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the Y-dimension in SI units (m/s²).
+   * Returns the acceleration in the Y-dimension in SI units (m/s2).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  Y acceleration
@@ -412,7 +412,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the Z-dimension in SI units (m/s²).
+   * Returns the acceleration in the Z-dimension in SI units (m/s2).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  Z acceleration
@@ -470,7 +470,7 @@ public int getDeviceDefaultOrientation() {
     "We now detect Landscape mode tablets and perform the compensation. " +
     "However if your project is already compensating for the change, you " +
     "will now get incorrect results. Although our preferred solution is for " +
-    "you to update your project, you can also just set this property to “true” " +
+    "you to update your project, you can also just set this property to true " +
     "and our compensation code will be deactivated. Note: We recommend that " +
     "you update your project as we may remove this property in a future " +
     "release.",

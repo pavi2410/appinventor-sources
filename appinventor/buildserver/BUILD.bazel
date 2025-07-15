@@ -1,0 +1,64 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_import", "java_library")
+
+java_import(
+    name = "BuildServerJars",
+    jars = glob(["lib/*.jar"]),
+)
+
+java_library(
+    name = "BuildServerConstants",
+    srcs = ["src/com/google/appinventor/buildserver/YoungAndroidConstants.java"],
+    deps = [
+        "//appinventor/common:CommonConstants",
+    ],
+)
+
+java_binary(
+    name = "main",
+    srcs = glob(["src/**/*.java"], exclude = ["src/com/google/appinventor/buildserver/YoungAndroidConstants.java"]),
+    main_class = "com.google.appinventor.buildserver.Main",
+    resources = [
+        "//appinventor/components:AndroidRuntime",
+    ] + glob(["src/com/google/appinventor/buildserver/resources/**/*"]),
+    deps = [
+        ":BuildServerJars",
+        ":BuildServerConstants",
+        "//appinventor/lib:Args4jForBuildServer",
+        "//appinventor/lib:AndroidToolsForBuildServer",
+        "//appinventor/lib:GuavaForBuildServer",
+        "//appinventor/lib:CommonsIoForBuildServer",
+        "//appinventor/lib:BouncyCastleForBuildServer",
+        "//appinventor/lib:EcjForBuildServer",
+        "//appinventor/lib:JsonForBuildServer",
+        "//appinventor/common:CommonVersion",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/common:CommonConstants",
+        "//appinventor/components:CommonConstants",
+        "//appinventor/components:AndroidRuntime",
+    ],
+)
+
+java_binary(
+    name = "server",
+    srcs = glob(["src/**/*.java"], exclude = ["src/com/google/appinventor/buildserver/YoungAndroidConstants.java"]),
+    main_class = "com.google.appinventor.buildserver.BuildServer",
+    resources = [
+        "//appinventor/components:AndroidRuntime",
+    ] + glob(["src/com/google/appinventor/buildserver/resources/**/*"]),
+    deps = [
+        ":BuildServerJars",
+        ":BuildServerConstants",
+        "//appinventor/lib:Args4jForBuildServer",
+        "//appinventor/lib:AndroidToolsForBuildServer",
+        "//appinventor/lib:GuavaForBuildServer",
+        "//appinventor/lib:CommonsIoForBuildServer",
+        "//appinventor/lib:BouncyCastleForBuildServer",
+        "//appinventor/lib:EcjForBuildServer",
+        "//appinventor/lib:JsonForBuildServer",
+        "//appinventor/common:CommonVersion",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/common:CommonConstants",
+        "//appinventor/components:CommonConstants",
+        "//appinventor/components:AndroidRuntime",
+    ],
+)

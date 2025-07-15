@@ -246,7 +246,7 @@ public class JsonUtil {
   }
 
   public static String getJsonRepresentation(Object value) throws JSONException {
-    if (value == null || value.equals(null)) {
+    if (value == null) {
       return "null";
     }
     if (value instanceof FString) {

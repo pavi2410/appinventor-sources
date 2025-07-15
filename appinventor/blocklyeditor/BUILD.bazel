@@ -1,0 +1,105 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "BlocklyTranslationGenerator",
+    srcs = [
+        "src/msg/BlocklyTranslationGenerator.java",
+    ],
+    javacopts = ["-XepDisableWarningsInGeneratedCode", "-Xep:DoubleBraceInitialization:OFF"],
+    main_class = "msg.BlocklyTranslationGenerator",
+    visibility = ["//appinventor/appengine:__pkg__"],
+    deps = [
+        "//appinventor/lib:LocalJarsForBlocklyTranslationGenerator",
+    ],
+)
+
+genrule(
+    name = "BlocklyCompile",
+    srcs = [
+        "//appinventor/lib:blockly_compressed",
+        "//appinventor/lib:block_lexical_variables_plugin",
+        "//appinventor/lib:closure_library",
+    ] + glob([
+        "src/blocks/utilities.js",
+        "src/mixins/dynamic_connections.js", 
+        "src/mixins/mixins.js",
+        "src/**/*.js",
+    ]),
+    outs = [
+        "blockly-all.js",
+        # "blockly-all.js.map",
+    ],
+    cmd_bash = """
+        $(location //appinventor/lib:ClosureCompiler) \\
+            --compilation_level BUNDLE \\
+            --language_in ECMASCRIPT_NEXT \\
+            --language_out ECMASCRIPT_NEXT \\
+            --js_output_file $(location blockly-all.js) \\
+            --js $(location //appinventor/lib:blockly_compressed) \\
+            --js $(location //appinventor/lib:block_lexical_variables_plugin) \\
+            --js $(location src/blocks/utilities.js) \\
+            --js $(location src/mixins/dynamic_connections.js) \\
+            --js $(location src/mixins/mixins.js) \\
+            $(patsubst %,--js %,$(filter src/%.js,$(SRCS))) \\
+            $(patsubst %,--js %,$(filter-out %_test.js %/testing/%.js %tests.js %_perf.js,$(filter %closure-library%.js,$(SRCS)))) \\
+            --entry_point=goog:AI.Blockly.BlocklyEditor \\
+            --charset UTF-8 \\
+            --create_source_map $(location blockly-all.js.map) \\
+            --source_map_location_mapping 'src|/ode/static/js' \\
+            --source_map_input '$(location //appinventor/lib:blockly_compressed)|$(location //appinventor/lib:blockly_compressed).map' \\
+            --dependency_mode=PRUNE_LEGACY
+    """,
+    cmd_bat = """
+        echo --compilation_level BUNDLE > closure_args.txt
+        echo --language_in ECMASCRIPT_NEXT >> closure_args.txt
+        echo --language_out ECMASCRIPT_NEXT >> closure_args.txt
+        echo --js_output_file $(location blockly-all.js) >> closure_args.txt
+        echo --js $(location //appinventor/lib:blockly_compressed) >> closure_args.txt
+        echo --js $(location //appinventor/lib:block_lexical_variables_plugin) >> closure_args.txt
+        echo --js $(location src/blocks/utilities.js) >> closure_args.txt
+        echo --js $(location src/mixins/dynamic_connections.js) >> closure_args.txt
+        echo --js $(location src/mixins/mixins.js) >> closure_args.txt
+        for %%f in ($(SRCS)) do (
+            echo %%f | findstr /v "blockly_compressed.js" | findstr /v "block-lexical-variables" > nul && (
+                echo %%f | findstr "closure-library" > nul && (
+                    echo %%f | findstr /v "_test.js" | findstr /v "testing" | findstr /v "tests.js" | findstr /v "_perf.js" > nul && echo --js %%f >> closure_args.txt
+                ) || (
+                    echo --js %%f >> closure_args.txt
+                )
+            )
+        )
+        echo --entry_point=goog:AI.Blockly.BlocklyEditor >> closure_args.txt
+        echo --charset UTF-8 >> closure_args.txt
+        echo --dependency_mode=PRUNE_LEGACY >> closure_args.txt
+        $(location //appinventor/lib:ClosureCompiler) --flagfile closure_args.txt
+    """,
+    tools = [
+        "//appinventor/lib:ClosureCompiler",
+    ],
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+exports_files(
+    [
+        "ploverConfig.js",
+        "media",
+    ],
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+filegroup(
+    name = "BlocklyMediaCss",
+    srcs = glob(["media/*.css"]),
+    visibility = ["//appinventor/appengine:__pkg__"],
+)
+
+filegroup(
+    name = "BlocklyMedia",
+    srcs = glob(
+        ["media/*"],
+        exclude = [
+            "media/*.css",
+        ],
+    ),
+    visibility = ["//appinventor/appengine:__pkg__"],
+)

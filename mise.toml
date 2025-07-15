@@ -1,0 +1,82 @@
+[tools]
+bazel = "8"
+buildifier = "latest"
+java = "11"
+
+# === Core Build Tasks ===
+[tasks.build-common]
+description = "Build App Inventor common libraries"  
+run = "bazel build //appinventor/common:all"
+
+[tasks.test-common]
+description = "Test App Inventor common libraries"
+run = "bazel test //appinventor/common:all"
+
+[tasks.build-components]
+description = "Build App Inventor components (CommonConstants only - AndroidRuntime needs Android toolchain)"
+run = "bazel build //appinventor/components:CommonConstants //appinventor/components:HtmlEntities"
+
+[tasks.build-buildserver]
+description = "Build App Inventor build server"
+run = "bazel build //appinventor/buildserver:main //appinventor/buildserver:server"
+
+[tasks.build-blocklyeditor]
+description = "Build Blockly editor media files and compile blockly-all.js"
+run = "bazel build //appinventor/blocklyeditor:BlocklyMedia //appinventor/blocklyeditor:BlocklyMediaCss //appinventor/blocklyeditor:BlocklyCompile"
+
+[tasks.build-appengine]
+description = "Build App Inventor AppEngine web interface"
+run = "bazel build //appinventor/appengine:YaClientApp //appinventor/appengine:MakeWar"
+
+# === Main Build Targets ===
+[tasks.build-all]
+description = "Build all core App Inventor components"
+depends = ["build-common", "build-components", "build-buildserver", "build-blocklyeditor", "build-appengine"]
+
+[tasks.build-android]
+description = "Build Android components (common + components + buildserver)"
+depends = ["build-common", "build-components", "build-buildserver"]
+
+# === Server Tasks ===
+[tasks.run-appengine]
+description = "Run App Inventor AppEngine local server"
+run = "java_dev_appserver --disable_update_check --address=0.0.0.0 --port=8888 bazel-bin/appinventor/appengine/MakeWar/war/"
+
+[tasks.run-buildserver]
+description = "Run App Inventor build server"
+run = "bazel run //appinventor/buildserver:server"
+
+[tasks.run-buildserver-cli]
+description = "Run App Inventor build server CLI"
+run = "bazel run //appinventor/buildserver:main"
+
+# === Test Tasks ===
+[tasks.test-all]
+description = "Run all tests"
+run = "bazel test //appinventor/common:all"
+
+# === Utility Tasks ===
+[tasks.make-authkey]
+description = "Generate authentication key"
+run = "bazel build //appinventor/appengine:AuthKey"
+
+[tasks.make-keystore]  
+description = "Generate keystore"
+run = "bazel build //appinventor/appengine:Keystore"
+
+[tasks.clean]
+description = "Clean all build artifacts"
+run = "bazel clean"
+
+# === Legacy Ant Support (for components requiring Android toolchain) ===
+[tasks.ant-playapp]
+description = "Build MIT AI2 Companion APK using Ant (requires Android SDK)"
+run = "cd appinventor && ant PlayApp"
+
+[tasks.ant-webapp]
+description = "Build web application using Ant"
+run = "cd appinventor && ant webapp"
+
+[tasks.ant-run-buildserver]
+description = "Run build server using Ant"
+run = "cd appinventor && ant RunLocalBuildServer"

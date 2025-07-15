@@ -1,0 +1,98 @@
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_java//java:defs.bzl", "java_library", "java_test")
+
+genrule(
+    name = "GetGitInfo",
+    outs = ["git_info.txt"],
+    cmd = """
+        echo git.build.version=bazel-build > $@
+        echo git.build.fingerprint=bazel-build >> $@
+        echo ant.build.date=bazel-build >> $@
+    """,
+)
+
+expand_template(
+    name = "GitBuildId",
+    out = "src/com/google/appinventor/common/version/GitBuildId.java",
+    substitutions = {
+        "@git.build.version@": "bazel-build",
+        "@git.build.fingerprint@": "bazel-build", 
+        "@ant.build.date@": "bazel-build",
+        "@acra.uri@": "",
+    },
+    template = "GitBuildId.template",
+)
+
+java_library(
+    name = "CommonVersion",
+    srcs = glob(["src/com/google/appinventor/common/version/*.java"]) + [
+        ":GitBuildId",
+    ],
+    resource_strip_prefix = "appinventor/common/src",
+    resources = glob(["src/com/google/appinventor/common/version/*.java"]) + [
+        ":GitBuildId",
+        "src/com/google/appinventor/common/CommonVersion.gwt.xml",
+    ],
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
+)
+
+java_library(
+    name = "CommonConstants",
+    srcs = glob(["src/com/google/appinventor/common/constants/*.java"]),
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
+)
+
+java_library(
+    name = "CommonUtils",
+    srcs = glob(["src/com/google/appinventor/common/utils/*.java"]),
+    resource_strip_prefix = "appinventor/common/src",
+    resources = glob(["src/com/google/appinventor/common/utils/*.java"]) + [
+        "src/com/google/appinventor/common/CommonUtils.gwt.xml",
+    ],
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
+    deps = [
+        "//appinventor/lib:GuavaForCommon",
+    ],
+)
+
+java_library(
+    name = "CommonTestUtils",
+    srcs = glob(["src/com/google/appinventor/common/testutils/*.java"]),
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+        "//appinventor/components:__pkg__",
+    ],
+)
+
+java_test(
+    name = "StringUtilsTest",
+    srcs = ["tests/com/google/appinventor/common/utils/StringUtilsTest.java"],
+    test_class = "com.google.appinventor.common.utils.StringUtilsTest",
+    deps = [
+        ":CommonUtils",
+        "//appinventor/lib:JUnitForCommon",
+    ],
+)
+
+java_test(
+    name = "FilenameUtilsTest", 
+    srcs = ["tests/com/google/appinventor/common/utils/FilenameUtilsTest.java"],
+    test_class = "com.google.appinventor.common.utils.FilenameUtilsTest",
+    deps = [
+        ":CommonUtils",
+        "//appinventor/lib:JUnitForCommon",
+    ],
+)

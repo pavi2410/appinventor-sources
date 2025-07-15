@@ -1,0 +1,150 @@
+load("@bazel_jar_jar//:jar_jar.bzl", "jar_jar")
+load("@rules_android//rules:rules.bzl", "android_library")
+load("@rules_java//java:defs.bzl", "java_library", "java_plugin")
+
+java_library(
+    name = "CommonConstants",
+    srcs = glob(
+        ["src/com/google/appinventor/components/common/*.java"],
+        exclude = ["src/com/google/appinventor/components/common/HtmlEntities.java"],
+    ),
+    resource_strip_prefix = "appinventor/components/src",
+    resources = glob(
+        ["src/com/google/appinventor/components/common/*.java"],
+        exclude = ["src/com/google/appinventor/components/common/HtmlEntities.java"],
+    ) + [
+        "src/com/google/appinventor/components/CommonConstants.gwt.xml",
+    ],
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+    ],
+)
+
+java_library(
+    name = "HtmlEntities",
+    srcs = glob(["src/com/google/appinventor/components/common/HtmlEntities.java"]),
+)
+
+java_library(
+    name = "Barcode",
+    srcs = glob(["src/com/google/zxing/client/android/**/*.java"]),
+    deps = [
+        "//appinventor/lib:QRGeneratorForComponents",
+        "//appinventor/lib:AndroidSdkForComponents",
+    ],
+)
+
+java_plugin(
+    name = "ComponentDescriptorGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    generates_api = True,
+    processor_class = "com.google.appinventor.components.scripts.ComponentDescriptorGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/lib:GuavaForComponents",
+        "//appinventor/lib:JsonForComponents",
+    ],
+)
+
+java_plugin(
+    name = "ComponentListGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    processor_class = "com.google.appinventor.components.scripts.ComponentListGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/lib:GuavaForComponents",
+        "//appinventor/lib:JsonForComponents",
+    ],
+)
+
+java_plugin(
+    name = "ComponentTranslationGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    processor_class = "com.google.appinventor.components.scripts.ComponentTranslationGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/lib:GuavaForComponents",
+        "//appinventor/lib:JsonForComponents",
+    ],
+)
+
+java_plugin(
+    name = "MarkdownDocumentationGenerator",
+    srcs = glob([
+        "src/com/google/appinventor/components/scripts/*.java",
+        "src/com/google/appinventor/components/annotations/*.java",
+        "src/com/google/appinventor/components/annotations/androidmanifest/*.java",
+    ]),
+    processor_class = "com.google.appinventor.components.scripts.MarkdownDocumentationGenerator",
+    deps = [
+        ":CommonConstants",
+        "//appinventor/common:CommonUtils",
+        "//appinventor/lib:GuavaForComponents",
+        "//appinventor/lib:JsonForComponents",
+    ],
+)
+
+jar_jar(
+    name = "shaded_json_lib",
+    inline_rules = ["rule org.json.** com.google.appinventor.components.runtime.repackaged.@0"],
+    input_jar = "//appinventor/lib:JsonAndroidForComponents",
+)
+
+java_library(
+    name = "AndroidRuntime",
+    srcs = glob([
+        "src/com/google/appinventor/components/runtime/**/*.java",
+        "src/com/google/appinventor/components/annotations/**/*.java",
+    ]),
+    #    javacopts = ["-XepDisableAllChecks"],
+    plugins = [
+        ":ComponentDescriptorGenerator",
+        ":ComponentListGenerator",
+        ":ComponentTranslationGenerator",
+        ":MarkdownDocumentationGenerator",
+    ],
+    visibility = [
+        "//appinventor/appengine:__pkg__",
+        "//appinventor/buildserver:__pkg__",
+    ],
+    deps = [
+        ":Barcode",
+        ":CommonConstants",
+        ":HtmlEntities",
+        ":shaded_json_lib",
+        "//appinventor/common:CommonVersion",
+        "//appinventor/lib:LocalJarsForAndroidRuntime",
+        "//appinventor/lib:AndroidSupportForComponents",
+        "//appinventor/lib:AndroidSdkForComponents",
+        "//appinventor/lib:AcraForComponents",
+        "//appinventor/lib:FirebaseForComponents", 
+        "//appinventor/lib:MpAndroidChartForComponents",
+        "//appinventor/lib:GoogleApiForComponents",
+        "//appinventor/lib:FusionTablesForComponents",
+        "//appinventor/lib:GoogleSheetsForComponents",
+        "//appinventor/lib:GuavaForComponents",
+        "//appinventor/lib:GoogleHttpForComponents",
+        "//appinventor/lib:ProtobufForComponents",
+        "//appinventor/lib:ApacheHttpForComponents",
+        "//appinventor/lib:JtsForComponents",
+        "//appinventor/lib:TwitterForComponents",
+        "//appinventor/lib:JedisForComponents",
+        "//appinventor/lib:CommonsMath3ForComponents",
+    ],
+)
