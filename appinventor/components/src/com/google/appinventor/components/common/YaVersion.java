@@ -1453,6 +1453,10 @@ public class YaVersion {
   // - The Resume and Pause methods were removed.
   public static final int PEDOMETER_COMPONENT_VERSION = 3;
 
+  // For PERSONALIMAGECLASSIFIER_COMPONENT_VERSION 20210315:
+  // - Version carried over from the standalone extension, which this component replaces.
+  public static final int PERSONALIMAGECLASSIFIER_COMPONENT_VERSION = 20210315;
+
   // For PHONECALL_COMPONENT_VERSION 2:
   // - The PhoneCallStarted event was added.
   // - The PhoneCallEnded event was added.
