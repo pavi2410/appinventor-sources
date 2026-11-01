@@ -7,6 +7,7 @@ import Foundation
 import WebKit
 import Zip
 import ZIPFoundation
+import CryptoKit
 
 fileprivate let MODEL_PATH_SUFFIX = ".mdl"
 
@@ -28,6 +29,9 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   private var transferModelPrefix: String? = nil
   private var personalModelPrefix: String? = nil
   private var callbacks: [String:(String)->Void] = [:]
+  private var _transferModelSource: TransferModelCache.Source? = nil
+  private var _transferModelSourceResolved = false
+  private var activeSchemeTasks = Set<ObjectIdentifier>()
   private var _initialized = false
 
   /**
@@ -72,6 +76,8 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   @objc public func setModel(_ path: String) {
     if path.hasSuffix(MODEL_PATH_SUFFIX) {
       _modelPath = path
+      _transferModelSource = nil
+      _transferModelSourceResolved = false
     } else {
       _form?.dispatchErrorOccurredEvent(self, "Model", ErrorMessage.ERROR_MODEL_AI, "\(BaseAiComponent.ERROR_INVALID_MODEL_FILE): Invalid model file format. Files must be of format \(MODEL_PATH_SUFFIX)")
     }
@@ -312,6 +318,11 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
           urlSchemeTask.didFailWithError(error)
           return
         }
+      } else if let source = remoteTransferModelSource() {
+        // The transfer model is not bundled with the app, so it is downloaded the first time it is
+        // needed and cached on disk. The path is of the form <model name>/<file>[?query].
+        serveRemoteTransferModel(urlSchemeTask, source: source, path: fileName)
+        return
       } else {
         urlSchemeTask.didFailWithError(AIError.FileNotFound)
         return
@@ -382,11 +393,222 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   }
 
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    // We deliver the payload in one go so it cannot be cancelled.
+    // Local payloads are delivered in one go. Downloads in progress are abandoned.
+    activeSchemeTasks.remove(ObjectIdentifier(urlSchemeTask))
+  }
+
+  /**
+   * Determines where the transfer model used by the current model file is published, based on
+   * the `transfer_model.json` recorded in the model file. Subclasses can override this to point
+   * at a different location.
+   */
+  open func remoteTransferModelSource() -> TransferModelCache.Source? {
+    if !_transferModelSourceResolved {
+      _transferModelSourceResolved = true
+      if let data = readModelEntry("transfer_model.json"),
+         let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+        _transferModelSource = TransferModelCache.resolve(name: json["name"] as? String,
+                                                          url: json["url"] as? String)
+      }
+    }
+    return _transferModelSource
+  }
+
+  private func readModelEntry(_ name: String) -> Data? {
+    guard let modelPath = _modelPath else {
+      return nil
+    }
+    let zipPath = AssetManager.shared.pathForExistingFileAsset(modelPath)
+    guard let archive = Archive(url: URL(fileURLWithPath: zipPath), accessMode: .read) else {
+      return nil
+    }
+    for entry in archive where entry.path == name {
+      var data = Data()
+      _ = try? archive.extract(entry) { data.append($0) }
+      return data
+    }
+    return nil
+  }
+
+  private func serveRemoteTransferModel(_ task: WKURLSchemeTask, source: TransferModelCache.Source,
+                                        path: String) {
+    var relativePath = path
+    if let query = relativePath.firstIndex(of: "?") {
+      relativePath = String(relativePath[..<query])
+    }
+    // Drop the model name; the source already identifies the model.
+    guard let slash = relativePath.firstIndex(of: "/") else {
+      task.didFailWithError(AIError.FileNotFound)
+      return
+    }
+    relativePath = String(relativePath[relativePath.index(after: slash)...])
+    let taskId = ObjectIdentifier(task)
+    activeSchemeTasks.insert(taskId)
+    let requestURL = task.request.url!
+    TransferModelCache.shared.fetch(source, path: relativePath) { [weak self] result in
+      DispatchQueue.main.async {
+        guard let self = self, self.activeSchemeTasks.remove(taskId) != nil else {
+          return
+        }
+        switch result {
+        case .success(let data):
+          let headers = [
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": relativePath.hasSuffix(".json") ? "application/json" : "application/octet-stream",
+            "Content-Length": "\(data.count)"
+          ]
+          let response = HTTPURLResponse(url: requestURL, statusCode: 200, httpVersion: "HTTP/1.1",
+                                         headerFields: headers)!
+          task.didReceive(response)
+          task.didReceive(data)
+          task.didFinish()
+        case .failure(let error):
+          print("Unable to load transfer model file \(relativePath): \(error)")
+          task.didFailWithError(error)
+        }
+      }
+    }
   }
 
   enum AIError: Error {
     case FileNotFound
     case webviewerNotSet
+  }
+}
+
+/**
+ * Downloads TensorFlow.js transfer models (for example MobileNet) on demand and keeps them on disk
+ * so that every component and project that needs the same base model shares one copy.
+ *
+ * Models are addressed by the URL they are published at. Each model lives in its own directory
+ * inside the cache, named after a hash of that URL, so different versions never collide.
+ */
+public final class TransferModelCache {
+  public static let shared = TransferModelCache()
+
+  /// Where one transfer model is published.
+  public struct Source {
+    let baseURL: String
+    let fileFormatQuery: Bool
+  }
+
+  enum CacheError: Error {
+    case invalidPath
+    case badResponse(Int)
+  }
+
+  /// Models known by name, used for model files that do not record where they came from.
+  private static let knownModels = [
+    "mobilenet": "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json",
+    "mobilenet_v1": "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json",
+    "mobilenet_v3_small": "https://www.kaggle.com/models/google/mobilenet-v3/TfJs/small-100-224-feature-vector/1"
+  ]
+
+  private let root: URL
+  private let queue = DispatchQueue(label: "TransferModelCache", qos: .userInitiated,
+                                    attributes: .concurrent)
+  private let lock = NSLock()
+  private var inFlight = [String: [(Result<Data, Error>) -> Void]]()
+
+  private init() {
+    let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    root = caches.appendingPathComponent("transfer-models", isDirectory: true)
+  }
+
+  /**
+   * Determines where a transfer model can be downloaded from.
+   *
+   * - Parameter name: The model's name as recorded in its `transfer_model.json`.
+   * - Parameter url: The URL recorded in `transfer_model.json`, if any.
+   * - Returns: The model source, or `nil` if neither the URL nor the name identifies a model.
+   */
+  public static func resolve(name: String?, url: String?) -> Source? {
+    var modelURL = url
+    if modelURL == nil || modelURL!.isEmpty {
+      modelURL = name.flatMap { knownModels[$0.lowercased()] }
+    }
+    guard var base = modelURL, base.hasPrefix("https://") else {
+      return nil
+    }
+    let tfHub = base.contains("kaggle.com/") || base.contains("tfhub.dev/")
+    if let query = base.firstIndex(of: "?") {
+      base = String(base[..<query])
+    }
+    if base.hasSuffix("/model.json") {
+      base = String(base.dropLast("/model.json".count))
+    }
+    while base.hasSuffix("/") {
+      base = String(base.dropLast())
+    }
+    return Source(baseURL: base, fileFormatQuery: tfHub)
+  }
+
+  /**
+   * Fetches a file belonging to a transfer model, from disk if it is cached and from the network
+   * (storing it in the cache) otherwise. `completion` may be called on any thread.
+   */
+  func fetch(_ source: Source, path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+    let allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-/")
+    guard !path.isEmpty, !path.contains(".."), !path.hasPrefix("/"), !path.hasSuffix("/"),
+          !path.contains("//"), path.unicodeScalars.allSatisfy({ allowed.contains($0) }) else {
+      completion(.failure(CacheError.invalidPath))
+      return
+    }
+    let directory = root.appendingPathComponent(Self.hash(source.baseURL), isDirectory: true)
+    let target = directory.appendingPathComponent(path)
+    queue.async {
+      if let data = try? Data(contentsOf: target), !data.isEmpty {
+        completion(.success(data))
+        return
+      }
+      let key = target.path
+      self.lock.lock()
+      if self.inFlight[key] != nil {
+        // Another request is already downloading this file; wait for it.
+        self.inFlight[key]!.append(completion)
+        self.lock.unlock()
+        return
+      }
+      self.inFlight[key] = [completion]
+      self.lock.unlock()
+      let remote = source.baseURL + "/" + path + (source.fileFormatQuery ? "?tfjs-format=file" : "")
+      self.download(URL(string: remote)!, to: target) { result in
+        self.lock.lock()
+        let waiting = self.inFlight.removeValue(forKey: key) ?? []
+        self.lock.unlock()
+        waiting.forEach { $0(result) }
+      }
+    }
+  }
+
+  private func download(_ url: URL, to target: URL, completion: @escaping (Result<Data, Error>) -> Void) {
+    var request = URLRequest(url: url)
+    request.timeoutInterval = 60
+    URLSession.shared.downloadTask(with: request) { location, response, error in
+      if let error = error {
+        completion(.failure(error))
+        return
+      }
+      let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+      guard let location = location, status == 200 else {
+        completion(.failure(CacheError.badResponse(status)))
+        return
+      }
+      do {
+        try FileManager.default.createDirectory(at: target.deletingLastPathComponent(),
+                                                withIntermediateDirectories: true)
+        if FileManager.default.fileExists(atPath: target.path) {
+          try FileManager.default.removeItem(at: target)
+        }
+        try FileManager.default.moveItem(at: location, to: target)
+        completion(.success(try Data(contentsOf: target)))
+      } catch {
+        completion(.failure(error))
+      }
+    }.resume()
+  }
+
+  private static func hash(_ value: String) -> String {
+    return Insecure.SHA1.hash(data: Data(value.utf8)).map { String(format: "%02x", $0) }.joined()
   }
 }
