@@ -517,6 +517,12 @@ public interface Images extends Resources {
   ImageResource paintPalette();
 
   /**
+   * Designer palette item: PersonalImageClassifier.
+   */
+  @Source("com/google/appinventor/images/glasses.png")
+  ImageResource glasses();
+
+  /**
    * Designer palette item: Pedometer Component
    */
   @Source("com/google/appinventor/images/pedometer.png")
