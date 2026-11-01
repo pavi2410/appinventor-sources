@@ -107,6 +107,7 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
   private TransferModelCache.Source transferModelSource = null;
   private final TransferModelCache transferModelCache;
   private boolean running = false;
+  private boolean webViewerPending = false;
   private int minClassTime = 0;
 
   public PersonalImageClassifier(final Form form) {
@@ -193,7 +194,7 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
 
   public void Initialize() {
     Log.d(LOG_TAG, "webview = " + webview);
-    if (webview == null) {
+    if (webview == null && !webViewerPending) {
       form.dispatchErrorOccurredEvent(this, "WebViewer",
           ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_WEBVIEWER_REQUIRED, LOG_TAG,
           "You must specify a WebViewer component in the WebViewer property.");
@@ -212,20 +213,25 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
   public void WebViewer(final WebViewer webviewer) {
     Runnable next = new Runnable() {
       public void run() {
+        webViewerPending = false;
         if (webviewer != null) {
           configureWebView((WebView) webviewer.getView());
           webview.requestLayout();
           Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
-          webview.loadUrl(form.getAssetPath("personal_image_classifier.html"));
+          webview.loadUrl(Form.ASSETS_PREFIX + "personal_image_classifier.html");
         }
       }
     };
+    // The WebView is configured once the user answers the camera permission prompt, which may be
+    // after Initialize runs.
+    webViewerPending = webviewer != null;
     form.askPermission(Manifest.permission.CAMERA, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
         if (granted) {
           next.run();
         } else {
+          webViewerPending = false;
           form.PermissionDenied(PersonalImageClassifier.this, "WebViewer", permission);
         }
       }
