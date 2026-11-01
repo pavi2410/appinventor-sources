@@ -421,6 +421,9 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
    * @return the entry's contents, or null if the model has no such entry
    */
   private byte[] readModelEntry(String name) throws IOException {
+    if (modelPath == null) {
+      return null;
+    }
     ZipInputStream zipInputStream = new ZipInputStream(MediaUtil.openMedia(form, modelPath));
     try {
       ZipEntry zipEntry;
