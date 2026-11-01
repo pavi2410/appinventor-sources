@@ -127,6 +127,21 @@ public class PersonalImageClassifierTest extends RobolectricTestBase {
   }
 
   @Test
+  public void testCompanionLoadsTheBundledPageNotTheProjectAssets() {
+    // In the companion, project assets live in a different directory than the files bundled
+    // with the app, and the component's page is one of the bundled files.
+    setUpAsRepl();
+    classifier = new PersonalImageClassifier(getForm());
+    webViewer = new WebViewer(getForm());
+    classifier.Model(MODEL);
+    classifier.WebViewer(webViewer);
+    ShadowActivityCompat.grantLastRequestedPermissions();
+
+    assertEquals("file:///android_asset/personal_image_classifier.html",
+        shadowOf(webView()).getLastLoadedUrl());
+  }
+
+  @Test
   public void testDenyingCameraDoesNotLoadThePageAndReportsTheDenial() {
     classifier.Model(MODEL);
     classifier.WebViewer(webViewer);
