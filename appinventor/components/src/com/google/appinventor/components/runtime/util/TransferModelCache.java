@@ -45,6 +45,8 @@ public final class TransferModelCache {
         "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json");
     KNOWN_MODELS.put("mobilenet_v1",
         "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json");
+    KNOWN_MODELS.put("mobilenet_v2",
+        "https://storage.googleapis.com/tfjs-models/savedmodel/mobilenet_v2_1.0_224/model.json");
     KNOWN_MODELS.put("mobilenet_v3_small",
         "https://www.kaggle.com/models/google/mobilenet-v3/TfJs/"
             + "small-100-224-feature-vector/1");
@@ -77,15 +79,17 @@ public final class TransferModelCache {
    * Determines where a transfer model can be downloaded from.
    *
    * @param name the model's name as recorded in its transfer_model.json
-   * @param url the URL recorded in transfer_model.json, or null/empty if it has none
+   * @param url the URL recorded in transfer_model.json, ignored unless it is an https URL
    * @return the model source, or null if neither the URL nor the name identifies a model
    */
   public static Source resolve(String name, String url) {
     String modelUrl = url;
-    if (modelUrl == null || modelUrl.isEmpty()) {
+    if (modelUrl == null || !modelUrl.startsWith("https://")) {
+      // Models exported without a usable URL (for example from a local development server) are
+      // identified by name instead.
       modelUrl = name == null ? null : KNOWN_MODELS.get(name.toLowerCase(Locale.ROOT));
     }
-    if (modelUrl == null || !modelUrl.startsWith("https://")) {
+    if (modelUrl == null) {
       return null;
     }
     boolean tfHub = modelUrl.contains("kaggle.com/") || modelUrl.contains("tfhub.dev/");

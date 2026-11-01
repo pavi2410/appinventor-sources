@@ -501,6 +501,7 @@ public final class TransferModelCache {
   private static let knownModels = [
     "mobilenet": "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json",
     "mobilenet_v1": "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json",
+    "mobilenet_v2": "https://storage.googleapis.com/tfjs-models/savedmodel/mobilenet_v2_1.0_224/model.json",
     "mobilenet_v3_small": "https://www.kaggle.com/models/google/mobilenet-v3/TfJs/small-100-224-feature-vector/1"
   ]
 
@@ -519,15 +520,17 @@ public final class TransferModelCache {
    * Determines where a transfer model can be downloaded from.
    *
    * - Parameter name: The model's name as recorded in its `transfer_model.json`.
-   * - Parameter url: The URL recorded in `transfer_model.json`, if any.
+   * - Parameter url: The URL recorded in `transfer_model.json`; ignored unless it is an https URL.
    * - Returns: The model source, or `nil` if neither the URL nor the name identifies a model.
    */
   public static func resolve(name: String?, url: String?) -> Source? {
     var modelURL = url
-    if modelURL == nil || modelURL!.isEmpty {
+    if modelURL?.hasPrefix("https://") != true {
+      // Models exported without a usable URL (for example from a local development server) are
+      // identified by name instead.
       modelURL = name.flatMap { knownModels[$0.lowercased()] }
     }
-    guard var base = modelURL, base.hasPrefix("https://") else {
+    guard var base = modelURL else {
       return nil
     }
     let tfHub = base.contains("kaggle.com/") || base.contains("tfhub.dev/")
