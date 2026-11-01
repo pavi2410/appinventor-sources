@@ -35,12 +35,15 @@ import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TransferModelCache;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import java.util.Collections;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +69,7 @@ import java.util.zip.ZipInputStream;
         iconName = "images/glasses.png",
         nonVisible = true)
 @SimpleObject
-@UsesAssets(fileNames = "personal_image_classifier.html, personal_image_classifier.js, mobilenet_group1-shard1of1, mobilenet_group10-shard1of1, mobilenet_group11-shard1of1, mobilenet_group12-shard1of1, mobilenet_group13-shard1of1, mobilenet_group14-shard1of1, mobilenet_group15-shard1of1, mobilenet_group16-shard1of1, mobilenet_group17-shard1of1, mobilenet_group18-shard1of1, mobilenet_group19-shard1of1, mobilenet_group2-shard1of1, mobilenet_group20-shard1of1, mobilenet_group21-shard1of1, mobilenet_group22-shard1of1, mobilenet_group23-shard1of1, mobilenet_group24-shard1of1, mobilenet_group25-shard1of1, mobilenet_group26-shard1of1, mobilenet_group27-shard1of1, mobilenet_group28-shard1of1, mobilenet_group29-shard1of1, mobilenet_group3-shard1of1, mobilenet_group30-shard1of1, mobilenet_group31-shard1of1, mobilenet_group32-shard1of1, mobilenet_group33-shard1of1, mobilenet_group34-shard1of1, mobilenet_group35-shard1of1, mobilenet_group36-shard1of1, mobilenet_group37-shard1of1, mobilenet_group38-shard1of1, mobilenet_group39-shard1of1, mobilenet_group4-shard1of1, mobilenet_group40-shard1of1, mobilenet_group41-shard1of1, mobilenet_group42-shard1of1, mobilenet_group43-shard1of1, mobilenet_group44-shard1of1, mobilenet_group45-shard1of1, mobilenet_group46-shard1of1, mobilenet_group47-shard1of1, mobilenet_group48-shard1of1, mobilenet_group49-shard1of1, mobilenet_group5-shard1of1, mobilenet_group50-shard1of1, mobilenet_group51-shard1of1, mobilenet_group52-shard1of1, mobilenet_group53-shard1of1, mobilenet_group54-shard1of1, mobilenet_group55-shard1of1, mobilenet_group6-shard1of1, mobilenet_group7-shard1of1, mobilenet_group8-shard1of1, mobilenet_group9-shard1of1, mobilenet_model.json, squeezenet_group1-shard1of1, squeezenet_model.json, tfjs-0.13.2.js")
+@UsesAssets(fileNames = "personal_image_classifier.html, personal_image_classifier.js, tfjs-1.5.2.js")
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.CAMERA")
 public final class PersonalImageClassifier extends AndroidNonvisibleComponent
     implements Component, OnPauseListener, OnResumeListener, OnClearListener {
@@ -93,16 +96,22 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
   private static final int ERROR_WEBVIEWER_REQUIRED = -7;
   private static final int ERROR_INVALID_MODEL_FILE = -8;
   private static final int ERROR_MODEL_REQUIRED = -9;
+  // -10 and -11 are defined in personal_image_classifier.js
+  private static final int ERROR_TRANSFER_MODEL_UNAVAILABLE = -12;
+  private static final int ERROR_TRANSFER_MODEL_UNSUPPORTED = -13;
 
   private WebView webview = null;
   private String inputMode = MODE_VIDEO;
   private List<String> labels = Collections.emptyList();
   private String modelPath = null;
+  private TransferModelCache.Source transferModelSource = null;
+  private final TransferModelCache transferModelCache;
   private boolean running = false;
   private int minClassTime = 0;
 
   public PersonalImageClassifier(final Form form) {
     super(form);
+    transferModelCache = new TransferModelCache(form);
     requestHardwareAcceleration(form);
     WebView.setWebContentsDebuggingEnabled(true);
     Log.d(LOG_TAG, "Created PersonalImageClassifier component");
@@ -135,26 +144,19 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
           if (url.contains(TRANSFER_MODEL_PREFIX)) {
             Log.d(LOG_TAG, "overriding " + url);
 
-            file = form.openAsset(url.substring(TRANSFER_MODEL_PREFIX.length()));
+            file = openTransferModelFile(url.substring(url.indexOf(TRANSFER_MODEL_PREFIX)
+                + TRANSFER_MODEL_PREFIX.length()));
+            if (file == null) {
+              return new WebResourceResponse(contentType, charSet, 404, "Not Found",
+                  new HashMap<String, String>(), new ByteArrayInputStream(new byte[0]));
+            }
           } else if (url.contains(PERSONAL_MODEL_PREFIX)) {
             Log.d(LOG_TAG, "overriding " + url);
 
-            String fileName = url.substring(PERSONAL_MODEL_PREFIX.length());
-            ZipInputStream zipInputStream = new ZipInputStream(MediaUtil.openMedia(form, modelPath));
-            ZipEntry zipEntry;
-
-            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-              if (zipEntry.getName().equals(fileName)) {
-                int zipEntrySize = (int) zipEntry.getSize();
-                byte[] fileBytes = new byte[zipEntrySize];
-
-                zipInputStream.read(fileBytes, 0, zipEntrySize);
-                file = new ByteArrayInputStream(fileBytes);
-                break;
-              }
+            byte[] fileBytes = readModelEntry(url.substring(PERSONAL_MODEL_PREFIX.length()));
+            if (fileBytes != null) {
+              file = new ByteArrayInputStream(fileBytes);
             }
-            
-            zipInputStream.close();
           }
 
           if (file != null) {
@@ -237,6 +239,7 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
 
     if (path.endsWith(MODEL_PATH_SUFFIX)) {
       modelPath = path;
+      transferModelSource = null;
     } else {
       form.dispatchErrorOccurredEvent(this, "Model",
         ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_INVALID_MODEL_FILE, LOG_TAG,
@@ -403,6 +406,80 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
   private void assertWebView(String method) {
     if (webview == null) {
       throw new RuntimeException(String.format(ERROR_WEBVIEWER_NOT_SET, method));
+    }
+  }
+
+  /**
+   * Reads one entry of the user's model file (a zip archive).
+   *
+   * @return the entry's contents, or null if the model has no such entry
+   */
+  private byte[] readModelEntry(String name) throws IOException {
+    ZipInputStream zipInputStream = new ZipInputStream(MediaUtil.openMedia(form, modelPath));
+    try {
+      ZipEntry zipEntry;
+      while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+        if (zipEntry.getName().equals(name)) {
+          ByteArrayOutputStream contents = new ByteArrayOutputStream();
+          byte[] buffer = new byte[8192];
+          int read;
+          while ((read = zipInputStream.read(buffer)) != -1) {
+            contents.write(buffer, 0, read);
+          }
+          return contents.toByteArray();
+        }
+      }
+    } finally {
+      zipInputStream.close();
+    }
+    return null;
+  }
+
+  /**
+   * Finds out where the transfer model (for example MobileNet) used by the user's model comes
+   * from by reading the transfer_model.json recorded in the model file.
+   */
+  private TransferModelCache.Source getTransferModelSource() throws IOException {
+    if (transferModelSource == null) {
+      byte[] info = readModelEntry("transfer_model.json");
+      if (info == null) {
+        return null;
+      }
+      try {
+        JSONObject json = new JSONObject(new String(info, "UTF-8"));
+        transferModelSource =
+            TransferModelCache.resolve(json.optString("name"), json.optString("url"));
+      } catch (JSONException e) {
+        Log.e(LOG_TAG, "Unable to parse transfer_model.json", e);
+      }
+    }
+    return transferModelSource;
+  }
+
+  /**
+   * Opens a file of the transfer model, downloading it if it has not been cached yet.
+   *
+   * @param path the requested path, of the form {@code <model name>/<file>[?query]}
+   * @return a stream over the file, or null if it is unavailable
+   */
+  private InputStream openTransferModelFile(String path) {
+    int query = path.indexOf('?');
+    if (query >= 0) {
+      path = path.substring(0, query);
+    }
+    int slash = path.indexOf('/');
+    if (slash < 0) {
+      return null;
+    }
+    try {
+      TransferModelCache.Source source = getTransferModelSource();
+      if (source == null) {
+        return null;
+      }
+      return new FileInputStream(transferModelCache.get(source, path.substring(slash + 1)));
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "Unable to load transfer model file " + path, e);
+      return null;
     }
   }
 
