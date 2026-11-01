@@ -42,7 +42,6 @@ import org.json.JSONException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -206,21 +205,16 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
     }
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.runtime.components.WebViewer")
-  @SimpleProperty(userVisible = false)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.WebViewer")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
   public void WebViewer(final WebViewer webviewer) {
     Runnable next = new Runnable() {
       public void run() {
         if (webviewer != null) {
           configureWebView((WebView) webviewer.getView());
           webview.requestLayout();
-          try {
-            Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
-            webview.loadUrl(form.getAssetPath("personal_image_classifier.html"));
-          } catch (FileNotFoundException e) {
-            Log.d(LOG_TAG, e.getMessage());
-            e.printStackTrace();
-          }
+          Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
+          webview.loadUrl(form.getAssetPath("personal_image_classifier.html"));
         }
       }
     };
@@ -237,7 +231,7 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
   public void Model(String path) {
     Log.d(LOG_TAG, "Personal model path: " + path);
 
@@ -342,7 +336,8 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
     webview.evaluateJavascript("classifyVideoData();", null);
   }
 
-  @SimpleFunction()
+  @SimpleFunction(description = "Starts continuously classifying frames from the video feed. "
+      + "Only valid when InputMode is Video.")
   public void StartContinuousClassification() {
     if (MODE_VIDEO.equals(inputMode) && !running) {
       assertWebView("StartVideoClassification");
@@ -351,7 +346,8 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
     }
   }
 
-  @SimpleFunction()
+  @SimpleFunction(description = "Stops the continuous classification started by "
+      + "StartContinuousClassification.")
   public void StopContinuousClassification() {
     if (MODE_VIDEO.equals(inputMode) && running) {
       assertWebView("StopVideoClassification");
