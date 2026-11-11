@@ -644,7 +644,10 @@ public class YaVersion {
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 5.
   // For YOUNG_ANDROID_VERSION 239:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 40.
-  public static final int YOUNG_ANDROID_VERSION = 239;
+  // For YOUNG_ANDROID_VERSION 240:
+  // - The PersonalImageClassifier component was added, replacing the extension.
+  // - PERSONALIMAGECLASSIFIER_COMPONENT_VERSION was incremented to 20261110.
+  public static final int YOUNG_ANDROID_VERSION = 240;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1453,9 +1456,16 @@ public class YaVersion {
   // - The Resume and Pause methods were removed.
   public static final int PEDOMETER_COMPONENT_VERSION = 3;
 
+  // PersonalImageClassifier versions are dates (yyyymmdd), carried over from the standalone
+  // extension this component replaces. They must stay above the extension's last release so
+  // that projects saved with the extension never have a newer version than the component.
   // For PERSONALIMAGECLASSIFIER_COMPONENT_VERSION 20210315:
-  // - Version carried over from the standalone extension, which this component replaces.
-  public static final int PERSONALIMAGECLASSIFIER_COMPONENT_VERSION = 20210315;
+  // - Last release of the standalone extension.
+  // For PERSONALIMAGECLASSIFIER_COMPONENT_VERSION 20261110:
+  // - The component was moved in-tree and placed in the Experimental category.
+  // - TensorFlow.js was updated from 0.13.2 to 1.5.2.
+  // - Transfer models are downloaded on first use instead of being bundled.
+  public static final int PERSONALIMAGECLASSIFIER_COMPONENT_VERSION = 20261110;
 
   // For PHONECALL_COMPONENT_VERSION 2:
   // - The PhoneCallStarted event was added.
