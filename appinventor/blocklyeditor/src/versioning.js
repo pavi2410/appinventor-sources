@@ -133,9 +133,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
       if (! upgradeMap) {
         throw "Blockly.Versioning.upgrade: no upgrade map for component type " + componentType;
       }
-      var versions = Blockly.Versioning.upgradeSteps(upgradeMap, preUpgradeVersion, systemVersion);
-      for (var i = 0; i < versions.length; i++) {
-        var version = versions[i];
+      for (var version = preUpgradeVersion + 1; version <= systemVersion; version++) {
         var versionUpgrader = upgradeMap[version];
         if (! versionUpgrader) {
           throw "Blockly.Versioning.upgrade: no upgrader to upgrade component type " + componentType +
@@ -217,40 +215,6 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   Blockly.Versioning.ensureWorkspace(blocksRep, opt_workspace); // No need to use result; does work by side effect on Blockly.common.getMainWorkspace()
 
   return didUpgrade;
-};
-
-/**
- * Returns the versions to step through when upgrading a component from fromVersion to
- * toVersion. Most components number their versions 1, 2, 3, ..., so every version in between is
- * a step and must have an upgrader. Components whose upgrade map sets dateVersioned use dates
- * (yyyymmdd) as versions, so only the versions listed in the map are steps; toVersion must be
- * one of them.
- * @param {Object} upgradeMap the component's upgrade map
- * @param {number} fromVersion the version the project was saved with
- * @param {number} toVersion the system version
- * @return {Array<number>} the versions to step through, in ascending order
- */
-Blockly.Versioning.upgradeSteps = function (upgradeMap, fromVersion, toVersion) {
-  var versions = [];
-  if (upgradeMap.dateVersioned) {
-    for (var key in upgradeMap) {
-      var version = Number(key);
-      if (upgradeMap.hasOwnProperty(key) && !isNaN(version) && version > fromVersion &&
-          version <= toVersion) {
-        versions.push(version);
-      }
-    }
-    versions.sort(function(a, b) { return a - b; });
-    if (versions[versions.length - 1] !== toVersion) {
-      // Leave the final step missing so the caller reports it.
-      versions.push(toVersion);
-    }
-  } else {
-    for (var version = fromVersion + 1; version <= toVersion; version++) {
-      versions.push(version);
-    }
-  }
-  return versions;
 };
 
 /**
@@ -3003,19 +2967,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: The Resume and Pause methods were removed.
     3: "noUpgrade"
 
-  }, // End Pedometer upgraders
-
-  "PersonalImageClassifier": {
-
-    // Versions are dates (yyyymmdd), carried over from the extension (last released as
-    // 20210315), so only the listed versions are upgrade steps.
-    dateVersioned: true,
-
-    // AI2: The component was moved in-tree, replacing the extension.
-    // TensorFlow.js was updated to 1.5.2 and transfer models are downloaded on first use.
-    20261110: "noUpgrade"
-
-  }, // End PersonalImageClassifier upgraders
+  }, // End PhoneCall upgraders
 
   "PhoneCall": {
 
