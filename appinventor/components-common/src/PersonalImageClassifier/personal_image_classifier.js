@@ -3,7 +3,7 @@
 console.log("PersonalImageClassifier: Using TensorFlow.js version " + tf.version.tfjs);
 
 const TRANSFER_MODEL_PREFIX = "appinventor://personal-image-classifier/transfer/";
-const TRANSFER_MODEL_SUFFIX = "_model.json";
+const TRANSFER_MODEL_JSON = "model.json";
 
 const PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier/personal/";
 const PERSONAL_MODEL_JSON_SUFFIX = "model.json";
@@ -22,10 +22,22 @@ const ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE = -5;
 const ERROR_INVALID_INPUT_MODE = -6;
 // Error -10 was failure to load labels
 const ERROR_FAILED_TO_START_VIDEO = -11;
+const ERROR_TRANSFER_MODEL_UNAVAILABLE = -12;
+const ERROR_TRANSFER_MODEL_UNSUPPORTED = -13;
+
+// Input ranges expected by the supported transfer models.
+const NORMALIZERS = {
+  // (x / 127) - 1 maps [0, 255] to [-1, 1], used by MobileNet v1 and v2
+  mobilenet: t => t.div(tf.scalar(127)).sub(tf.scalar(1)),
+  // x / 255 maps [0, 255] to [0, 1], used by MobileNet v3
+  unit: t => t.div(tf.scalar(255))
+};
 
 // Inputs are passed through an activation of the transfer before being fed into
 // the user provided model
 let transferModel;
+let transferModelFn;
+let normalize = NORMALIZERS.mobilenet;
 let model;
 
 // Data required to use the model
@@ -48,16 +60,58 @@ let video = /** @type {HTMLVideoElement} */ (document.getElementById('webcam'));
 webcamHolder.style.display = 'none';
 video.style.display = "none";
 
-async function loadTransferModel(modelName, modelActivation) {
-  const transferModel = await tf.loadModel(TRANSFER_MODEL_PREFIX + modelName + TRANSFER_MODEL_SUFFIX);
+/**
+ * Loads the transfer model (for example MobileNet) named in the user's model file. The files are
+ * served by the native layer, which downloads them the first time and caches them on disk.
+ * The model format is detected from the model itself: layers models (MobileNet v1) can be
+ * truncated up front, while graph models (MobileNet v3) have to be executed up to the layer
+ * that provides the activation.
+ */
+async function loadTransferModel(info) {
+  const modelName = info['name'];
+  const modelActivation = info['lastLayer'];
+  const modelUrl = TRANSFER_MODEL_PREFIX + encodeURIComponent(modelName) + "/" + TRANSFER_MODEL_JSON;
 
-  // Return an internal activation of the transfer model.
-  const layer = transferModel.getLayer(modelActivation);
-  return tf.model({inputs: transferModel.inputs, outputs: layer.output});
+  let topology;
+  try {
+    topology = await loadModelFile(modelUrl, true);
+  } catch (e) {
+    throw new TransferModelError(ERROR_TRANSFER_MODEL_UNAVAILABLE, e);
+  }
+
+  normalize = NORMALIZERS[info['normalization'] || (/v3/i.test(modelName) ? "unit" : "mobilenet")];
+  if (!normalize) {
+    throw new TransferModelError(ERROR_TRANSFER_MODEL_UNSUPPORTED, "unknown normalization");
+  }
+
+  try {
+    if (topology['format'] === "graph-model") {
+      const graph = await tf.loadGraphModel(modelUrl);
+      transferModelFn = input => graph.execute(input, modelActivation);
+      return graph;
+    }
+    const base = await tf.loadLayersModel(modelUrl);
+    const layer = base.getLayer(modelActivation);
+    const truncated = tf.model({inputs: base.inputs, outputs: layer.output});
+    transferModelFn = input => truncated.predict(input);
+    return truncated;
+  } catch (e) {
+    throw new TransferModelError(ERROR_TRANSFER_MODEL_UNAVAILABLE, e);
+  }
+}
+
+class TransferModelError extends Error {
+  constructor(code, cause) {
+    super("transfer model error " + code + ": " + cause);
+    this.code = code;
+  }
 }
 
 async function loadModelFile(url, json) {
   const modelFileResponse = await fetch(url);
+  if (!modelFileResponse.ok) {
+    throw new Error("Failed to fetch " + url + ": " + modelFileResponse.status);
+  }
 
   console.log("Done fetching file");
 
@@ -79,7 +133,7 @@ const loadModel = async () => {
   try {
     // Loads the transfer model
     transferModelInfo = await loadModelFile(PERSONAL_MODEL_PREFIX + TRANSFER_MODEL_INFO_SUFFIX, true);
-    transferModel = await loadTransferModel(transferModelInfo['name'], transferModelInfo['lastLayer']);
+    transferModel = await loadTransferModel(transferModelInfo);
 
     // Loads the user's personal model
     const modelTopologyBlob = await loadModelFile(PERSONAL_MODEL_PREFIX + PERSONAL_MODEL_JSON_SUFFIX, false);
@@ -88,20 +142,21 @@ const loadModel = async () => {
     const modelWeightsBlob = await loadModelFile(PERSONAL_MODEL_PREFIX + PERSONAL_MODEL_WEIGHTS_SUFFIX, false);
     const modelWeightsFile = blobToFile(modelWeightsBlob, PERSONAL_MODEL_WEIGHTS_SUFFIX);
 
-    model = await tf.loadModel(tf.io.browserFiles([modelTopologyFile, modelWeightsFile]));
+    model = await tf.loadLayersModel(tf.io.browserFiles([modelTopologyFile, modelWeightsFile]));
 
     // Loads the model labels mapping
     modelLabels = await loadModelFile(PERSONAL_MODEL_PREFIX + PERSONAL_MODEL_LABELS_SUFFIX, true);
     topk_predictions = Math.min(3, Object.keys(modelLabels).length);
 
     const zeros = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
-    transferModel.predict(zeros).dispose();
+    transferModelFn(zeros).dispose();
     zeros.dispose();
     console.log("PersonalImageClassifier: transfer model activation and personal model are ready");
     PersonalImageClassifier.ready(JSON.stringify(Object.values(modelLabels)));
   } catch (error) {
     console.log("PersonalImageClassifier: " + error);
-    PersonalImageClassifier.error(ERROR_CLASSIFICATION_NOT_SUPPORTED);
+    PersonalImageClassifier.error(error instanceof TransferModelError ?
+      error.code : ERROR_CLASSIFICATION_NOT_SUPPORTED);
   }
 };
 
@@ -129,16 +184,16 @@ function cropImage(img) {
 async function predict(pixels, crop) {
   try {
     const logits = tf.tidy(() => {
-      const img = crop ? cropImage(tf.fromPixels(pixels)) :
-        tf.image.resizeBilinear(tf.fromPixels(pixels).toFloat(), [IMAGE_SIZE, IMAGE_SIZE]);
+      const img = crop ? cropImage(tf.browser.fromPixels(pixels)) :
+        tf.image.resizeBilinear(tf.browser.fromPixels(pixels).toFloat(), [IMAGE_SIZE, IMAGE_SIZE]);
       const batchedImage = img.expandDims(0);
-      const scaled = batchedImage.toFloat().div(tf.scalar(127)).sub(tf.scalar(1));
+      const scaled = normalize(batchedImage.toFloat());
 
       // Make a prediction, first using the transfer model activation and then
       // feeding that into the user provided model
-      const activation = transferModel.predict(scaled);
+      const activation = transferModelFn(scaled);
       const predictions = model.predict(activation);
-      return predictions.as1D();
+      return predictions.reshape([-1]);
     });
 
     const topPredictions = await logits.topk(topk_predictions);

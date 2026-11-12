@@ -63,6 +63,7 @@ class YoungAndroidComponentFactory extends BaseComponentFactory {
     bundledImages.put("images/orientationsensor.png", images.orientationsensor());
     bundledImages.put("images/passwordtextbox.png", images.passwordtextbox());
     bundledImages.put("images/paintpalette.png", images.paintPalette());
+    bundledImages.put("images/glasses.png", images.glasses());
     bundledImages.put("images/pedometer.png", images.pedometerComponent());
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
