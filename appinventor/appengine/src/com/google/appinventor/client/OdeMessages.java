@@ -612,6 +612,28 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Alert message reported when the component import upgraded an already imported extension")
   String componentUpgradedAlert();
 
+  @DefaultMessage("Extension not imported")
+  @Description("Title of the dialog shown when the user imports an extension that has been " +
+      "replaced by a built-in component.")
+  String supersededExtensionImportRejectedTitle();
+
+  @DefaultMessage("{0} is now built in, so the extension was not imported. " +
+      "Find it in the Experimental drawer of the Palette.")
+  @Description("Alert message reported when the user imports an extension that has been " +
+      "replaced by a built-in component. {0} is the name of the built-in component.")
+  String supersededExtensionImportRejected(String componentName);
+
+  @DefaultMessage("Extension replaced")
+  @Description("Title of the dialog shown when a project's extensions are replaced by built-in " +
+      "components.")
+  String supersededExtensionsMigratedTitle();
+
+  @DefaultMessage("{0} is now built in. This project was updated to use it and the extension " +
+      "was removed. Your blocks are unchanged.")
+  @Description("Message shown when a project is loaded that contained extensions that have " +
+      "been replaced by built-in components. {0} is the list of built-in components.")
+  String supersededExtensionsMigrated(String componentNames);
+
   @DefaultMessage("The selected file is not a component file!\n" +
       "Component files are aix files.")
   @Description("Error message reported when the file selected for upload is not a component archive.")

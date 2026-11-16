@@ -9,6 +9,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentImportResponse;
 import com.google.appinventor.shared.rpc.component.ComponentImportResponse.Status;
+import com.google.appinventor.shared.rpc.component.SupersededExtensions;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
@@ -178,6 +179,21 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     JSONArray newComponents = readExtensionComponents(contents, nameMap);
     if (newComponents == null || newComponents.length() == 0) {
       response.setMessage("No valid component descriptors found in the extension.");
+      return;
+    }
+
+    // Refuse extensions that have been replaced by built-in components
+    Map<String, String> superseded = new TreeMap<>();
+    for (int i = 0; i < newComponents.length(); i++) {
+      String type = newComponents.getJSONObject(i).getString("type");
+      String builtIn = SupersededExtensions.getBuiltInForType(type);
+      if (builtIn != null) {
+        superseded.put(type, builtIn);
+      }
+    }
+    if (!superseded.isEmpty()) {
+      response.setStatus(Status.SUPERSEDED);
+      response.setComponentTypes(superseded);
       return;
     }
 
