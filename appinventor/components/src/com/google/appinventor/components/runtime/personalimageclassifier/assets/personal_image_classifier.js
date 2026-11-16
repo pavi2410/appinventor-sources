@@ -303,11 +303,22 @@ function classifyImageData(imageData) {
   }
 }
 
+// Resolves once the video element has a frame to classify. Video starts asynchronously after the
+// classifier is ready, so a classification requested from ClassifierReady can arrive first.
+function whenVideoReady() {
+  if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+    return Promise.resolve();
+  }
+  return new Promise(resolve => video.addEventListener('loadeddata', resolve, {once: true}));
+}
+
 // Called from PersonalImageClassifier.java
 // noinspection JSUnusedGlobalSymbols
 function classifyVideoData() {
   if (isVideoMode) {
-    predict(video, true).catch(() => PersonalImageClassifier.error(ERROR_CLASSIFICATION_FAILED));
+    whenVideoReady()
+      .then(() => predict(video, true))
+      .catch(() => PersonalImageClassifier.error(ERROR_CLASSIFICATION_FAILED));
   } else {
     PersonalImageClassifier.error(ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE);
   }
@@ -320,7 +331,9 @@ function cvcHandler() {
   let now = new Date();
   if (now.getTime() - lastClassification.getTime() > minClassTime) {
     lastClassification = now;
-    predict(video, true).then(() => requestAnimationFrame(cvcHandler));
+    whenVideoReady()
+      .then(() => predict(video, true))
+      .then(() => requestAnimationFrame(cvcHandler));
   } else {
     requestAnimationFrame(cvcHandler);
   }

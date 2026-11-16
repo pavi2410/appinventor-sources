@@ -86,14 +86,14 @@ public class PersonalImageClassifierTest extends RobolectricTestBase {
   @Test
   public void testModelMustBeAnMdlFile() {
     classifier.Model("model.txt");
-    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_EXTENSION_ERROR);
+    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_MODEL_AI);
   }
 
   @Test
   public void testInitializeRequiresAWebViewer() {
     classifier.Model(MODEL);
     classifier.Initialize();
-    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_EXTENSION_ERROR);
+    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_WEBVIEW_AI);
   }
 
   @Test
@@ -102,7 +102,7 @@ public class PersonalImageClassifierTest extends RobolectricTestBase {
     ShadowActivityCompat.grantLastRequestedPermissions();
     ShadowEventDispatcher.clearEvents();
     classifier.Initialize();
-    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_EXTENSION_ERROR);
+    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_MODEL_AI);
   }
 
   @Test
@@ -154,7 +154,7 @@ public class PersonalImageClassifierTest extends RobolectricTestBase {
     // The prompt has been answered, so a missing WebView is a real problem again.
     ShadowEventDispatcher.clearEvents();
     classifier.Initialize();
-    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_EXTENSION_ERROR);
+    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_WEBVIEW_AI);
   }
 
   // ---------------------------------------------------------------------------------------------

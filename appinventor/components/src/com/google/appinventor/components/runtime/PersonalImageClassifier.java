@@ -195,16 +195,14 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
   public void Initialize() {
     Log.d(LOG_TAG, "webview = " + webview);
     if (webview == null && !webViewerPending) {
-      form.dispatchErrorOccurredEvent(this, "WebViewer",
-          ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_WEBVIEWER_REQUIRED, LOG_TAG,
+      form.dispatchErrorOccurredEvent(this, "WebViewer", ErrorMessages.ERROR_WEBVIEW_AI,
           "You must specify a WebViewer component in the WebViewer property.");
     }
 
     Log.d(LOG_TAG, "modelPath = " + modelPath);
     if (modelPath == null) {
-      form.dispatchErrorOccurredEvent(this, "Model",
-          ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_MODEL_REQUIRED, LOG_TAG,
-          "You must provide a model file in the Model property");
+      form.dispatchErrorOccurredEvent(this, "Model", ErrorMessages.ERROR_MODEL_AI,
+          "You must provide a model file in the Model property.");
     }
   }
 
@@ -247,9 +245,8 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
       modelPath = path;
       transferModelSource = null;
     } else {
-      form.dispatchErrorOccurredEvent(this, "Model",
-        ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_INVALID_MODEL_FILE, LOG_TAG,
-        "Invalid model file format: files must be of format " + MODEL_PATH_SUFFIX);
+      form.dispatchErrorOccurredEvent(this, "Model", ErrorMessages.ERROR_MODEL_AI,
+          "Files must be of format " + MODEL_PATH_SUFFIX);
     }
   }
 
@@ -268,7 +265,7 @@ public final class PersonalImageClassifier extends AndroidNonvisibleComponent
       webview.evaluateJavascript("setInputMode(\"image\");", null);
       inputMode = MODE_IMAGE;
     } else {
-      form.dispatchErrorOccurredEvent(this, "InputMode", ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode " + mode);
+      form.dispatchErrorOccurredEvent(this, "InputMode", ErrorMessages.ERROR_INPUT_MODE_AI, mode);
     }
   }
 
