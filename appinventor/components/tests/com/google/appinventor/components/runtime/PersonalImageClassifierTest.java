@@ -62,11 +62,11 @@ public class PersonalImageClassifierTest extends RobolectricTestBase {
   // ---------------------------------------------------------------------------------------------
 
   @Test
-  public void testIsAnExperimentalNonVisibleComponent() {
+  public void testIsAnAiNonVisibleComponent() {
     DesignerComponent annotation = PersonalImageClassifier.class
         .getAnnotation(DesignerComponent.class);
     assertNotNull(annotation);
-    assertEquals(ComponentCategory.EXPERIMENTAL, annotation.category());
+    assertEquals(ComponentCategory.AI, annotation.category());
     assertTrue(annotation.nonVisible());
   }
 

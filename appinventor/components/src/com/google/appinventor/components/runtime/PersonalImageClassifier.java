@@ -62,7 +62,7 @@ import java.util.zip.ZipInputStream;
  */
 
 @DesignerComponent(version = YaVersion.PERSONALIMAGECLASSIFIER_COMPONENT_VERSION,
-        category = ComponentCategory.EXPERIMENTAL,
+        category = ComponentCategory.AI,
         description = "Component that classifies images using a user trained model from the image " +
             "classification explorer. You must provide a WebViewer component in the PersonalImageClassifier " +
             "component's WebViewer property in order for classification to work.",

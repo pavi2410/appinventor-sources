@@ -618,7 +618,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String supersededExtensionImportRejectedTitle();
 
   @DefaultMessage("{0} is now built in, so the extension was not imported. " +
-      "Find it in the Experimental drawer of the Palette.")
+      "Find it in the AI drawer of the Palette.")
   @Description("Alert message reported when the user imports an extension that has been " +
       "replaced by a built-in component. {0} is the name of the built-in component.")
   String supersededExtensionImportRejected(String componentName);
