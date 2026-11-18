@@ -13,6 +13,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -40,6 +41,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ComponentImportWizard extends Wizard {
 
@@ -48,6 +51,13 @@ public class ComponentImportWizard extends Wizard {
   public static class ImportComponentCallback extends OdeAsyncCallback<ComponentImportResponse> {
     @Override
     public void onSuccess(ComponentImportResponse response) {
+      if (response.getStatus() == ComponentImportResponse.Status.SUPERSEDED) {
+        Set<String> builtIns = new TreeSet<>(response.getComponentTypes().values());
+        MessageDialog.messageDialog(MESSAGES.supersededExtensionImportRejectedTitle(),
+            MESSAGES.supersededExtensionImportRejected(String.join(", ", builtIns)),
+            MESSAGES.okButton(), null, null);
+        return;
+      }
       if (response.getStatus() == ComponentImportResponse.Status.FAILED){
         Window.alert(MESSAGES.componentImportError() + "\n" + response.getMessage());
         return;

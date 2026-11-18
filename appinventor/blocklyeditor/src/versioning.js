@@ -133,17 +133,25 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
       if (! upgradeMap) {
         throw "Blockly.Versioning.upgrade: no upgrade map for component type " + componentType;
       }
-      for (var version = preUpgradeVersion + 1; version <= systemVersion; version++) {
+      if (! upgradeMap[systemVersion]) {
+        throw "Blockly.Versioning.upgrade: no upgrader to upgrade component type " + componentType +
+            " to version " + systemVersion;
+      }
+      // Versions need not be consecutive (e.g. dates), so step through the ones the map lists.
+      var versions = Object.keys(upgradeMap)
+          .map(Number)
+          .filter(function(version) { return version > preUpgradeVersion && version <= systemVersion; })
+          .sort(function(a, b) { return a - b; });
+      var fromVersion = preUpgradeVersion;
+      for (var i = 0; i < versions.length; i++) {
+        var version = versions[i];
         var versionUpgrader = upgradeMap[version];
-        if (! versionUpgrader) {
-          throw "Blockly.Versioning.upgrade: no upgrader to upgrade component type " + componentType +
-              " to version " + version;
-        }
         // Perform upgrade
         Blockly.Versioning.log("applying upgrader for upgrading component type " + componentType +
-            " from version " + (version-1) + " to version " + version);
+            " from version " + fromVersion + " to version " + version);
         // Apply upgrader, possibly mutating rep and changing its dynamic type.
         rep = Blockly.Versioning.applyUpgrader(versionUpgrader, rep, opt_workspace);
+        fromVersion = version;
       }
       didUpgrade = true;
     } // otherwise, preUpgradeVersion and systemVersion are equal and no updgrade is necessary
@@ -2967,7 +2975,18 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: The Resume and Pause methods were removed.
     3: "noUpgrade"
 
-  }, // End PhoneCall upgraders
+  }, // End Pedometer upgraders
+
+  "PersonalImageClassifier": {
+
+    // Versions are dates (yyyymmdd), carried over from the extension (last released as
+    // 20210315).
+
+    // AI2: The component was moved in-tree, replacing the extension.
+    // TensorFlow.js was updated to 1.5.2 and transfer models are downloaded on first use.
+    20261110: "noUpgrade"
+
+  }, // End PersonalImageClassifier upgraders
 
   "PhoneCall": {
 

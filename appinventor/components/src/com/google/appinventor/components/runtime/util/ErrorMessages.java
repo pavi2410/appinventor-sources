@@ -314,7 +314,12 @@ public final class ErrorMessages {
   // ListView Errors
   public static final int ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601;
 
-  // Start the next group of errors at 4700
+  // AI component errors. The numbers match components-ios/src/ErrorMessages.swift.
+  public static final int ERROR_MODEL_AI = 4701;
+  public static final int ERROR_WEBVIEW_AI = 4801;
+  public static final int ERROR_INPUT_MODE_AI = 100401;
+
+  // Start the next group of errors at 4900
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -766,6 +771,10 @@ public final class ErrorMessages {
     // ListView Errors
     errorMessages.put(ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS,
         "The index %d is out of bounds for the list view.");
+    // AI component errors
+    errorMessages.put(ERROR_MODEL_AI, "Invalid model file: %s");
+    errorMessages.put(ERROR_WEBVIEW_AI, "Invalid WebViewer: %s");
+    errorMessages.put(ERROR_INPUT_MODE_AI, "Invalid input mode: %s");
   }
 
   private ErrorMessages() {

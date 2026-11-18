@@ -34,7 +34,14 @@ public class ComponentImportResponse implements IsSerializable{
      * contains B, C, D. This is an error state because we don't want to trigger a delete of all
      * of the user's blocks associated with class A.
      */
-    BUNDLE_DOWNGRADE
+    BUNDLE_DOWNGRADE,
+
+    /**
+     * SUPERSEDED is returned when the extension has been replaced by a built-in component (see
+     * {@link SupersededExtensions}). Nothing is imported. The component types map the extension's
+     * types to the built-in components that replace them.
+     */
+    SUPERSEDED
   }
 
   private Status status;

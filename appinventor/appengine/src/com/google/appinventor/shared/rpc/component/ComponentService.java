@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import java.util.List;
+import java.util.Map;
 
 @RemoteServiceRelativePath(ServerLayout.COMPONENT_SERVICE)
 public interface ComponentService extends RemoteService {
@@ -43,5 +44,15 @@ public interface ComponentService extends RemoteService {
    * @param projectId id of the project where the component was imported
    */
   void deleteImportedComponent(String fullyQualifiedName, long projectId);
+
+  /**
+   * Finds the extensions in a project that are official releases replaced by built-in components.
+   * See {@link SupersededExtensions}.
+   *
+   * @param projectId the project to check
+   * @return the folders under assets/external_comps that hold replaced extensions, mapped to the
+   *     built-in components that replace them
+   */
+  Map<String, String> findSupersededExtensions(long projectId);
 
 }

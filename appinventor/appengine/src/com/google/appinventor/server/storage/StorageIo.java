@@ -21,6 +21,7 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
@@ -481,6 +482,18 @@ public interface StorageIo {
    * @return  file content
    */
   byte[] downloadRawFile(String userId, long projectId, String fileId);
+
+  /**
+   * Returns the stored hashes of a project's asset files whose names start with the given prefix,
+   * without downloading their content. Asset files are files under assets/; their hash is the
+   * uppercase hex MD5 of their content.
+   *
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId project ID
+   * @param prefix the start of the file IDs to include, for example "assets/external_comps/"
+   * @return the matching file IDs mapped to their hashes
+   */
+  Map<String, String> getAssetHashes(String userId, long projectId, String prefix);
 
   /**
    * Creates a temporary file with the given content and returns

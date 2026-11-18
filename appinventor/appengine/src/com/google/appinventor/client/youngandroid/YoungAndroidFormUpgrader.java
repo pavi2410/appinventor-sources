@@ -426,6 +426,10 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFirebaseDBProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Pedometer")) {
         srcCompVersion = upgradePedometerProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("PersonalImageClassifier")) {
+        srcCompVersion = upgradePersonalImageClassifierProperties(componentProperties,
+            srcCompVersion);
       } else if (componentType.equals("Map")) {
         srcCompVersion = upgradeMapProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Circle")) {
@@ -2269,6 +2273,18 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // The Resume and Pause methods were removed.
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradePersonalImageClassifierProperties(
+      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    // Versions are dates (yyyymmdd).
+    if (srcCompVersion < 20261110) {
+      // Projects at 20210315 were made with the extension. The component was moved in-tree,
+      // TensorFlow.js was updated and transfer models are downloaded on first use. No
+      // properties changed.
+      srcCompVersion = 20261110;
     }
     return srcCompVersion;
   }

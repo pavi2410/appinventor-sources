@@ -71,7 +71,7 @@ fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier
     print("Entered Classify")
     print(imagePath)
     var scaledImageBitmap: UIImage? = nil
-    if let image = UIImage(named: imagePath) {
+    if let image = AssetManager.shared.imageFromPath(path: imagePath) {
       let width = PersonalImageClassifier.IMAGE_WIDTH
       let height = Int(image.size.height * CGFloat(PersonalImageClassifier.IMAGE_WIDTH) / image.size.width)
 
@@ -81,6 +81,8 @@ fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier
       UIGraphicsEndImageContext()
     } else {
       print("Unable to load \(imagePath)")
+      Error(Int32(BaseAiComponent.ERROR_CLASSIFICATION_FAILED))
+      return
     }
 
     if let immagex = scaledImageBitmap {

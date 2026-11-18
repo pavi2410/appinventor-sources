@@ -9,6 +9,7 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ComponentServiceAsync {
 
@@ -28,4 +29,9 @@ public interface ComponentServiceAsync {
    * @see ComponentService#deleteImportedComponent(String, long)
    */
    void deleteImportedComponent(String fullyQualifiedName, long projectId, AsyncCallback<Void> callback);
+
+  /**
+   * @see ComponentService#findSupersededExtensions(long)
+   */
+  void findSupersededExtensions(long projectId, AsyncCallback<Map<String, String>> callback);
 }

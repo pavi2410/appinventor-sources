@@ -29,6 +29,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
+import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -36,6 +37,7 @@ import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONString;
 import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.rpc.component.SupersededExtensions;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -801,16 +803,52 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   private Promise<Object> loadExternalComponents() {
-    //Get the list of all ComponentNodes to be Added
-    List<ProjectNode> componentNodes = new ArrayList<>();
-    YoungAndroidComponentsFolder componentsFolder =
+    final YoungAndroidComponentsFolder componentsFolder =
         ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    // Only ask the server to check releases when a folder could hold a replaced extension.
+    boolean hasCandidates = false;
     for (ProjectNode node : componentsFolder.getChildren()) {
+      String[] parts = node.getFileId().split("/");
+      if (parts.length > 3 && SupersededExtensions.getTypeForFolder(parts[2]) != null) {
+        hasCandidates = true;
+        break;
+      }
+    }
+    if (!hasCandidates) {
+      return importExtensions(componentsFolder, new HashMap<String, String>());
+    }
+    return Promise.<Map<String, String>>call(MESSAGES.loadError(),
+        c -> Ode.getInstance().getComponentService().findSupersededExtensions(projectId, c))
+        // If the check fails, load the extensions as they are; the migration runs next time.
+        .<Map<String, String>>error(caught -> Promise.resolve(new HashMap<String, String>()))
+        .then(supersededFolders -> importExtensions(componentsFolder, supersededFolders));
+  }
+
+  /**
+   * Imports the project's extensions, except those replaced by built-in components, which are
+   * removed instead so the project's components and blocks attach to the built-in components.
+   *
+   * @param componentsFolder the project's external components folder
+   * @param supersededFolders folders of official releases replaced by built-in components, mapped
+   *     to their replacements
+   * @return a promise that resolves once all extensions have been imported
+   */
+  private Promise<Object> importExtensions(YoungAndroidComponentsFolder componentsFolder,
+      Map<String, String> supersededFolders) {
+    List<ProjectNode> componentNodes = new ArrayList<>();
+    for (ProjectNode node : componentsFolder.getChildren()) {
+      String[] parts = node.getFileId().split("/");
+      if (parts.length > 3 && supersededFolders.containsKey(parts[2])) {
+        continue;
+      }
       // Find all components that are json files.
       final String nodeName = node.getName();
       if (nodeName.endsWith(".json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
         componentNodes.add(node);
       }
+    }
+    if (!supersededFolders.isEmpty()) {
+      removeSupersededExtensions(componentsFolder, supersededFolders);
     }
 
     // Create a promise that resolves once all components have been added
@@ -818,6 +856,62 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         .stream()
         .map(this::importExtension)
         .toArray(Promise[]::new));
+  }
+
+  /**
+   * Deletes the folders of extensions that have been replaced by built-in components and, once
+   * every folder is deleted, tells the user. If a deletion fails, the error is reported instead and
+   * the folder is kept, so the migration runs again the next time the project is opened. Nothing
+   * is deleted in read-only mode; the extensions are still skipped, so the project uses the
+   * built-in components for this session.
+   *
+   * @param componentsFolder the project's external components folder
+   * @param supersededFolders the folders to delete, mapped to their built-in replacements
+   */
+  private void removeSupersededExtensions(final YoungAndroidComponentsFolder componentsFolder,
+      Map<String, String> supersededFolders) {
+    final Ode ode = Ode.getInstance();
+    if (ode.isReadOnly()) {
+      return;
+    }
+    List<String> builtIns = new ArrayList<>(new HashSet<>(supersededFolders.values()));
+    Collections.sort(builtIns);
+    final String builtInNames = String.join(", ", builtIns);
+    final int[] pending = {supersededFolders.size()};
+    final boolean[] failed = {false};
+    for (String folder : supersededFolders.keySet()) {
+      final String directory = componentsFolder.getFileId() + "/" + folder + "/";
+      ode.getProjectService().deleteFolder(ode.getSessionId(), projectId, directory,
+          new OdeAsyncCallback<Void>(MESSAGES.deleteFileError()) {
+            @Override
+            public void onSuccess(Void result) {
+              List<ProjectNode> deleted = new ArrayList<>();
+              for (ProjectNode node : componentsFolder.getChildren()) {
+                if (node.getFileId().startsWith(directory)) {
+                  deleted.add(node);
+                }
+              }
+              for (ProjectNode node : deleted) {
+                project.deleteNode(node);
+              }
+              ode.updateModificationDate(projectId, System.currentTimeMillis());
+              pending[0]--;
+              if (pending[0] == 0 && !failed[0]) {
+                // Not ErrorReporter.reportInfo: the RPCs that load the project would hide it
+                // straight away.
+                MessageDialog.messageDialog(MESSAGES.supersededExtensionsMigratedTitle(),
+                    MESSAGES.supersededExtensionsMigrated(builtInNames),
+                    MESSAGES.okButton(), null, null);
+              }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+              failed[0] = true;
+              super.onFailure(caught);
+            }
+          });
+    }
   }
 
   // Resets any warnings that should be given when a project is loaded
