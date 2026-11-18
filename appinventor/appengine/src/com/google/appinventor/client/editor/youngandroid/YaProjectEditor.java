@@ -803,21 +803,43 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   private Promise<Object> loadExternalComponents() {
-    //Get the list of all ComponentNodes to be Added
-    List<ProjectNode> componentNodes = new ArrayList<>();
-    YoungAndroidComponentsFolder componentsFolder =
+    final YoungAndroidComponentsFolder componentsFolder =
         ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
-    // Extensions replaced by built-in components, keyed by folder name. They are not loaded, so
-    // the project's components and blocks attach to the built-in component instead.
-    Map<String, String> supersededFolders = new HashMap<>();
+    // Only ask the server to check releases when a folder could hold a replaced extension.
+    boolean hasCandidates = false;
     for (ProjectNode node : componentsFolder.getChildren()) {
       String[] parts = node.getFileId().split("/");
-      if (parts.length > 3) {
-        String builtIn = SupersededExtensions.getBuiltInForFolder(parts[2]);
-        if (builtIn != null) {
-          supersededFolders.put(parts[2], builtIn);
-          continue;
-        }
+      if (parts.length > 3 && SupersededExtensions.getTypeForFolder(parts[2]) != null) {
+        hasCandidates = true;
+        break;
+      }
+    }
+    if (!hasCandidates) {
+      return importExtensions(componentsFolder, new HashMap<String, String>());
+    }
+    return Promise.<Map<String, String>>call(MESSAGES.loadError(),
+        c -> Ode.getInstance().getComponentService().findSupersededExtensions(projectId, c))
+        // If the check fails, load the extensions as they are; the migration runs next time.
+        .<Map<String, String>>error(caught -> Promise.resolve(new HashMap<String, String>()))
+        .then(supersededFolders -> importExtensions(componentsFolder, supersededFolders));
+  }
+
+  /**
+   * Imports the project's extensions, except those replaced by built-in components, which are
+   * removed instead so the project's components and blocks attach to the built-in components.
+   *
+   * @param componentsFolder the project's external components folder
+   * @param supersededFolders folders of official releases replaced by built-in components, mapped
+   *     to their replacements
+   * @return a promise that resolves once all extensions have been imported
+   */
+  private Promise<Object> importExtensions(YoungAndroidComponentsFolder componentsFolder,
+      Map<String, String> supersededFolders) {
+    List<ProjectNode> componentNodes = new ArrayList<>();
+    for (ProjectNode node : componentsFolder.getChildren()) {
+      String[] parts = node.getFileId().split("/");
+      if (parts.length > 3 && supersededFolders.containsKey(parts[2])) {
+        continue;
       }
       // Find all components that are json files.
       final String nodeName = node.getName();

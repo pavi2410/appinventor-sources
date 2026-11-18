@@ -17,6 +17,7 @@ import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 
+import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayInputStream;
@@ -143,6 +144,34 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     }
   }
 
+  @Override
+  public Map<String, String> findSupersededExtensions(long projectId) {
+    final String prefix = "assets/external_comps/";
+    Map<String, String> superseded = new HashMap<>();
+    // Uses the hashes stored with each asset file, so nothing is downloaded.
+    Map<String, String> hashes =
+        storageIo.getAssetHashes(userInfoProvider.getUserId(), projectId, prefix);
+    for (Map.Entry<String, String> entry : hashes.entrySet()) {
+      String[] parts = entry.getKey().substring(prefix.length()).split("/");
+      if (parts.length != 2 || !parts[1].equals(SupersededExtensions.FINGERPRINT_FILE)) {
+        continue;
+      }
+      String type = SupersededExtensions.getTypeForFolder(parts[0]);
+      if (type == null) {
+        continue;
+      }
+      String builtIn = SupersededExtensions.getBuiltIn(type, entry.getValue());
+      if (builtIn != null) {
+        superseded.put(parts[0], builtIn);
+      }
+    }
+    return superseded;
+  }
+
+  private static String md5(byte[] content) {
+    return Hashing.md5().hashBytes(content).toString();
+  }
+
   private Map<String, byte[]> extractContents(InputStream inputStream)
       throws IOException {
     Map<String, byte[]> contents = new HashMap<String, byte[]>();
@@ -182,13 +211,21 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
       return;
     }
 
-    // Refuse extensions that have been replaced by built-in components
+    // Refuse official releases of extensions that have been replaced by built-in components
+    Set<String> fingerprints = new HashSet<>();
+    for (Map.Entry<String, byte[]> entry : contents.entrySet()) {
+      if (StorageUtil.basename(entry.getKey()).equals(SupersededExtensions.FINGERPRINT_FILE)) {
+        fingerprints.add(md5(entry.getValue()));
+      }
+    }
     Map<String, String> superseded = new TreeMap<>();
     for (int i = 0; i < newComponents.length(); i++) {
       String type = newComponents.getJSONObject(i).getString("type");
-      String builtIn = SupersededExtensions.getBuiltInForType(type);
-      if (builtIn != null) {
-        superseded.put(type, builtIn);
+      for (String fingerprint : fingerprints) {
+        String builtIn = SupersededExtensions.getBuiltIn(type, fingerprint);
+        if (builtIn != null) {
+          superseded.put(type, builtIn);
+        }
       }
     }
     if (!superseded.isEmpty()) {

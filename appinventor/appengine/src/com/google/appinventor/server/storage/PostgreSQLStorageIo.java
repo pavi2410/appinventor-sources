@@ -49,7 +49,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.UUID;
@@ -2062,6 +2064,36 @@ public class PostgreSQLStorageIo implements StorageIo {
       @Nonnull String strUserId, long projectId, @Nonnull String fileName) {
     byte[] contentBytes = downloadProjectFile(projectId, strUserId, fileName);
     return contentBytes;
+  }
+
+  @Override
+  public Map<String, String> getAssetHashes(
+      @Nonnull String strUserId, long projectId, @Nonnull String prefix) {
+    boolean ok = false;
+    Map<String, String> hashes = new HashMap<>();
+    try (Connection conn = getConnection(false, strUserId, false)) {
+      doSetAutoCommit(conn, false);
+      long userId = getUserId(strUserId, conn, false);
+      try (PreparedStatement qstmt =
+          conn.prepareStatement(
+              "SELECT fileName, hash FROM projectFile WHERE projectId = ? AND userId = ? AND"
+                  + " hash IS NOT NULL AND left(fileName, length(?)) = ?")) {
+        qstmt.setLong(1, projectId);
+        qstmt.setLong(2, userId);
+        qstmt.setString(3, prefix);
+        qstmt.setString(4, prefix);
+        ResultSet rs = qstmt.executeQuery();
+        while (rs.next()) {
+          hashes.put(rs.getString("fileName"), rs.getString("hash"));
+        }
+        ok = true;
+      } finally {
+        doFinish(conn, ok, "getAssetHashes");
+      }
+    } catch (SQLException e) {
+      throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
+    }
+    return hashes;
   }
 
   /**
