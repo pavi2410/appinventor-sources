@@ -36,7 +36,8 @@ public class Resources {
   public static final String RUNTIME_TOOLS_DIR = "/tools/";
   private static final String ANDROID_RUNTIME = RUNTIME_FILES_DIR + "android.jar";
   private static final String ACRA_RUNTIME = RUNTIME_FILES_DIR + "acra-4.4.0.jar";
-  private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa.jar";
+  private static final String KAWA_COMPILER = RUNTIME_FILES_DIR + "kawa-compiler.jar";
+  private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa-runtime.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR = RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String DX_JAR = RUNTIME_TOOLS_DIR + "dx.jar";
   private static final String D8_JAR = RUNTIME_TOOLS_DIR + "d8.jar";
@@ -120,6 +121,15 @@ public class Resources {
     return getResource(ACRA_RUNTIME);
   }
 
+  /** The full Kawa jar, used to compile YAIL. Built by ai2-kawa's "ant appinventor". */
+  public String getKawaCompiler() {
+    return getResource(KAWA_COMPILER);
+  }
+
+  /**
+   * The Kawa classes an app can load on the device, dexed into every app. Built by ai2-kawa's
+   * "ant appinventor".
+   */
   public String getKawaRuntime() {
     return getResource(KAWA_RUNTIME);
   }

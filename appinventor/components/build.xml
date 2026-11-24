@@ -135,7 +135,8 @@
           file="${lib.dir}/webrtc/x86_64/libjingle_peerconnection_so.so" />
     <copy toFile="${public.deps.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
     <copy toFile="${public.deps.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
-    <copy toFile="${public.deps.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <copy toFile="${public.deps.dir}/kawa-compiler.jar" file="${lib.dir}/kawa/kawa-1.11-compiler.jar" />
+    <copy toFile="${public.deps.dir}/kawa-runtime.jar" file="${lib.dir}/kawa/kawa-1.11-runtime.jar" />
     <copy toFile="${public.deps.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${public.deps.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${public.deps.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />

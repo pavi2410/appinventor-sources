@@ -2,3 +2,10 @@ The kawa jars in this directory include modifications for App Inventor.
 
 The changes are in the file
 kawa-1.11-changes.diff
+
+Both jars are built from https://github.com/mit-cml/ai2-kawa with "ant appinventor"
+(see that repository's README for the JDK to use):
+
+  kawa-1.11-compiler.jar  The full jar. The buildserver compiles YAIL with it.
+  kawa-1.11-runtime.jar   The classes an app can load on the device. The buildserver
+                          dexes it into every app.
