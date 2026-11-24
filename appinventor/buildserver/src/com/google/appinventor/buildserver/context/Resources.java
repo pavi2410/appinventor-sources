@@ -38,6 +38,7 @@ public class Resources {
   private static final String ACRA_RUNTIME = RUNTIME_FILES_DIR + "acra-4.4.0.jar";
   private static final String KAWA_COMPILER = RUNTIME_FILES_DIR + "kawa-compiler.jar";
   private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa-runtime.jar";
+  private static final String KAWA_RUNTIME_KEEP_RULES = RUNTIME_FILES_DIR + "kawa-runtime.pro";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR = RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String DX_JAR = RUNTIME_TOOLS_DIR + "dx.jar";
   private static final String D8_JAR = RUNTIME_TOOLS_DIR + "d8.jar";
@@ -132,6 +133,14 @@ public class Resources {
    */
   public String getKawaRuntime() {
     return getResource(KAWA_RUNTIME);
+  }
+
+  /**
+   * R8 keep rules for the classes in {@link #getKawaRuntime()} that Kawa loads by name. Built
+   * with the jar by ai2-kawa's "ant appinventor".
+   */
+  public String getKawaRuntimeKeepRules() {
+    return getResource(KAWA_RUNTIME_KEEP_RULES);
   }
 
   public String getSimpleAndroidRuntimeJar() {

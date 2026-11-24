@@ -140,6 +140,11 @@ public class RunR8 extends DexTask implements AndroidTask {
       out.println("-dontwarn org.apache.http.util.Args");
       out.println("-dontwarn org.apache.http.entity.ContentType");
       out.println("-dontwarn org.apache.http.Consts");
+      // AndroidRuntime.jar refers to libraries that are added only for the Companion (WebRTC,
+      // ACRA) or only for components that need them (repackaged org.json).
+      out.println("-dontwarn org.webrtc.**");
+      out.println("-dontwarn org.acra.**");
+      out.println("-dontwarn " + RUNTIME + "repackaged.**");
       if (System.getenv("AI_R8_STRICT") == null) {
         // Extensions and libraries may reference optional classes we can't foresee. Set
         // AI_R8_STRICT to see them all.
@@ -154,13 +159,23 @@ public class RunR8 extends DexTask implements AndroidTask {
       // Swing GUI and desktop REPL, and slib modules loaded only by (require 'srfi-N), which
       // YAIL never emits. cut, enums and DefineRecordType are referenced by name from
       // kawa.standard.Scheme. kawa.Shell stays because gnu.expr uses it.
-      out.println("-keep class !gnu.xquery.**,!gnu.kawa.xslt.**,!gnu.ecmascript.**,"
+      // Compiled apps never evaluate YAIL at runtime, so R8 may drop the Kawa and runtime util
+      // classes they don't use (allowshrinking). The Companion's REPL evaluates YAIL, so it keeps
+      // the whole evaluator.
+      boolean appMode = !context.isForCompanion();
+      String keepTraced = appMode ? "-keep,allowshrinking class " : "-keep class ";
+      out.println(keepTraced + "!gnu.xquery.**,!gnu.kawa.xslt.**,!gnu.ecmascript.**,"
           + "!gnu.commonlisp.**,!gnu.kawa.swingviews.**,!gnu.kawa.models.**,"
           + "!gnu.kawa.servlet.**,!gnu.kawa.sax.**,"
           + "gnu.kawa.slib.cut**,gnu.kawa.slib.enums**,gnu.kawa.slib.DefineRecordType**,"
           + "!gnu.kawa.slib.**,gnu.** { *; }");
-      out.println("-keep class !kawa.GuiConsole,!kawa.GuiInPort,!kawa.PaintableView,"
+      out.println(keepTraced + "!kawa.GuiConsole,!kawa.GuiInPort,!kawa.PaintableView,"
           + "!kawa.Repl*,!kawa.TextPaneWriter,!kawa.Telnet*,!kawa.repl,kawa.** { *; }");
+      if (appMode) {
+        // Kawa classes the runtime jar loads by name (Class.forName), which R8 can't trace.
+        // Generated with the jar by ai2-kawa; compiled YAIL names no others.
+        out.println("-include " + context.getResources().getKawaRuntimeKeepRules());
+      }
       // The compiled runtime.scm, loaded by name when a screen starts.
       out.println("-keep class com.google.youngandroid.** { *; }");
 
@@ -175,9 +190,9 @@ public class RunR8 extends DexTask implements AndroidTask {
           "EventDispatcher", "HandlesEventDispatching", "OptionHelper"}) {
         out.println("-keep class " + RUNTIME + cls + " { *; }");
       }
-      out.println("-keep class " + RUNTIME + "util.** { *; }");
-      out.println("-keep class " + RUNTIME + "errors.** { *; }");
-      out.println("-keep class com.google.appinventor.components.common.** { *; }");
+      out.println(keepTraced + RUNTIME + "util.** { *; }");
+      out.println(keepTraced + RUNTIME + "errors.** { *; }");
+      out.println(keepTraced + "com.google.appinventor.components.common.** { *; }");
 
       // Components the project uses. Unused components may be removed.
       Set<String> types = new TreeSet<>(context.getSimpleCompTypes());

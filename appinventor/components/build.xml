@@ -137,6 +137,7 @@
     <copy toFile="${public.deps.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
     <copy toFile="${public.deps.dir}/kawa-compiler.jar" file="${lib.dir}/kawa/kawa-1.11-compiler.jar" />
     <copy toFile="${public.deps.dir}/kawa-runtime.jar" file="${lib.dir}/kawa/kawa-1.11-runtime.jar" />
+    <copy toFile="${public.deps.dir}/kawa-runtime.pro" file="${lib.dir}/kawa/kawa-1.11-runtime.pro" />
     <copy toFile="${public.deps.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${public.deps.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${public.deps.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />

@@ -9,3 +9,5 @@ Both jars are built from https://github.com/mit-cml/ai2-kawa with "ant appinvent
   kawa-1.11-compiler.jar  The full jar. The buildserver compiles YAIL with it.
   kawa-1.11-runtime.jar   The classes an app can load on the device. The buildserver
                           dexes it into every app.
+  kawa-1.11-runtime.pro   R8 keep rules for the classes in kawa-1.11-runtime.jar that
+                          Kawa loads by name. RunR8 uses them for compiled apps.
