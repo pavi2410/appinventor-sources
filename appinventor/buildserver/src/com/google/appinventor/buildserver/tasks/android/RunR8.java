@@ -150,8 +150,17 @@ public class RunR8 extends DexTask implements AndroidTask {
       out.println("-renamesourcefileattribute SourceFile");
 
       // Kawa looks up classes and members by name throughout its runtime.
-      out.println("-keep class gnu.** { *; }");
-      out.println("-keep class kawa.** { *; }");
+      // Keep Kawa whole, except packages App Inventor never reaches: other languages, the
+      // Swing GUI and desktop REPL, and slib modules loaded only by (require 'srfi-N), which
+      // YAIL never emits. cut, enums and DefineRecordType are referenced by name from
+      // kawa.standard.Scheme. kawa.Shell stays because gnu.expr uses it.
+      out.println("-keep class !gnu.xquery.**,!gnu.kawa.xslt.**,!gnu.ecmascript.**,"
+          + "!gnu.commonlisp.**,!gnu.kawa.swingviews.**,!gnu.kawa.models.**,"
+          + "!gnu.kawa.servlet.**,!gnu.kawa.sax.**,"
+          + "gnu.kawa.slib.cut**,gnu.kawa.slib.enums**,gnu.kawa.slib.DefineRecordType**,"
+          + "!gnu.kawa.slib.**,gnu.** { *; }");
+      out.println("-keep class !kawa.GuiConsole,!kawa.GuiInPort,!kawa.PaintableView,"
+          + "!kawa.Repl*,!kawa.TextPaneWriter,!kawa.Telnet*,!kawa.repl,kawa.** { *; }");
       // The compiled runtime.scm, loaded by name when a screen starts.
       out.println("-keep class com.google.youngandroid.** { *; }");
 
