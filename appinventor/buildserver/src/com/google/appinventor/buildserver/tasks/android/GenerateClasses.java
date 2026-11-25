@@ -84,7 +84,7 @@ public class GenerateClasses implements AndroidTask {
       }
 
       // Construct the class path including component libraries (jars)
-      StringBuilder classpath = new StringBuilder(context.getResources().getKawaRuntime());
+      StringBuilder classpath = new StringBuilder(context.getResources().getKawaCompiler());
       classpath.append(File.pathSeparator);
       classpath.append(context.getResources().getAcraRuntime());
       classpath.append(File.pathSeparator);

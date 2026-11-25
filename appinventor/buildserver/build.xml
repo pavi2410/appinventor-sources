@@ -95,6 +95,7 @@
     <copy toFile="${classes.tools.dir}/bundletool.jar" file="${lib.dir}/android/tools/bundletool-all-1.7.1.jar" />
     <copy toFile="${classes.tools.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.tools.dir}/d8.jar" file="${lib.dir}/android/tools/d8.jar" />
+    <copy toFile="${classes.tools.dir}/org.apache.http.legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt2" />
@@ -403,7 +404,7 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
     <fileset dir="${build.dir}/components/deps" includes="*.jar" />
-    <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <pathelement location="${lib.dir}/kawa/kawa-1.11-compiler.jar" />
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />

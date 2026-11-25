@@ -36,10 +36,14 @@ public class Resources {
   public static final String RUNTIME_TOOLS_DIR = "/tools/";
   private static final String ANDROID_RUNTIME = RUNTIME_FILES_DIR + "android.jar";
   private static final String ACRA_RUNTIME = RUNTIME_FILES_DIR + "acra-4.4.0.jar";
-  private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa.jar";
+  private static final String KAWA_COMPILER = RUNTIME_FILES_DIR + "kawa-compiler.jar";
+  private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa-runtime.jar";
+  private static final String KAWA_RUNTIME_KEEP_RULES = RUNTIME_FILES_DIR + "kawa-runtime.pro";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR = RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String DX_JAR = RUNTIME_TOOLS_DIR + "dx.jar";
   private static final String D8_JAR = RUNTIME_TOOLS_DIR + "d8.jar";
+  private static final String APACHE_HTTP_LEGACY_JAR =
+      RUNTIME_TOOLS_DIR + "org.apache.http.legacy.jar";
   private static final String APKSIGNER_JAR = RUNTIME_TOOLS_DIR + "apksigner.jar";
 
   public static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
@@ -118,8 +122,25 @@ public class Resources {
     return getResource(ACRA_RUNTIME);
   }
 
+  /** The full Kawa jar, used to compile YAIL. Built by ai2-kawa's "ant appinventor". */
+  public String getKawaCompiler() {
+    return getResource(KAWA_COMPILER);
+  }
+
+  /**
+   * The Kawa classes an app can load on the device, dexed into every app. Built by ai2-kawa's
+   * "ant appinventor".
+   */
   public String getKawaRuntime() {
     return getResource(KAWA_RUNTIME);
+  }
+
+  /**
+   * R8 keep rules for the classes in {@link #getKawaRuntime()} that Kawa loads by name. Built
+   * with the jar by ai2-kawa's "ant appinventor".
+   */
+  public String getKawaRuntimeKeepRules() {
+    return getResource(KAWA_RUNTIME_KEEP_RULES);
   }
 
   public String getSimpleAndroidRuntimeJar() {
@@ -136,6 +157,14 @@ public class Resources {
 
   public String getD8Jar() {
     return getResource(D8_JAR);
+  }
+
+  /**
+   * The Apache HTTP client the device provides through the org.apache.http.legacy shared
+   * library. R8 needs it as a library so it doesn't treat code using it as unreachable.
+   */
+  public String getApacheHttpLegacyJar() {
+    return getResource(APACHE_HTTP_LEGACY_JAR);
   }
 
   public String getApksignerJar() {
